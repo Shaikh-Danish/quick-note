@@ -1,65 +1,98 @@
-import Image from "next/image";
+'use client'
+
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
+import { PlusIcon, SignOutIcon } from '@phosphor-icons/react'
 
 export default function Home() {
+  const supabase = createClient()
+  const router = useRouter()
+
+  const { data: user, isLoading: userLoading } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      return user
+    }
+  })
+
+  // Example data fetch from a hypothetical "notes" table
+  const { data: notes, isLoading: notesLoading } = useQuery({
+    queryKey: ['notes'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('notes')
+        .select('*')
+        .order('created_at', { ascending: false })
+      
+      if (error && error.code !== 'PGRST116') { // Ignore table not found
+         console.warn("Notes table might not exist yet:", error.message)
+         return []
+      }
+      return data || []
+    },
+    enabled: !!user
+  })
+
+  const signout = async () => {
+    await supabase.auth.signOut()
+    router.refresh() // Trigger middleware redirect
+  }
+
+  if (userLoading) return <div className="flex h-screen items-center justify-center font-mono">Verifying session...</div>
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="flex flex-col min-h-screen bg-zinc-50 dark:bg-black font-sans">
+      <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-zinc-200 dark:border-white/10 dark:bg-black/80 p-4 z-50">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">Pocket Note</h1>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-zinc-500 hidden sm:block">{user?.email}</span>
+            <button 
+              onClick={signout}
+              className="p-2 hover:bg-zinc-100 rounded-lg transition-colors dark:hover:bg-white/10"
+              title="Sign out"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <SignOutIcon size={20} />
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <main className="flex-1 p-6 md:p-12">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">All Notes</h2>
+            <button className="flex items-center gap-2 px-4 py-2 bg-zinc-950 text-white rounded-full text-sm font-medium hover:bg-zinc-800 transition-colors">
+              <PlusIcon weight="bold" />
+              New Note
+            </button>
+          </div>
+
+          {notesLoading ? (
+            <div className="text-zinc-500">Loading notes...</div>
+          ) : notes && notes.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {notes.map((note: any) => (
+                <div key={note.id} className="p-4 bg-white border border-zinc-200 rounded-xl hover:shadow-sm transition-shadow dark:bg-zinc-900 dark:border-white/10">
+                  <h3 className="font-semibold text-zinc-900 dark:text-white">{note.title}</h3>
+                  <p className="text-sm text-zinc-500 mt-2 line-clamp-3">{note.content}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mb-4 dark:bg-white/5">
+                <PlusIcon size={32} className="text-zinc-400" />
+              </div>
+              <h3 className="text-lg font-medium text-zinc-900 dark:text-white">No notes yet</h3>
+              <p className="text-zinc-500 mt-1">Start by creating your first note.</p>
+              <button className="mt-4 text-zinc-950 font-semibold hover:underline dark:text-white">Go to Supabase Dashboard to create a 'notes' table</button>
+            </div>
+          )}
         </div>
       </main>
     </div>
-  );
+  )
 }
