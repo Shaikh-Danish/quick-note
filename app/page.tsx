@@ -1,13 +1,11 @@
 import { headers } from "next/headers";
-
-import { auth } from "@/lib/auth";
-
-import LandingPage from "@/components/landing/landing-page";
-import DashboardPage from "@/components/dashboard/dashboard-page";
+import DashboardPage from "@/app/(dashboard)/_components/dashboard/dashboard-page";
+import LandingPage from "@/app/(marketing)/_components/landing/landing-page";
+import { auth } from "@/features/auth/server";
 
 export default async function Page() {
   const session = await auth.api.getSession({
-    headers: await headers()
+    headers: await headers(),
   });
 
   if (!session) {
