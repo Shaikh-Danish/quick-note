@@ -5,10 +5,10 @@ import {
     Notebook,
     Plus,
     SignOut,
-    UserCircle,
 } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import { authClient } from "@/features/auth/client";
 
 export default function DashboardPage({ user }: { user: any }) {
     const router = useRouter();
@@ -30,7 +30,7 @@ export default function DashboardPage({ user }: { user: any }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16 items-center">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-zinc-900 dark:bg-zinc-100 rounded-lg flex items-center justify-center">
+                            <div className="w-8 h-8 bg-zinc-900 dark:bg-zinc-100  flex items-center justify-center">
                                 <Notebook
                                     weight="fill"
                                     className="text-white dark:text-zinc-900"
@@ -49,7 +49,7 @@ export default function DashboardPage({ user }: { user: any }) {
                                 </div>
                                 <input
                                     type="text"
-                                    className="block w-full pl-10 pr-3 py-2 border border-zinc-200 dark:border-zinc-800 rounded-xl leading-5 bg-zinc-50 dark:bg-zinc-900 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-100 dark:placeholder-zinc-600 sm:text-sm transition-all focus:bg-white dark:focus:bg-black"
+                                    className="block w-full pl-10 pr-3 py-2 border border-zinc-200 dark:border-zinc-800  leading-5 bg-zinc-50 dark:bg-zinc-900 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-100 dark:placeholder-zinc-600 sm:text-sm transition-all focus:bg-white dark:focus:bg-black"
                                     placeholder="Search notes..."
                                 />
                             </div>
@@ -64,13 +64,13 @@ export default function DashboardPage({ user }: { user: any }) {
                                     {user?.email}
                                 </span>
                             </div>
-                            <button
+                            <Button
                                 onClick={signout}
-                                className="p-2.5 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 rounded-xl hover:text-zinc-900 dark:hover:text-white transition-colors border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 active:scale-95"
+                                className="p-2.5 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400  hover:text-zinc-900 dark:hover:text-white transition-colors border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 active:scale-95"
                                 title="Sign out"
                             >
                                 <SignOut size={20} />
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -87,13 +87,13 @@ export default function DashboardPage({ user }: { user: any }) {
                                 Capture your thoughts, ideas, and tasks.
                             </p>
                         </div>
-                        <button className="flex items-center gap-2.5 px-6 py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-2xl text-base font-bold hover:shadow-xl dark:hover:shadow-[0_4px_20px_rgba(255,255,255,0.05)] transition-all hover:-translate-y-0.5 active:translate-y-0">
+                        <Button className="flex items-center gap-2.5 px-6 py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900  text-base font-bold hover:shadow-xl dark:hover:shadow-[0_4px_20px_rgba(255,255,255,0.05)] transition-all hover:-translate-y-0.5 active:translate-y-0">
                             <Plus weight="bold" size={20} />
                             <span>New Note</span>
-                        </button>
+                        </Button>
                     </div>
 
-                    <div className="flex flex-col items-center justify-center min-h-[400px] border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[32px] bg-white dark:bg-[#09090b] shadow-sm animate-pulse-slow">
+                    <div className="flex flex-col items-center justify-center min-h-[400px] border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#09090b] shadow-sm animate-pulse-slow">
                         <div className="w-20 h-20 bg-zinc-50 dark:bg-zinc-900 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
                             <Notebook
                                 size={40}
@@ -107,9 +107,9 @@ export default function DashboardPage({ user }: { user: any }) {
                             Looks empty here! Start your creative journey by creating your
                             first note today.
                         </p>
-                        <button className="px-6 py-2.5 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white rounded-xl text-sm font-semibold hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
+                        <Button className="px-6 py-2.5 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white  text-sm font-semibold hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
                             Explore Templates
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </main>
