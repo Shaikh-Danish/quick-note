@@ -4,7 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { emailOTP } from "better-auth/plugins"
 
-import { PrismaClient } from "@/app/generated/prisma/client";
+import { PrismaClient } from "./prisma-client";
 import { transporter } from "./email";
 import { getSignInEmailTemplate } from "./email-templates/sign-in";
 import { getEmailVerificationTemplate } from "./email-templates/email-verification";
@@ -20,6 +20,7 @@ export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
+    baseURL: process.env.BETTER_AUTH_URL,
     plugins: [
         emailOTP({
             async sendVerificationOTP({ email, otp, type }) {
