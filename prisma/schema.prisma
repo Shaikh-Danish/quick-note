@@ -24,6 +24,7 @@ model User {
   displayUsername String?
   sessions        Session[]
   accounts        Account[]
+  notes           Note[]
 
   @@unique([email])
   @@unique([username])
@@ -76,4 +77,39 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Note {
+  id        String    @id @default(uuid())
+  title     String
+  content   String // Will store encrypted content
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags      NoteTag[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("note")
+}
+
+model Tag {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  notes     NoteTag[]
+  createdAt DateTime  @default(now())
+
+  @@map("tag")
+}
+
+model NoteTag {
+  noteId String
+  tagId  String
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([noteId, tagId])
+  @@index([noteId])
+  @@index([tagId])
+  @@map("note_tag")
 }
