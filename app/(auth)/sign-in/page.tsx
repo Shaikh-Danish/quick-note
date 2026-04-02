@@ -3,8 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
+
 import { authClient } from "@/features/auth/client";
 import { useZodForm } from "@/hooks/use-zod-form";
 
@@ -69,25 +73,25 @@ export default function SignIn() {
                     </p>
                 </div>
 
-                <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl p-2  border border-zinc-200/50 dark:border-zinc-800 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.08)]">
+                <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl p-5  border border-zinc-200/50 dark:border-zinc-800 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.08)]">
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                         <div className="space-y-4">
                             <div className="group space-y-2">
-                                <label
+                                <Label
                                     htmlFor="email"
                                     className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 ml-1"
                                 >
                                     Email Address
-                                </label>
+                                </Label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white transition-colors">
                                         <Icons.email size={18} weight="duotone" />
                                     </div>
-                                    <input
+                                    <Input
                                         id="email"
                                         type="email"
                                         {...register("email")}
-                                        className="block w-full pl-11 pr-4 py-3 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all"
+                                        className="block w-full h-11 pl-11 pr-4 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all font-mono"
                                         placeholder="name@example.com"
                                     />
                                 </div>
@@ -100,12 +104,12 @@ export default function SignIn() {
 
                             <div className="group space-y-2">
                                 <div className="flex items-center justify-between ml-1">
-                                    <label
+                                    <Label
                                         htmlFor="password"
                                         className="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500"
                                     >
                                         Password
-                                    </label>
+                                    </Label>
                                     <Link
                                         href="#"
                                         className="text-xs font-bold text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
@@ -117,11 +121,11 @@ export default function SignIn() {
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white transition-colors">
                                         <Icons.password size={18} weight="duotone" />
                                     </div>
-                                    <input
+                                    <Input
                                         id="password"
                                         type="password"
                                         {...register("password")}
-                                        className="block w-full pl-11 pr-4 py-3 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all"
+                                        className="block w-full h-11 pl-11 pr-4 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all font-mono"
                                         placeholder="••••••••"
                                     />
                                 </div>
@@ -133,10 +137,10 @@ export default function SignIn() {
                             </div>
                         </div>
 
-                        <button
+                        <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full flex items-center justify-center gap-3 py-3 px-6 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900  text-base font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-50 shadow-[0_15px_30px_rgba(0,0,0,0.1)] dark:shadow-none"
+                            className="w-full h-11 flex items-center justify-center gap-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900  text-base font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-50 shadow-[0_15px_30px_rgba(0,0,0,0.1)] dark:shadow-none"
                         >
                             {loading ? (
                                 <div className="w-5 h-5 border-2 border-current border-t-transparent  animate-spin" />
@@ -146,7 +150,7 @@ export default function SignIn() {
                                     <Icons.arrowRight weight="bold" size={18} />
                                 </>
                             )}
-                        </button>
+                        </Button>
                     </form>
                 </div>
 
