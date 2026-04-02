@@ -2,12 +2,10 @@
 
 import {
     ArrowRight,
-    CaretDown,
     Folders,
     GithubLogo,
     Layout,
     Lightning,
-    Note,
     Notebook,
     Quotes,
     ShieldCheck,
@@ -17,10 +15,10 @@ import Link from "next/link";
 
 export default function LandingPage() {
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-[#070708] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-black scroll-smooth">
+        <div className="flex flex-col min-h-screen bg-[#fafafa] dark:bg-[#070708] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-900 selection:text-white dark:selection:bg-white dark:selection:text-black scroll-smooth">
             {/* Header / Nav */}
-            <header className="fixed top-0 left-0 right-0 z-[100] px-4 py-4 pointer-events-none">
-                <nav className="max-w-4xl mx-auto flex items-center justify-between h-14 px-6  border border-zinc-200/50 dark:border-zinc-800/50 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-2xl pointer-events-auto shadow-[0_8px_32px_rgba(0,0,0,0.03)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
+            <header className="fixed top-0 left-0 right-0 z-100 px-4 py-4 pointer-events-none">
+                <nav className="max-w-4xl mx-auto flex items-center justify-between h-14 px-6  border border-zinc-200/50 dark:border-zinc-800/50 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-2xl pointer-events-auto shadow-[0_8px_32px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)]">
                     <div className="flex items-center gap-2 group cursor-pointer">
                         <div className="w-7 h-7 bg-zinc-950 dark:bg-white  flex items-center justify-center transition-transform group-hover:rotate-6">
                             <Notebook
@@ -39,13 +37,13 @@ export default function LandingPage() {
                             href="#features"
                             className="hover:text-zinc-950 dark:hover:text-white transition-colors"
                         >
-                            Experience
+                            Flow
                         </a>
                         <a
                             href="#community"
                             className="hover:text-zinc-950 dark:hover:text-white transition-colors"
                         >
-                            Vault
+                            Shortcuts
                         </a>
                     </div>
 
@@ -68,37 +66,36 @@ export default function LandingPage() {
 
             <main className="flex-1">
                 {/* Hero Section */}
-                <section className="relative overflow-hidden pt-44 pb-32 md:pt-60 md:pb-52">
+                <section className="relative overflow-hidden pt-32 pb-24 md:pt-40 md:pb-32">
                     <div className="max-w-6xl mx-auto px-6 relative z-10">
                         <div className="text-center">
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5  bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200/50 dark:border-zinc-700/50 mb-10 animate-fade-in transition-all hover:border-zinc-300 dark:hover:border-zinc-600 cursor-default">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5  bg-white dark:bg-zinc-800/50 border border-zinc-200/50 dark:border-zinc-700/50 mb-6 animate-fade-in transition-all hover:border-zinc-300 dark:hover:border-zinc-600 cursor-default shadow-sm text-zinc-600 dark:text-zinc-400">
                                 <Sparkle weight="fill" className="text-amber-500" size={14} />
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
                                     Better productivity awaits
                                 </span>
                             </div>
 
-                            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-8 leading-[0.85] text-zinc-950 dark:text-white">
-                                Organize{" "}
-                                <span className="text-zinc-400 dark:text-zinc-600">Ideas</span>
+                            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-6 leading-[0.85] text-zinc-950 dark:text-white">
+                                Your useful data.
                                 <br />
-                                at light{" "}
+                                Always within{" "}
                                 <span className="italic font-serif font-light text-zinc-300 dark:text-zinc-700">
-                                    speed.
+                                    reach.
                                 </span>
                             </h1>
 
                             <p className="max-w-xl mx-auto text-zinc-400 dark:text-zinc-500 text-lg md:text-xl font-medium mb-12 leading-relaxed tracking-tight">
-                                A high-performance spatial note taking engine built for the
-                                modern thinker. Zero friction, total control.
+                                A simple way to keep your most important information at your fingertips. 
+                                Save what's useful once and find it instantly when you need it.
                             </p>
 
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                                 <Link
                                     href="/sign-up"
-                                    className="w-full sm:w-auto px-10 py-5 bg-zinc-950 dark:bg-white text-white dark:text-zinc-950  text-lg font-black hover:shadow-2xl dark:hover:shadow-white/5 transition-all hover:-translate-y-1 active:translate-y-0 group"
+                                    className="w-full sm:w-auto px-6 py-3 bg-zinc-950 dark:bg-white text-white dark:text-zinc-950  text-base font-black hover:shadow-2xl dark:hover:shadow-white/5 transition-all hover:-translate-y-1 active:translate-y-0 group"
                                 >
-                                    Start Writing
+                                    Get Started
                                     <ArrowRight
                                         weight="bold"
                                         className="inline-block ml-2 group-hover:translate-x-1 transition-transform"
@@ -106,9 +103,9 @@ export default function LandingPage() {
                                 </Link>
                                 <a
                                     href="https://github.com"
-                                    className="w-full sm:w-auto px-10 py-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-white  text-lg font-black hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all flex items-center justify-center gap-3"
+                                    className="w-full sm:w-auto px-6 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-white  text-base font-black hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all flex items-center justify-center gap-3"
                                 >
-                                    <GithubLogo size={24} weight="fill" />
+                                    <GithubLogo size={20} weight="fill" />
                                     The Code
                                 </a>
                             </div>
@@ -116,18 +113,19 @@ export default function LandingPage() {
                     </div>
 
                     {/* Hero Background Animation */}
-                    <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_120%,rgba(0,0,0,0.05),transparent)] dark:bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.03),transparent)]" />
-                    <div className="absolute -top-[10%] left-1/2 -translate-x-1/2 w-[120%] h-[120%] -z-20 pointer-events-none opacity-[0.03] dark:opacity-[0.05] grayscale">
+                    <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_120%,rgba(0,0,0,0.02),transparent)] dark:bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.03),transparent)]" />
+                    <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-zinc-200/50 dark:via-zinc-800/50 to-transparent -z-10" />
+                    <div className="absolute -top-[10%] left-1/2 -translate-x-1/2 w-[120%] h-[120%] -z-20 pointer-events-none opacity-[0.02] dark:opacity-[0.05] grayscale">
                         <div className="w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-50" />
                     </div>
                 </section>
 
                 {/* Bento Grid / Features */}
-                <section id="features" className="py-24 bg-white dark:bg-[#070708]">
+                <section id="features" className="py-16 bg-[#fafafa] dark:bg-[#070708] border-y border-zinc-200/50 dark:border-zinc-800/50">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-full md:h-[600px]">
                             {/* Feature 1: Large Card */}
-                            <div className="md:col-span-2 md:row-span-2 p-10 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/50  group hover:border-zinc-900 dark:hover:border-zinc-100 transition-all overflow-hidden flex flex-col justify-between relative">
+                            <div className="md:col-span-2 md:row-span-2 p-6 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/50  group hover:border-zinc-900 dark:hover:border-zinc-100 transition-all overflow-hidden flex flex-col justify-between relative">
                                 <div>
                                     <div className="w-12 h-12 bg-white dark:bg-zinc-900  flex items-center justify-center mb-6 shadow-sm border border-zinc-200 dark:border-zinc-800">
                                         <Lightning
@@ -137,11 +135,11 @@ export default function LandingPage() {
                                         />
                                     </div>
                                     <h3 className="text-3xl font-black mb-4 tracking-tighter">
-                                        Spatial Engine
+                                        Instant Access
                                     </h3>
                                     <p className="text-zinc-500 dark:text-zinc-400 text-lg leading-snug">
-                                        Experience the fastest note loading in the industry. Powered
-                                        by a custom database engine that puts your thoughts first.
+                                        Find what you need in a split second. Your most important 
+                                        information is always right where you left it.
                                     </p>
                                 </div>
                                 <div className="mt-8 relative h-48 -mr-16 -mb-4 bg-zinc-100 dark:bg-zinc-800 rounded-tl-[2rem] border-t border-l border-zinc-200 dark:border-zinc-700 opacity-50 transition-all group-hover:opacity-100 group-hover:-translate-x-4">
@@ -155,7 +153,7 @@ export default function LandingPage() {
                             </div>
 
                             {/* Feature 2: Shield */}
-                            <div className="md:col-span-2 p-10 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/50  group hover:border-zinc-900 dark:hover:border-zinc-100 transition-all flex items-end">
+                            <div className="md:col-span-2 p-6 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/50  group hover:border-zinc-900 dark:hover:border-zinc-100 transition-all flex items-end">
                                 <div className="flex-1">
                                     <div className="w-10 h-10 bg-white dark:bg-zinc-900  flex items-center justify-center mb-4 shadow-sm border border-zinc-200 dark:border-zinc-800">
                                         <ShieldCheck
@@ -180,7 +178,7 @@ export default function LandingPage() {
                             </div>
 
                             {/* Feature 3: Folders */}
-                            <div className="p-8 bg-zinc-950 dark:bg-white text-white dark:text-zinc-950  group transition-all relative overflow-hidden flex flex-col justify-between">
+                            <div className="p-6 bg-white dark:bg-zinc-800/30 border border-zinc-200/50 dark:border-zinc-700/50  group hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all flex flex-col justify-between shadow-sm hover:shadow-md">
                                 <Folders
                                     size={140}
                                     weight="duotone"
@@ -188,18 +186,18 @@ export default function LandingPage() {
                                 />
                                 <div className="z-10">
                                     <h3 className="text-xl font-black leading-tight">
-                                        Organized
+                                        Instant
                                         <br />
-                                        Stacks
+                                        Snippets
                                     </h3>
                                 </div>
                                 <p className="text-xs font-medium z-10 opacity-70">
-                                    Multi-level nesting and metadata tagging for the super-users.
+                                    A global clipboard for your most used data. Retrieve anything in milliseconds.
                                 </p>
                             </div>
 
                             {/* Feature 4: Layout */}
-                            <div className="p-8 bg-zinc-100 dark:bg-zinc-800/30 border border-zinc-200/50 dark:border-zinc-700/50  group hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all flex flex-col justify-between">
+                            <div className="p-8 bg-white dark:bg-zinc-800/30 border border-zinc-200/50 dark:border-zinc-700/50  group hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all flex flex-col justify-between shadow-sm hover:shadow-md">
                                 <Layout
                                     size={40}
                                     className="text-zinc-400 dark:text-zinc-600"
@@ -220,7 +218,7 @@ export default function LandingPage() {
                 {/* Testimonial / Community */}
                 <section
                     id="community"
-                    className="py-32 bg-white dark:bg-[#070708] overflow-hidden"
+                    className="py-20 bg-white dark:bg-[#070708] overflow-hidden"
                 >
                     <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-20">
                         <div className="flex-1">
@@ -230,27 +228,27 @@ export default function LandingPage() {
                                 className="text-zinc-100 dark:text-zinc-800 mb-8"
                             />
                             <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 leading-[1.1] text-zinc-950 dark:text-white">
-                                Trusted by thinkers at world-class teams.
+                                Trusted by people who need their data now.
                             </h2>
-                            <div className="flex items-center gap-4 p-6 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-3xl">
+                            <div className="flex items-center gap-4 p-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl">
                                 <div className="w-12 h-12 bg-zinc-300 dark:bg-zinc-700  shrink-0" />
                                 <div>
-                                    <p className="font-bold text-sm">
-                                        "Quick Note is the first tool that actually matches the
-                                        speed of my thoughts. Invaluable."
+                                     <p className="font-bold text-sm">
+                                        "Quick Note is the first tool that actually makes my
+                                        useful information easy to find. Invaluable."
                                     </p>
                                     <span className="text-[10px] uppercase font-black tracking-widest text-zinc-400 mt-1 block">
-                                        Senior Lead, Apex Design
+                                        Power User, Creative Hub
                                     </span>
                                 </div>
                             </div>
                         </div>
                         <div className="flex-1 relative">
                             {/* Decorative visual representing the app */}
-                            <div className="w-full aspect-square bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800  flex items-center justify-center p-8 overflow-hidden group">
+                            <div className="w-full aspect-square bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800  flex items-center justify-center p-6 overflow-hidden group">
                                 <div className="w-full h-full bg-white dark:bg-zinc-950  shadow-xl transition-transform group-hover:scale-105 duration-700">
                                     {/* Placeholder for your generated image */}
-                                    <div className="w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-900 text-zinc-300 dark:text-zinc-700">
+                                    <div className="w-full h-full flex items-center justify-center bg-white dark:bg-zinc-900 text-zinc-300 dark:text-zinc-700">
                                         <span className="text-[8px] uppercase tracking-[0.5em] font-black opacity-20">
                                             Preview Interface
                                         </span>
@@ -263,19 +261,19 @@ export default function LandingPage() {
                 </section>
 
                 {/* Final CTA */}
-                <section className="py-40 bg-zinc-950 dark:bg-white text-white dark:text-zinc-950">
+                <section className="py-24 bg-zinc-950 dark:bg-white text-white dark:text-zinc-950">
                     <div className="max-w-4xl mx-auto px-6 text-center">
                         <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-12 leading-[0.9]">
-                            Upgrade your
+                            Access your useful
                             <br />
-                            brain today.
+                            data instantly.
                         </h2>
                         <Link
                             href="/sign-up"
-                            className="inline-flex items-center gap-4 px-12 py-6 bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white  text-2xl font-black hover:scale-105 active:scale-95 transition-all shadow-2xl"
+                            className="inline-flex items-center gap-4 px-8 py-4 bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white  text-lg font-black hover:scale-105 active:scale-95 transition-all shadow-2xl"
                         >
-                            Sign Up Free
-                            <ArrowRight weight="bold" size={24} />
+                            Get Started
+                            <ArrowRight weight="bold" size={20} />
                         </Link>
                         <p className="mt-12 text-sm font-bold opacity-40 uppercase tracking-widest leading-loose">
                             No credit card required • GDPR Compliant • Open Source
@@ -285,7 +283,7 @@ export default function LandingPage() {
             </main>
 
             {/* Footer */}
-            <footer className="py-20 border-t border-zinc-200/50 dark:border-zinc-800/50 bg-white dark:bg-[#070708]">
+            <footer className="py-12 border-t border-zinc-200/50 dark:border-zinc-800/50 bg-[#fafafa] dark:bg-[#070708]">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="flex flex-col md:flex-row justify-between items-start gap-12">
                         <div className="space-y-6">
@@ -302,8 +300,7 @@ export default function LandingPage() {
                                 </span>
                             </div>
                             <p className="text-sm text-zinc-400 font-medium max-w-xs">
-                                Redefining the standard for personal knowledge management
-                                systems. Built with precision for the modern web.
+                                The ultimate shortcut for your daily boilerplate and recurring information.
                             </p>
                         </div>
 
@@ -349,7 +346,7 @@ export default function LandingPage() {
             </footer>
 
             {/* Micro-animations Overlay */}
-            <div className="fixed inset-0 pointer-events-none z-[1000] border-[20px] border-white/5 dark:border-black/5 opacity-50" />
+            <div className="fixed inset-0 pointer-events-none z-1000 border-[20px] border-white/5 dark:border-black/5 opacity-50" />
         </div>
     );
 }

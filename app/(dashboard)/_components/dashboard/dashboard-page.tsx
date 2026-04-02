@@ -10,7 +10,13 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/features/auth/client";
 
-export default function DashboardPage({ user }: { user: any }) {
+interface User {
+    name?: string | null;
+    email: string;
+    image?: string | null;
+}
+
+export default function DashboardPage({ user }: { user: User | null }) {
     const router = useRouter();
 
     const signout = async () => {
@@ -28,7 +34,7 @@ export default function DashboardPage({ user }: { user: any }) {
             {/* Dashboard Header */}
             <header className="sticky top-0 z-40 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16 items-center">
+                    <div className="flex justify-between h-14 items-center">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-zinc-900 dark:bg-zinc-100  flex items-center justify-center">
                                 <Notebook
@@ -50,7 +56,7 @@ export default function DashboardPage({ user }: { user: any }) {
                                 <input
                                     type="text"
                                     className="block w-full pl-10 pr-3 py-2 border border-zinc-200 dark:border-zinc-800  leading-5 bg-zinc-50 dark:bg-zinc-900 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-100 dark:placeholder-zinc-600 sm:text-sm transition-all focus:bg-white dark:focus:bg-black"
-                                    placeholder="Search notes..."
+                                    placeholder="Find a shortcut..."
                                 />
                             </div>
                         </div>
@@ -76,20 +82,20 @@ export default function DashboardPage({ user }: { user: any }) {
                 </div>
             </header>
 
-            <main className="flex-1 px-4 py-12 sm:px-6 lg:px-8">
+            <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto">
-                    <div className="flex items-center justify-between mb-12">
+                    <div className="flex items-center justify-between mb-8">
                         <div className="flex flex-col gap-1">
                             <h2 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-                                Your Notes
+                                Your Vault
                             </h2>
                             <p className="text-zinc-500 dark:text-zinc-400">
-                                Capture your thoughts, ideas, and tasks.
+                                Frequent data, saved for instant retrieval.
                             </p>
                         </div>
-                        <Button className="flex items-center gap-2.5 px-6 py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900  text-base font-bold hover:shadow-xl dark:hover:shadow-[0_4px_20px_rgba(255,255,255,0.05)] transition-all hover:-translate-y-0.5 active:translate-y-0">
-                            <Plus weight="bold" size={20} />
-                            <span>New Note</span>
+                        <Button className="flex items-center gap-2 px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900  text-sm font-bold hover:shadow-xl dark:hover:shadow-[0_4px_20px_rgba(255,255,255,0.05)] transition-all hover:-translate-y-0.5 active:translate-y-0">
+                            <Plus weight="bold" size={18} />
+                            <span>New Snippet</span>
                         </Button>
                     </div>
 
@@ -101,13 +107,12 @@ export default function DashboardPage({ user }: { user: any }) {
                             />
                         </div>
                         <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
-                            No notes found
+                            Vault is empty
                         </h3>
                         <p className="text-zinc-500 dark:text-zinc-400 max-w-xs text-center mb-8">
-                            Looks empty here! Start your creative journey by creating your
-                            first note today.
+                            Save your first recurring piece of information and stop typing it twice.
                         </p>
-                        <Button className="px-6 py-2.5 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white  text-sm font-semibold hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
+                        <Button className="px-4 py-2 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white  text-sm font-semibold hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
                             Explore Templates
                         </Button>
                     </div>

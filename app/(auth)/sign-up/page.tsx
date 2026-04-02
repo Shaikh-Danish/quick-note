@@ -1,10 +1,11 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
+import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/toast";
 import { authClient } from "@/features/auth/client";
 import { useZodForm } from "@/hooks/use-zod-form";
@@ -44,17 +45,17 @@ export default function SignUp() {
     };
 
     return (
-        <div className="relative min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center p-6 overflow-hidden">
+        <div className="relative min-h-screen bg-[#fafafa] dark:bg-zinc-950 flex items-center justify-center p-3 overflow-hidden">
             {/* Ambient Background */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-5%] left-[-5%] w-[45%] h-[45%]  bg-zinc-200/40 dark:bg-zinc-800/20 blur-[130px] animate-pulse" />
-                <div className="absolute bottom-[-5%] right-[-5%] w-[45%] h-[45%]  bg-zinc-200/40 dark:bg-zinc-800/20 blur-[130px] animate-pulse delay-700" />
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] dark:opacity-[0.05] brightness-100 contrast-150" />
+                <div className="absolute top-[-5%] left-[-5%] w-[45%] h-[45%]  bg-zinc-200/30 dark:bg-zinc-800/20 blur-[130px] animate-pulse" />
+                <div className="absolute bottom-[-5%] right-[-5%] w-[45%] h-[45%]  bg-zinc-200/30 dark:bg-zinc-800/20 blur-[130px] animate-pulse delay-700" />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] dark:opacity-[0.05] brightness-100 contrast-150" />
             </div>
 
             <div className="relative w-full max-w-[460px] animate-in fade-in zoom-in duration-1000">
                 <div className="text-center mb-10 space-y-3">
-                    <div className="inline-flex items-center justify-center w-14 h-14 bg-zinc-900 dark:bg-zinc-100  mb-4 shadow-2xl rotate-3 hover:rotate-0 transition-all duration-500 cursor-pointer">
+                    <div className="inline-flex items-center justify-center w-14 h-14 bg-zinc-900 dark:bg-zinc-100  mb-4 shadow-[0_20px_40px_rgba(0,0,0,0.2)] rotate-3 hover:rotate-0 transition-all duration-500 cursor-pointer">
                         <Icons.logo
                             weight="fill"
                             className="text-white dark:text-zinc-900"
@@ -65,11 +66,11 @@ export default function SignUp() {
                         Join Quick Note
                     </h1>
                     <p className="text-zinc-500 dark:text-zinc-400 text-lg">
-                        Capture your thoughts, beautifully.
+                        The ultimate shortcut for your data.
                     </p>
                 </div>
 
-                <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl p-8 md:p-10  border border-white dark:border-zinc-800 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)]">
+                <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl p-4 md:p-5  border border-zinc-200/50 dark:border-zinc-800 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.08)]">
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="grid grid-cols-1 gap-3">
                             <div className="group space-y-1">
@@ -83,10 +84,10 @@ export default function SignUp() {
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white transition-colors">
                                         <Icons.user size={18} weight="duotone" />
                                     </div>
-                                    <input
+                                    <Input
                                         id="name"
                                         {...register("name")}
-                                        className="block w-full pl-11 pr-4 py-3.5 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all"
+                                        className="block w-full pl-11 pr-4 py-3 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all"
                                         placeholder="John Doe"
                                     />
                                 </div>
@@ -108,10 +109,10 @@ export default function SignUp() {
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white transition-colors">
                                         <Icons.idCard size={18} weight="duotone" />
                                     </div>
-                                    <input
+                                    <Input
                                         id="username"
                                         {...register("username")}
-                                        className="block w-full pl-11 pr-4 py-3.5 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all font-mono"
+                                        className="block w-full pl-11 pr-4 py-3 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all font-mono"
                                         placeholder="johndoe"
                                     />
                                 </div>
@@ -133,11 +134,11 @@ export default function SignUp() {
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white transition-colors">
                                         <Icons.email size={18} weight="duotone" />
                                     </div>
-                                    <input
+                                    <Input
                                         id="email"
                                         type="email"
                                         {...register("email")}
-                                        className="block w-full pl-11 pr-4 py-3.5 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all"
+                                        className="block w-full pl-11 pr-4 py-3 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all"
                                         placeholder="name@example.com"
                                     />
                                 </div>
@@ -159,11 +160,11 @@ export default function SignUp() {
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-zinc-900 dark:group-focus-within:text-white transition-colors">
                                         <Icons.password size={18} weight="duotone" />
                                     </div>
-                                    <input
+                                    <Input
                                         id="password"
                                         type="password"
                                         {...register("password")}
-                                        className="block w-full pl-11 pr-4 py-3.5 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all"
+                                        className="block w-full pl-11 pr-4 py-3 border border-zinc-200 dark:border-zinc-800  bg-white/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/5 dark:focus:ring-white/10 transition-all"
                                         placeholder="••••••••"
                                     />
                                 </div>
@@ -175,10 +176,10 @@ export default function SignUp() {
                             </div>
                         </div>
 
-                        <button
+                        <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900  text-base font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-50 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-none mt-2"
+                            className="w-full flex items-center justify-center gap-3 py-3 px-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900  text-base font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-50 shadow-[0_15px_30px_rgba(0,0,0,0.1)] dark:shadow-none mt-2"
                         >
                             {loading ? (
                                 <div className="w-5 h-5 border-2 border-current border-t-transparent  animate-spin" />
@@ -188,7 +189,7 @@ export default function SignUp() {
                                     <Icons.arrowRight weight="bold" size={18} />
                                 </>
                             )}
-                        </button>
+                        </Button>
                     </form>
                 </div>
 
