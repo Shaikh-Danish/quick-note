@@ -86,7 +86,7 @@ export default function LandingPage() {
                             </h1>
 
                             <p className="max-w-xl mx-auto text-muted-foreground text-lg md:text-xl font-medium mb-12 leading-relaxed tracking-tight">
-                                A simple way to keep your most important information at your fingertips. 
+                                A simple way to keep your most important information at your fingertips.
                                 Save what's useful once and find it instantly when you need it.
                             </p>
 
@@ -138,11 +138,11 @@ export default function LandingPage() {
                                         Instant Access
                                     </h3>
                                     <p className="text-muted-foreground text-lg leading-snug">
-                                        Find what you need in a split second. Your most important 
+                                        Find what you need in a split second. Your most important
                                         information is always right where you left it.
                                     </p>
                                 </div>
-                                <div className="mt-8 relative h-48 -mr-16 -mb-4 bg-muted rounded-tl-[2rem] border-t border-l border-border opacity-50 transition-all group-hover:opacity-100 group-hover:-translate-x-4">
+                                <div className="mt-8 relative h-48 -mr-16 -mb-4 bg-muted rounded-tl-4xl border-t border-l border-border opacity-50 transition-all group-hover:opacity-100 group-hover:-translate-x-4">
                                     {/* Abstract UI representation */}
                                     <div className="p-6 space-y-4">
                                         <div className="h-4 w-32 bg-muted-foreground/30 " />
@@ -233,7 +233,7 @@ export default function LandingPage() {
                             <div className="flex items-center gap-4 p-4 bg-muted/50 border border-border rounded-2xl">
                                 <div className="w-12 h-12 bg-muted-foreground/30  shrink-0" />
                                 <div>
-                                     <p className="font-bold text-sm">
+                                    <p className="font-bold text-sm">
                                         "Quick Note is the first tool that actually makes my
                                         useful information easy to find. Invaluable."
                                     </p>
@@ -346,7 +346,7 @@ export default function LandingPage() {
             </footer>
 
             {/* Micro-animations Overlay */}
-            <div className="fixed inset-0 pointer-events-none z-1000 border-[20px] border-foreground/5 opacity-50" />
+            <div className="fixed inset-0 pointer-events-none z-1000 border-20 border-foreground/5 opacity-50" />
         </div>
     );
 }

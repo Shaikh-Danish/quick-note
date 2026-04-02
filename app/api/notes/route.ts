@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 
+import { createNote, getUserNotes } from "@/data-access/notes";
 import { auth } from "@/features/auth/server";
-import { getUserNotes, createNote } from "@/data-access/notes";
 import { noteSchema } from "@/lib/schemas/notes";
 
 export async function GET() {

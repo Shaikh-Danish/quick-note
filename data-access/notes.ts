@@ -1,5 +1,5 @@
+import { decryptNoteContent, encryptNoteContent } from "@/lib/encryption";
 import { prisma } from "@/lib/prisma";
-import { encryptNoteContent, decryptNoteContent } from "@/lib/encryption";
 
 export async function getUserNotes(userId: string) {
   try {
@@ -28,7 +28,7 @@ export async function getUserNotes(userId: string) {
 
 export async function createNote(
   userId: string,
-  data: { title?: string; content?: string; tags?: string[] }
+  data: { title?: string; content?: string; tags?: string[] },
 ) {
   try {
     const encryptedContent = encryptNoteContent(data.content || "", userId);

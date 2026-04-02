@@ -1,10 +1,10 @@
 "use client";
 
 import { Icons } from "@/components/ui/icons";
+import { useNotes } from "@/features/notes/client";
 import { DashboardHeader } from "./dashboard-header";
 import { NoteCard } from "./note-card";
 import { QuickCreateNote } from "./quick-create-note";
-import { useNotes } from "@/features/notes/client";
 
 interface User {
   name?: string | null;

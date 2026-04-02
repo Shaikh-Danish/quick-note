@@ -1,5 +1,5 @@
 import { formatDistanceToNow } from "date-fns";
-import { Icons } from "@/components/ui/icons";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -7,9 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Icons } from "@/components/ui/icons";
 
-import { type Note } from "@/features/notes/client";
+import type { Note } from "@/features/notes/client";
 
 interface NoteCardProps {
   note: Note;
@@ -45,7 +45,7 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
           {note.title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-5 py-2 flex-grow overflow-hidden">
+      <CardContent className="px-5 py-2 grow overflow-hidden">
         <p className="text-sm text-muted-foreground line-clamp-3">
           {note.content}
         </p>

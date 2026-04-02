@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import { useZodForm } from "@/hooks/use-zod-form";
-import { noteSchema, type NoteSchema } from "@/lib/schemas/notes";
 import { useCreateNote } from "@/features/notes/client";
+import { useZodForm } from "@/hooks/use-zod-form";
+import { type NoteSchema, noteSchema } from "@/lib/schemas/notes";
+import { cn } from "@/lib/utils";
 
 interface QuickCreateNoteProps {
   onSuccess?: () => void;
@@ -176,7 +176,9 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={createNote.isPending || (!currentTitle && !currentContent)}
+                  disabled={
+                    createNote.isPending || (!currentTitle && !currentContent)
+                  }
                   className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-6 border-none"
                 >
                   {createNote.isPending ? "Saving..." : "Save"}
