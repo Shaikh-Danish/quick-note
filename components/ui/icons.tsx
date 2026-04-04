@@ -18,8 +18,10 @@ import {
   PlusIcon,
   SignOutIcon,
   SunIcon,
+  TagIcon,
   UserIcon,
   UserPlusIcon,
+  CircleNotchIcon,
 } from "@phosphor-icons/react";
 
 export const Icons = {
@@ -44,5 +46,7 @@ export const Icons = {
   signOut: SignOutIcon,
   magnifyingGlass: MagnifyingGlassIcon,
   sun: SunIcon,
-  moon: MoonIcon
+  moon: MoonIcon,
+  loader2: CircleNotchIcon,
+  tag: TagIcon,
 };

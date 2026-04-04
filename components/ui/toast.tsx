@@ -17,7 +17,8 @@ export function Toaster() {
       position="bottom-right"
       toastOptions={{
         // Define default styling that matches the app's premium design
-        className: "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-50  shadow-lg font-medium",
+        className:
+          "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-50  shadow-lg font-medium",
         style: {
           background: "var(--tw-bg-opacity)",
           color: "currentColor",

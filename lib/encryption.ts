@@ -15,21 +15,21 @@ function getKey(userId: string): Buffer {
 /**
  * Encrypts purely the text using AES-256-CBC.
  */
-export function encryptNoteContent(text: string, userId: string): string {
+export function encryptString(text: string, userId: string): string {
   const iv = crypto.randomBytes(16);
   const key = getKey(userId);
-  
+
   const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
   let encrypted = cipher.update(text, "utf8", "hex");
   encrypted += cipher.final("hex");
-  
+
   return `${iv.toString("hex")}:${encrypted}`;
 }
 
 /**
  * Decrypts purely the text using AES-256-CBC.
  */
-export function decryptNoteContent(encryptedText: string, userId: string): string {
+export function decryptString(encryptedText: string, userId: string): string {
   if (!encryptedText || !encryptedText.includes(":")) return encryptedText;
 
   const [ivStr, encryptedStr] = encryptedText.split(":");
@@ -38,7 +38,7 @@ export function decryptNoteContent(encryptedText: string, userId: string): strin
   const iv = Buffer.from(ivStr, "hex");
   const key = getKey(userId);
   const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
-  
+
   try {
     let decrypted = decipher.update(encryptedStr, "hex", "utf8");
     decrypted += decipher.final("utf8");

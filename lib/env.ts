@@ -5,10 +5,16 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url("DATABASE_URL must be a valid URL"),
     BETTER_AUTH_SECRET: z.string().min(1, "BETTER_AUTH_SECRET is required"),
-    BETTER_AUTH_URL: z.string().url("BETTER_AUTH_URL must be a valid URL").optional(),
+    BETTER_AUTH_URL: z
+      .string()
+      .url("BETTER_AUTH_URL must be a valid URL")
+      .optional(),
   },
   client: {
-    NEXT_PUBLIC_BASE_APP_URL: z.string().url("NEXT_PUBLIC_BASE_APP_URL must be a valid URL").optional(),
+    NEXT_PUBLIC_BASE_APP_URL: z
+      .string()
+      .url("NEXT_PUBLIC_BASE_APP_URL must be a valid URL")
+      .optional(),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,

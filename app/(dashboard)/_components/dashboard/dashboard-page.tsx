@@ -19,9 +19,9 @@ export default function DashboardPage({ user }: { user: User | null }) {
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
       <DashboardHeader user={user} />
 
-      <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
+      <main className="flex-1 p-4">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center justify-between mb-2">
             <div className="flex flex-col gap-1">
               <h2 className="text-4xl font-extrabold tracking-tight text-foreground">
                 Your Notes

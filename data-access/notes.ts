@@ -1,4 +1,4 @@
-import { decryptNoteContent, encryptNoteContent } from "@/lib/encryption";
+import { decryptString, encryptString } from "@/lib/encryption";
 import { prisma } from "@/lib/prisma";
 
 export async function getUserNotes(userId: string) {
@@ -17,7 +17,8 @@ export async function getUserNotes(userId: string) {
 
     return notes.map((note) => ({
       ...note,
-      content: decryptNoteContent(note.content, userId),
+      title: decryptString(note.title, userId),
+      content: decryptString(note.content, userId),
       tags: note.tags.map((t) => t.tag),
     }));
   } catch (error) {
@@ -31,11 +32,12 @@ export async function createNote(
   data: { title?: string; content?: string; tags?: string[] },
 ) {
   try {
-    const encryptedContent = encryptNoteContent(data.content || "", userId);
+    const encryptedTitle = encryptString(data.title || "Untitled Note", userId);
+    const encryptedContent = encryptString(data.content || "", userId);
 
     return await prisma.note.create({
       data: {
-        title: data.title || "Untitled Note",
+        title: encryptedTitle,
         content: encryptedContent,
         userId: userId,
         tags: {
