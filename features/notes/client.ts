@@ -10,14 +10,35 @@ export interface Note {
   tags?: { id: string; name: string }[];
 }
 
-export function useNotes() {
+export function useNotes(sortBy: "latest" | "most_copied" = "latest") {
   return useQuery({
-    queryKey: ["notes"],
+    queryKey: ["notes", sortBy],
     queryFn: async () => {
-      const response = await fetch("/api/notes");
+      const response = await fetch(`/api/notes?sort=${sortBy}`);
       if (!response.ok) throw new Error("Failed to fetch notes");
       const data = await response.json();
       return data.notes as Note[];
+    },
+  });
+}
+
+export function useIncrementCopyCount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/notes/${id}/copy`, {
+        method: "POST",
+      });
+
+      if (!response.ok) throw new Error("Failed to update copy count");
+
+      return response.json();
+    },
+    onSuccess: () => {
+      // We don't invalidate here to avoid layout shifts immediately after copy
+      // but we could if we want the "most copied" list to reorder live.
+      // Actually, let's NOT invalidate immediately to keep UX smooth.
     },
   });
 }

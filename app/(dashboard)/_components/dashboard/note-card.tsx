@@ -9,7 +9,7 @@ import type { Note } from "@/features/notes/client";
 
 interface NoteCardProps {
   note: Note;
-  onCopy?: (text: string) => void;
+  onCopy?: (note: Note) => void;
   onAction?: (id: string) => void;
 }
 
@@ -17,7 +17,7 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    onCopy?.(note.content);
+    onCopy?.(note);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

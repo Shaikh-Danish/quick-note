@@ -85,11 +85,13 @@ model Note {
   content   String // Stores AES-256 encrypted content
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tags      NoteTag[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  tags        NoteTag[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  copiedCount Int       @default(0)
 
   @@index([userId])
+  @@index([copiedCount(sort: Desc)])
   @@map("note")
 }
 

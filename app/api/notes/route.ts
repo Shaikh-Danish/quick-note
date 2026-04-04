@@ -5,7 +5,7 @@ import { createNote, getUserNotes } from "@/data-access/notes";
 import { auth } from "@/features/auth/server";
 import { noteSchema } from "@/lib/schemas/notes";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -15,7 +15,10 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const notes = await getUserNotes(session.user.id);
+    const { searchParams } = new URL(req.url);
+    const sort = (searchParams.get("sort") as "latest" | "most_copied") || "latest";
+
+    const notes = await getUserNotes(session.user.id, sort);
 
     return NextResponse.json({ notes });
   } catch (error) {

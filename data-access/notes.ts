@@ -1,7 +1,10 @@
 import { decryptString, encryptString } from "@/lib/encryption";
 import { prisma } from "@/lib/prisma";
 
-export async function getUserNotes(userId: string) {
+export async function getUserNotes(
+  userId: string,
+  sortBy: "latest" | "most_copied" = "latest",
+) {
   try {
     const notes = await prisma.note.findMany({
       where: { userId },
@@ -12,7 +15,10 @@ export async function getUserNotes(userId: string) {
           },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy:
+        sortBy === "most_copied"
+          ? { copiedCount: "desc" }
+          : { createdAt: "desc" },
     });
 
     return notes.map((note) => ({
@@ -24,6 +30,22 @@ export async function getUserNotes(userId: string) {
   } catch (error) {
     console.error("Data Access: Failed to fetch notes:", error);
     throw new Error("Failed to load notes from database");
+  }
+}
+
+export async function incrementNoteCopyCount(userId: string, noteId: string) {
+  try {
+    return await prisma.note.update({
+      where: { id: noteId, userId: userId },
+      data: {
+        copiedCount: {
+          increment: 1,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Data Access: Failed to increment copy count:", error);
+    throw new Error("Failed to update copy count");
   }
 }
 
