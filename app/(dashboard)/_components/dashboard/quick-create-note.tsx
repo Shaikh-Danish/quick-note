@@ -26,11 +26,10 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
 
   const form = useZodForm<NoteSchema>(noteSchema, {
     defaultValues: { title: "", content: "", tags: [] },
+    mode: "onChange",
   });
 
-  const { register, handleSubmit, reset, watch } = form;
-  const currentTitle = watch("title");
-  const currentContent = watch("content");
+  const { register, handleSubmit, reset, formState: { isValid } } = form;
 
   const onSubmit = (data: NoteSchema) => {
     createNote.mutate(data, {
@@ -86,25 +85,7 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
               </div>
             </div>
 
-            <div className="px-6 py-4 bg-muted/30 flex items-center justify-between border-t border-border/10">
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  type="button"
-                  className="h-9 w-9 text-muted-foreground hover:text-primary"
-                >
-                  <Icons.image size={18} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  type="button"
-                  className="h-9 w-9 text-muted-foreground hover:text-primary"
-                >
-                  <Icons.tag size={18} />
-                </Button>
-              </div>
+            <div className="px-6 py-4 bg-muted/50 flex items-center justify-end border-t border-border/10">
 
               <div className="flex items-center gap-3">
                 <Button
@@ -117,9 +98,7 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={
-                    createNote.isPending || (!currentTitle && !currentContent)
-                  }
+                  disabled={createNote.isPending || !isValid}
                   className="px-8 font-bold shadow-md shadow-primary/20"
                 >
                   {createNote.isPending ? (

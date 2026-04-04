@@ -4,6 +4,7 @@ import {
   BellIcon,
   CheckIcon,
   CheckSquareIcon,
+  CircleNotchIcon,
   CopyIcon,
   DotsThreeIcon,
   DotsThreeVerticalIcon,
@@ -21,7 +22,6 @@ import {
   TagIcon,
   UserIcon,
   UserPlusIcon,
-  CircleNotchIcon,
 } from "@phosphor-icons/react";
 
 export const Icons = {
