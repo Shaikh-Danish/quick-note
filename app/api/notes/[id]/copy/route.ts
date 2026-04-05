@@ -14,13 +14,15 @@ export async function POST(
     });
 
     if (!session?.user) {
+      console.error("Copy API: No session found - returning 401");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
-    await incrementNoteCopyCount(session.user.id, id);
 
-    return NextResponse.json({ success: true });
+    const updated = await incrementNoteCopyCount(session.user.id, id);
+
+    return NextResponse.json({ success: true, copiedCount: updated.copiedCount });
   } catch (error) {
     console.error("API Error (POST /api/notes/[id]/copy):", error);
     return NextResponse.json(

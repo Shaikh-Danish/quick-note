@@ -23,8 +23,6 @@ export function useNotes(sortBy: "latest" | "most_copied" = "latest") {
 }
 
 export function useIncrementCopyCount() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (id: string) => {
       const response = await fetch(`/api/notes/${id}/copy`, {
@@ -35,10 +33,11 @@ export function useIncrementCopyCount() {
 
       return response.json();
     },
-    onSuccess: () => {
-      // We don't invalidate here to avoid layout shifts immediately after copy
-      // but we could if we want the "most copied" list to reorder live.
-      // Actually, let's NOT invalidate immediately to keep UX smooth.
+    onSuccess: (data) => {
+      console.log("Copy count incremented:", data);
+    },
+    onError: (error) => {
+      console.error("Failed to increment copy count:", error);
     },
   });
 }

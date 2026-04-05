@@ -33,61 +33,69 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/90 backdrop-blur-xl">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-14 items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-primary flex items-center justify-center">
+          {/* Brand */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 bg-primary flex items-center justify-center">
               <Icons.notebook
                 weight="fill"
                 className="text-primary-foreground"
-                size={18}
+                size={15}
               />
             </div>
-            <h1 className="font-bold text-lg hidden sm:block tracking-tight text-foreground">
+            <h1 className="font-black text-xs uppercase tracking-[0.2em] hidden sm:block text-foreground">
               Quick Note
             </h1>
           </div>
 
-          <div className="flex-1 max-w-md mx-8 group hidden md:block">
+          {/* Search */}
+          <div className="flex-1 max-w-sm mx-8 hidden md:block">
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
-                <Icons.magnifyingGlass size={16} />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground/30">
+                <Icons.magnifyingGlass size={14} />
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-2 border border-border leading-5 bg-secondary placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-ring dark:placeholder-zinc-600 sm:text-sm transition-all focus:bg-background"
-                placeholder="Find a shortcut..."
+                className="block w-full pl-9 pr-3 py-1.5 border border-border/40 leading-5 bg-transparent placeholder-muted-foreground/30 focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring text-xs font-medium transition-all"
+                placeholder="Search notes..."
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col items-end text-sm mr-2">
-              <span className="font-semibold text-foreground">
+          {/* Actions */}
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col items-end mr-1">
+              <span className="text-xs font-bold text-foreground tracking-tight">
                 {user?.name || "User"}
               </span>
-              <span className="text-xs text-muted-foreground truncate w-32 text-right">
+              <span className="text-[10px] text-muted-foreground/40 font-mono truncate max-w-[140px]">
                 {user?.email}
               </span>
             </div>
+
+            <div className="w-px h-6 bg-border/40" />
+
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="h-9 w-9"
+              className="h-8 w-8 text-muted-foreground/50 hover:text-foreground"
               aria-label="Toggle theme"
             >
-              <Icons.sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Icons.moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <Icons.sun className="h-3.5 w-3.5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Icons.moon className="absolute h-3.5 w-3.5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
               <span className="sr-only">Toggle theme</span>
             </Button>
             <Button
+              variant="ghost"
+              size="icon"
               onClick={signout}
-              className="p-2.5 bg-secondary text-muted-foreground hover:text-foreground dark:hover:text-primary-foreground transition-colors border border-transparent hover:border-border active:scale-95"
+              className="h-8 w-8 text-muted-foreground/50 hover:text-foreground"
               title="Sign out"
             >
-              <Icons.signOut size={20} />
+              <Icons.signOut size={16} />
             </Button>
           </div>
         </div>
