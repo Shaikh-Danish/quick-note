@@ -79,18 +79,31 @@ model Verification {
   @@map("verification")
 }
 
+enum NoteCategory {
+  TEXT
+  URL
+  IMAGE
+  DOCUMENT
+  MARKDOWN
+
+  @@map("note_category")
+}
+
 model Note {
-  id        String    @id @default(uuid())
-  title     String // Stores AES-256 encrypted title
-  content   String // Stores AES-256 encrypted content
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String       @id @default(uuid())
+  title       String       // Stores AES-256 encrypted title
+  content     String       // Stores AES-256 encrypted content
+  category    NoteCategory @default(TEXT)
+  contentType String?      // Stores AES-256 encrypted MIME type (e.g. image/jpeg, application/pdf)
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   tags        NoteTag[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  copiedCount Int       @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  copiedCount Int          @default(0)
 
   @@index([userId])
+  @@index([userId, category])
   @@index([copiedCount(sort: Desc)])
   @@map("note")
 }

@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { createNote, getUserNotes } from "@/data-access/notes";
 import { auth } from "@/features/auth/server";
-import { noteSchema } from "@/lib/schemas/notes";
+import { noteSchema, notesQuerySchema } from "@/lib/schemas/notes";
 
 export async function GET(req: NextRequest) {
   try {
@@ -16,11 +16,25 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const sort = (searchParams.get("sort") as "latest" | "most_copied") || "latest";
+    const rawQuery = {
+      sort: searchParams.get("sort") ?? undefined,
+      category: searchParams.get("category") ?? undefined,
+      search: searchParams.get("search") ?? undefined,
+      page: searchParams.get("page") ?? undefined,
+      limit: searchParams.get("limit") ?? undefined,
+    };
 
-    const notes = await getUserNotes(session.user.id, sort);
+    const parsed = notesQuerySchema.safeParse(rawQuery);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid query parameters", details: parsed.error.format() },
+        { status: 400 },
+      );
+    }
 
-    return NextResponse.json({ notes });
+    const result = await getUserNotes(session.user.id, parsed.data);
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error("API Error (GET /api/notes):", error);
     return NextResponse.json(

@@ -50,19 +50,6 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             </h1>
           </div>
 
-          {/* Search */}
-          <div className="flex-1 max-w-sm mx-8 hidden md:block">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground/30">
-                <Icons.magnifyingGlass size={14} />
-              </div>
-              <input
-                type="text"
-                className="block w-full pl-9 pr-3 py-1.5 border border-border/40 leading-5 bg-transparent placeholder-muted-foreground/30 focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring text-xs font-medium transition-all"
-                placeholder="Search notes..."
-              />
-            </div>
-          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-3">

@@ -5,7 +5,17 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import type { Note } from "@/features/notes/client";
+import type { NoteCategory } from "@/lib/schemas/notes";
+import { CATEGORY_LABELS } from "@/lib/schemas/notes";
 import { cn } from "@/lib/utils";
+
+const CATEGORY_ICONS: Record<NoteCategory, keyof typeof Icons> = {
+  TEXT: "textT",
+  URL: "link",
+  IMAGE: "image",
+  DOCUMENT: "file",
+  MARKDOWN: "article",
+};
 
 interface NoteCardProps {
   note: Note;
@@ -22,6 +32,8 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const CategoryIcon = Icons[CATEGORY_ICONS[note.category]];
+
   return (
     <div
       className={cn(
@@ -35,7 +47,16 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
 
       <div className="space-y-3 pl-1">
         <div className="flex items-start justify-between">
-          <div className="flex flex-wrap gap-1">
+          <div className="flex items-center gap-1.5">
+            {/* Category badge */}
+            <Badge
+              variant="outline"
+              className="rounded-none px-1.5 py-0.5 text-[8px] uppercase tracking-widest font-black border-border/30 bg-muted/30 text-muted-foreground/50 gap-1"
+            >
+              <CategoryIcon size={10} weight="bold" />
+              {CATEGORY_LABELS[note.category]}
+            </Badge>
+            {/* Tags */}
             {note.tags?.map((tag) => (
               <Badge
                 key={tag.id}
@@ -60,15 +81,34 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
             {note.title}
           </h3>
           <p className="text-[11px] leading-relaxed text-muted-foreground/60 break-all line-clamp-5 font-medium">
-            {note.content}
+            {note.category === "URL" ? (
+              <a
+                href={note.content}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-ring hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {note.content}
+              </a>
+            ) : (
+              note.content
+            )}
           </p>
         </div>
       </div>
 
       <div className="flex justify-between items-center pt-3 mt-3 border-t border-border/20 pl-1">
-        <span className="text-[9px] font-mono text-muted-foreground/30">
-          {formatDistanceToNow(new Date(note.createdAt), { addSuffix: true })}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] font-mono text-muted-foreground/70">
+            {formatDistanceToNow(new Date(note.createdAt), { addSuffix: true })}
+          </span>
+          {note.copiedCount > 0 && (
+            <span className="text-[8px] font-mono text-muted-foreground/60">
+              · {note.copiedCount}×
+            </span>
+          )}
+        </div>
 
         <button
           type="button"
