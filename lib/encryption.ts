@@ -48,3 +48,30 @@ export function decryptString(encryptedText: string, userId: string): string {
     return "Encrypted data could not be parsed.";
   }
 }
+
+export function encryptWithPassword(text: string, password: string): string {
+  const key = crypto.scryptSync(password, "quick-note-salt", 32);
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
+  let encrypted = cipher.update(text, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return `${iv.toString("hex")}:${encrypted}`;
+}
+
+export function decryptWithPassword(encryptedText: string, password: string): string {
+  if (!encryptedText || !encryptedText.includes(":")) return encryptedText;
+  const [ivStr, encryptedStr] = encryptedText.split(":");
+  if (!ivStr || !encryptedStr) return encryptedText;
+
+  const iv = Buffer.from(ivStr, "hex");
+  const key = crypto.scryptSync(password, "quick-note-salt", 32);
+  const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
+
+  try {
+    let decrypted = decipher.update(encryptedStr, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
+  } catch (_) {
+    throw new Error("Invalid password");
+  }
+}

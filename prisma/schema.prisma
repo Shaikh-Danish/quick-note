@@ -101,6 +101,7 @@ model Note {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   copiedCount Int          @default(0)
+  isProtected Boolean      @default(false)
 
   @@index([userId])
   @@index([userId, category])

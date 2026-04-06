@@ -34,7 +34,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/90 backdrop-blur-xl">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
         <div className="flex justify-between h-14 items-center">
           {/* Brand */}
           <div className="flex items-center gap-2.5">

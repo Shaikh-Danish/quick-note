@@ -2,6 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
+import { unlockNoteContent } from "@/features/notes/actions";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 import type { Note } from "@/features/notes/client";
@@ -25,11 +26,46 @@ interface NoteCardProps {
 
 export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
   const [copied, setCopied] = useState(false);
+  const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
+  const [unlockPassword, setUnlockPassword] = useState("");
+  const [unlocking, setUnlocking] = useState(false);
+  const [unlockError, setUnlockError] = useState("");
 
   const handleCopy = () => {
-    onCopy?.(note);
+    onCopy?.({ ...note, content: unlockedContent || note.content });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const contentToDownload = unlockedContent || note.content;
+    const a = document.createElement("a");
+    a.href = contentToDownload;
+    const ext = note.contentType?.split('/')[1] || (note.category === "IMAGE" ? "png" : "pdf");
+    a.download = `${note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${ext}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleUnlock = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!unlockPassword) return;
+    setUnlocking(true);
+    setUnlockError("");
+    try {
+      const res = await unlockNoteContent(note.content, unlockPassword);
+      if (res.success && res.content) {
+        setUnlockedContent(res.content);
+      } else {
+        setUnlockError(res.error || "Failed to unlock");
+      }
+    } catch {
+      setUnlockError("Failed to unlock");
+    } finally {
+      setUnlocking(false);
+    }
   };
 
   const CategoryIcon = Icons[CATEGORY_ICONS[note.category]];
@@ -80,21 +116,51 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
           <h3 className="text-xs font-black uppercase tracking-wide text-foreground/90 leading-tight">
             {note.title}
           </h3>
-          <p className="text-[11px] leading-relaxed text-muted-foreground/60 break-all line-clamp-5 font-medium">
-            {note.category === "URL" ? (
-              <a
-                href={note.content}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-ring hover:underline"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {note.content}
-              </a>
-            ) : (
-              note.content
-            )}
-          </p>
+          {note.isProtected && unlockedContent === null ? (
+            <div className="mt-2 space-y-2 pb-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">
+                <Icons.password size={12} weight="bold" />
+                Protected Content
+              </div>
+              <form onSubmit={handleUnlock} className="flex gap-1.5">
+                <input
+                  type="password"
+                  className="h-7 px-2 text-xs w-full bg-muted/30 border border-border/40 focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground/30"
+                  placeholder="Password..."
+                  value={unlockPassword}
+                  onChange={(e) => setUnlockPassword(e.target.value)}
+                />
+                <button
+                  disabled={unlocking || !unlockPassword}
+                  type="submit"
+                  className="h-7 px-3 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest disabled:opacity-50 transition-opacity"
+                >
+                  {unlocking ? "Wait" : "Unlock"}
+                </button>
+              </form>
+              {unlockError && (
+                <p className="text-[10px] text-destructive font-bold uppercase tracking-wider">
+                  {unlockError}
+                </p>
+              )}
+            </div>
+          ) : (
+            <p className="text-[11px] leading-relaxed text-muted-foreground/60 break-all line-clamp-5 font-medium">
+              {note.category === "URL" ? (
+                <a
+                  href={unlockedContent || note.content}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-ring hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {unlockedContent || note.content}
+                </a>
+              ) : (
+                unlockedContent || note.content
+              )}
+            </p>
+          )}
         </div>
       </div>
 
@@ -110,23 +176,37 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={handleCopy}
-          className={cn(
-            "p-1.5 transition-all duration-150 cursor-pointer",
-            copied
-              ? "text-green-500"
-              : "text-muted-foreground/20 hover:text-foreground hover:bg-muted/40",
+        <div className="flex gap-1 items-center">
+          {(note.category === "IMAGE" || note.category === "DOCUMENT") && (
+            <button
+              type="button"
+              onClick={handleDownload}
+              disabled={note.isProtected && unlockedContent === null}
+              className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/20 hover:text-foreground hover:bg-muted/40"
+              title="Download file"
+            >
+              <Icons.download size={12} weight="bold" />
+            </button>
           )}
-          title="Copy to clipboard"
-        >
-          {copied ? (
-            <Icons.check size={12} weight="bold" />
-          ) : (
-            <Icons.copy size={12} weight="bold" />
-          )}
-        </button>
+          <button
+            type="button"
+            onClick={handleCopy}
+            disabled={note.isProtected && unlockedContent === null}
+            className={cn(
+              "p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
+              copied
+                ? "text-green-500"
+                : "text-muted-foreground/20 hover:text-foreground hover:bg-muted/40",
+            )}
+            title="Copy to clipboard"
+          >
+            {copied ? (
+              <Icons.check size={12} weight="bold" />
+            ) : (
+              <Icons.copy size={12} weight="bold" />
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

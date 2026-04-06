@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateNote } from "@/features/notes/client";
 import { useZodForm } from "@/hooks/use-zod-form";
@@ -52,6 +53,7 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { isValid },
   } = form;
 
@@ -131,40 +133,17 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                 autoFocus
                 placeholder="Note Title"
                 {...register("title")}
-                className="border-none shadow-none text-lg font-bold px-0 focus-visible:ring-0 placeholder:text-muted-foreground/30 bg-transparent"
+                className="border-none shadow-none text-lg font-bold px-2 focus-visible:ring-0 placeholder:text-muted-foreground/30 bg-transparent"
               />
             </div>
 
             <div className="h-px bg-border/40" />
 
-            {/* Content type input for IMAGE / DOCUMENT */}
-            {(internalCategory === "IMAGE" ||
-              internalCategory === "DOCUMENT") && (
-                <div className="space-y-1">
-                  <label
-                    htmlFor="contentType"
-                    className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40"
-                  >
-                    MIME Type
-                  </label>
-                  <Input
-                    id="contentType"
-                    placeholder={
-                      internalCategory === "IMAGE"
-                        ? "image/jpeg"
-                        : "application/pdf"
-                    }
-                    {...register("contentType")}
-                    className="border border-border/30 shadow-none text-xs font-mono h-8 focus-visible:ring-1 focus-visible:ring-ring placeholder:text-muted-foreground/30 bg-transparent"
-                  />
-                </div>
-              )}
-
             <div className="space-y-3">
               <Textarea
                 placeholder={contentPlaceholder[internalCategory]}
                 {...register("content")}
-                className="border-none shadow-none resize-none min-h-[140px] px-0 focus-visible:ring-0 text-sm placeholder:text-muted-foreground/30 bg-transparent leading-relaxed"
+                className="border-none shadow-none resize-none min-h-[140px] p-2 focus-visible:ring-0 text-sm placeholder:text-muted-foreground/30 bg-transparent leading-relaxed"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                     e.preventDefault();
@@ -209,6 +188,40 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                     </p>
                   </div>
                 )}
+
+              {(internalCategory === "IMAGE" ||
+                internalCategory === "DOCUMENT") && (
+                  <div className="flex flex-col gap-3 p-4 border border-border/40 bg-muted/5">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <label htmlFor="isProtected" className="text-xs font-bold uppercase tracking-wide cursor-pointer">
+                        Password Protection
+                      </label>
+                      <p className="text-[10px] text-muted-foreground/60">
+                        Require a password to view this file
+                      </p>
+                    </div>
+                    <Switch
+                      id="isProtected"
+                      checked={watch("isProtected")}
+                      onCheckedChange={(val) => {
+                        setValue("isProtected", val, { shouldValidate: true });
+                        if (!val) setValue("password", "", { shouldValidate: true });
+                      }}
+                    />
+                  </div>
+                  {watch("isProtected") && (
+                    <div className="pt-2">
+                      <Input
+                        type="password"
+                        placeholder="Enter password..."
+                        {...register("password")}
+                        className="h-8 text-xs bg-background"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

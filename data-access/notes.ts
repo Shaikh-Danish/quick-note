@@ -1,4 +1,4 @@
-import { decryptString, encryptString } from "@/lib/encryption";
+import { decryptString, encryptString, encryptWithPassword } from "@/lib/encryption";
 import type { NoteCategory as PrismaNoteCategory } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import type { NoteCategory, NotesQuery } from "@/lib/schemas/notes";
@@ -12,6 +12,7 @@ export interface NoteResult {
   createdAt: Date;
   updatedAt: Date;
   copiedCount: number;
+  isProtected: boolean;
   tags: { id: string; name: string }[];
 }
 
@@ -65,6 +66,7 @@ export async function getUserNotes(
       createdAt: note.createdAt,
       updatedAt: note.updatedAt,
       copiedCount: note.copiedCount,
+      isProtected: note.isProtected,
       tags: note.tags.map((t) => t.tag),
     }));
 
@@ -117,11 +119,18 @@ export async function createNote(
     category?: NoteCategory;
     contentType?: string;
     tags?: string[];
+    isProtected?: boolean;
+    password?: string;
   },
 ) {
   try {
+    let innerContent = data.content;
+    if (data.isProtected && data.password && data.password.trim() !== "") {
+      innerContent = encryptWithPassword(data.content, data.password);
+    }
+
     const encryptedTitle = encryptString(data.title, userId);
-    const encryptedContent = encryptString(data.content, userId);
+    const encryptedContent = encryptString(innerContent, userId);
     const encryptedContentType = data.contentType
       ? encryptString(data.contentType, userId)
       : null;
@@ -133,6 +142,7 @@ export async function createNote(
         category: (data.category || "TEXT") as PrismaNoteCategory,
         contentType: encryptedContentType,
         userId: userId,
+        isProtected: data.isProtected ?? false,
         tags: {
           create: (data.tags || []).map((t) => ({
             tag: {

@@ -35,6 +35,8 @@ export const noteSchema = z.object({
   category: noteCategorySchema.default("TEXT"),
   contentType: z.string().optional(),
   tags: z.array(z.string()).optional().default([]),
+  isProtected: z.boolean().optional().default(false),
+  password: z.string().optional(),
 });
 
 export type NoteSchema = z.infer<typeof noteSchema>;

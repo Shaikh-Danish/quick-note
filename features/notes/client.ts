@@ -10,6 +10,7 @@ export interface Note {
   contentType: string | null;
   createdAt: string;
   copiedCount: number;
+  isProtected?: boolean;
   tags?: { id: string; name: string }[];
 }
 
