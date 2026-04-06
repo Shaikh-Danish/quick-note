@@ -30,9 +30,9 @@ import {
   SunIcon,
   TagIcon,
   TextTIcon,
+  Trash,
   UserIcon,
   UserPlusIcon,
-  Trash,
 } from "@phosphor-icons/react";
 
 export const Icons = {

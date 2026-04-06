@@ -43,10 +43,10 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
   const createNote = useCreateNote();
 
   const form = useZodForm<NoteSchema>(noteSchema, {
-    defaultValues: { 
-      title: "", 
-      content: "", 
-      category: "TEXT", 
+    defaultValues: {
+      title: "",
+      content: "",
+      category: "TEXT",
       tags: [],
       isProtected: false,
       password: ""
