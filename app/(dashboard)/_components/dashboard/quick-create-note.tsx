@@ -61,9 +61,10 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
     handleSubmit,
     reset,
     setValue,
-    watch,
     formState: { isValid },
   } = form;
+
+  const [isProtected, setIsProtected] = useState(false);
 
   const onSubmit = (data: NoteSchema) => {
     const contentType =
@@ -73,13 +74,17 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
 
     if (selectedFile && (internalCategory === "IMAGE" || internalCategory === "DOCUMENT")) {
       const formData = new FormData();
+
       formData.append("title", data.title);
       formData.append("category", internalCategory);
       if (contentType) formData.append("contentType", contentType);
+
       formData.append("file", selectedFile);
+
       if (data.isProtected) formData.append("isProtected", "true");
       if (data.password) formData.append("password", data.password);
       if (data.tags && data.tags.length > 0) formData.append("tags", JSON.stringify(data.tags));
+
       payload = formData as unknown as NoteSchema;
     }
 
@@ -89,6 +94,7 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
         onSuccess: () => {
           reset();
           setSelectedFile(null);
+          setIsProtected(false);
           setOpen(false);
           onSuccess?.();
         },
@@ -223,15 +229,16 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                         </p>
                       </div>
                       <Switch
-                        id="isProtected"
-                        checked={watch("isProtected")}
-                        onCheckedChange={(val) => {
-                          setValue("isProtected", val, { shouldValidate: true });
-                          if (!val) setValue("password", "", { shouldValidate: true });
+                        checked={isProtected}
+                        onCheckedChange={(checked) => {
+                          setIsProtected(checked);
+                          setValue("isProtected", checked, { shouldValidate: true, shouldDirty: true });
+                          if (!checked) setValue("password", "", { shouldValidate: true });
                         }}
                       />
                     </div>
-                    {watch("isProtected") && (
+
+                    {isProtected && (
                       <div className="pt-2">
                         <Input
                           type="password"
