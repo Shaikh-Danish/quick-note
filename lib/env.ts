@@ -9,6 +9,10 @@ export const env = createEnv({
       .string()
       .url("BETTER_AUTH_URL must be a valid URL")
       .optional(),
+    R2_ENDPOINT: z.string().url("R2_ENDPOINT must be a valid URL"),
+    R2_ACCESS_KEY_ID: z.string().min(1, "R2_ACCESS_KEY_ID is required"),
+    R2_SECRET_ACCESS_KEY: z.string().min(1, "R2_SECRET_ACCESS_KEY is required"),
+    R2_BUCKET_NAME: z.string().min(1, "R2_BUCKET_NAME is required"),
   },
   client: {
     NEXT_PUBLIC_BASE_APP_URL: z
@@ -21,5 +25,9 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     NEXT_PUBLIC_BASE_APP_URL: process.env.NEXT_PUBLIC_BASE_APP_URL,
+    R2_ENDPOINT: process.env.R2_ENDPOINT,
+    R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
+    R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
+    R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
   },
 });

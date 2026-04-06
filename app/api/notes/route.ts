@@ -6,10 +6,13 @@ import { auth } from "@/features/auth/server";
 import { noteSchema, notesQuerySchema } from "@/lib/schemas/notes";
 
 export async function GET(req: NextRequest) {
+  const t0 = performance.now();
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
+    const tAuth = performance.now();
+    console.log(`[GET /api/notes] ⏱ Auth: ${(tAuth - t0).toFixed(1)}ms`);
 
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -31,8 +34,13 @@ export async function GET(req: NextRequest) {
         { status: 400 },
       );
     }
+    const tParse = performance.now();
+    console.log(`[GET /api/notes] ⏱ Query parse: ${(tParse - tAuth).toFixed(1)}ms`);
 
     const result = await getUserNotes(session.user.id, parsed.data);
+    const tDb = performance.now();
+    console.log(`[GET /api/notes] ⏱ DB query: ${(tDb - tParse).toFixed(1)}ms`);
+    console.log(`[GET /api/notes] ⏱ Total: ${(tDb - t0).toFixed(1)}ms`);
 
     return NextResponse.json(result);
   } catch (error) {
@@ -45,20 +53,26 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const t0 = performance.now();
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
+    const tAuth = performance.now();
+    console.log(`[POST /api/notes] ⏱ Auth: ${(tAuth - t0).toFixed(1)}ms`);
 
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const contentTypeHeader = req.headers.get("content-type") || "";
-    let result: { success: true; data: any } | { success: false; error: any };
 
     if (contentTypeHeader.includes("multipart/form-data")) {
+      // --- File upload path (IMAGE / DOCUMENT) ---
       const formData = await req.formData();
+      const tFormParse = performance.now();
+      console.log(`[POST /api/notes] ⏱ FormData parse: ${(tFormParse - tAuth).toFixed(1)}ms`);
+
       const file = formData.get("file") as File | null;
       if (!file) {
         return NextResponse.json(
@@ -67,24 +81,53 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      const title = formData.get("title") as string;
+      if (!title || title.trim() === "") {
+        return NextResponse.json(
+          { error: "Invalid payload", details: "Title is required" },
+          { status: 400 },
+        );
+      }
+
+      console.log(`[POST /api/notes] 📄 File: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB, ${file.type})`);
+
       const fileBuffer = Buffer.from(await file.arrayBuffer());
-      const base64 = `data:${file.type};base64,${fileBuffer.toString("base64")}`;
+      const tBuffer = performance.now();
+      console.log(`[POST /api/notes] ⏱ File → Buffer: ${(tBuffer - tFormParse).toFixed(1)}ms`);
 
-      const payload = {
-        title: formData.get("title"),
-        content: base64,
-        category: formData.get("category"),
-        contentType: formData.get("contentType") || file.type,
-        tags: formData.get("tags") ? JSON.parse(formData.get("tags") as string) : [],
-        isProtected: formData.get("isProtected") === "true",
-        password: formData.get("password") || undefined,
-      };
+      const category = (formData.get("category") as string) || "IMAGE";
+      const contentType = (formData.get("contentType") as string) || file.type;
+      const tags = formData.get("tags") ? JSON.parse(formData.get("tags") as string) : [];
+      const isProtected = formData.get("isProtected") === "true";
+      const password = (formData.get("password") as string) || undefined;
 
-      result = noteSchema.safeParse(payload);
-    } else {
-      const body = await req.json();
-      result = noteSchema.safeParse(body);
+      const tPreDb = performance.now();
+      const note = await createNote(session.user.id, {
+        title,
+        content: "", // No content for file uploads
+        category: category as "IMAGE" | "DOCUMENT",
+        contentType,
+        tags,
+        isProtected,
+        password,
+        fileBuffer,
+        fileName: file.name,
+      });
+      const tDb = performance.now();
+      console.log(`[POST /api/notes] ⏱ R2 upload + DB create: ${(tDb - tPreDb).toFixed(1)}ms`);
+      console.log(`[POST /api/notes] ⏱ Total: ${(tDb - t0).toFixed(1)}ms`);
+
+      return NextResponse.json({ success: true, note });
     }
+
+    // --- JSON path (TEXT / URL / MARKDOWN) ---
+    const body = await req.json();
+    const tJsonParse = performance.now();
+    console.log(`[POST /api/notes] ⏱ JSON parse: ${(tJsonParse - tAuth).toFixed(1)}ms`);
+
+    const result = noteSchema.safeParse(body);
+    const tValidate = performance.now();
+    console.log(`[POST /api/notes] ⏱ Schema validate: ${(tValidate - tJsonParse).toFixed(1)}ms`);
 
     if (!result.success) {
       return NextResponse.json(
@@ -93,11 +136,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const tPreDb = performance.now();
     const note = await createNote(session.user.id, result.data);
+    const tDb = performance.now();
+    console.log(`[POST /api/notes] ⏱ DB create: ${(tDb - tPreDb).toFixed(1)}ms`);
+    console.log(`[POST /api/notes] ⏱ Total: ${(tDb - t0).toFixed(1)}ms`);
 
     return NextResponse.json({ success: true, note });
   } catch (error) {
-    console.error("API Error (POST /api/notes):", error);
+    const tErr = performance.now();
+    console.error(`[POST /api/notes] ❌ Error after ${(tErr - t0).toFixed(1)}ms:`, error);
     return NextResponse.json(
       { error: "Failed to create note" },
       { status: 500 },

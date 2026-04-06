@@ -1,6 +1,7 @@
 import { decryptString, encryptString, encryptWithPassword } from "@/lib/encryption";
 import type { NoteCategory as PrismaNoteCategory } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { uploadFileToR2, deleteFileFromR2 } from "@/lib/r2";
 import type { NoteCategory, NotesQuery } from "@/lib/schemas/notes";
 
 export interface NoteResult {
@@ -9,6 +10,8 @@ export interface NoteResult {
   content: string;
   category: NoteCategory;
   contentType: string | null;
+  fileKey: string | null;
+  fileSize: number | null;
   createdAt: Date;
   updatedAt: Date;
   useCount: number;
@@ -58,11 +61,14 @@ export async function getUserNotes(
     let decryptedNotes = notes.map((note) => ({
       id: note.id,
       title: decryptString(note.title, userId),
-      content: decryptString(note.content, userId),
+      // For file-based notes, content is just a placeholder — actual file is in R2
+      content: note.fileKey ? "" : decryptString(note.content, userId),
       category: note.category as NoteCategory,
       contentType: note.contentType
         ? decryptString(note.contentType, userId)
         : null,
+      fileKey: note.fileKey,
+      fileSize: note.fileSize,
       createdAt: note.createdAt,
       updatedAt: note.updatedAt,
       useCount: note.useCount,
@@ -111,6 +117,10 @@ export async function incrementNoteCopyCount(userId: string, noteId: string) {
   }
 }
 
+/**
+ * Creates a note. For file-based notes (IMAGE/DOCUMENT), uploads the file
+ * to R2 with encryption. For text notes, encrypts content in the DB.
+ */
 export async function createNote(
   userId: string,
   data: {
@@ -121,19 +131,41 @@ export async function createNote(
     tags?: string[];
     isProtected?: boolean;
     password?: string;
+    // File upload fields (for IMAGE/DOCUMENT)
+    fileBuffer?: Buffer;
+    fileName?: string;
   },
 ) {
   try {
-    let innerContent = data.content;
-    if (data.isProtected && data.password && data.password.trim() !== "") {
-      innerContent = encryptWithPassword(data.content, data.password);
-    }
-
     const encryptedTitle = encryptString(data.title, userId);
-    const encryptedContent = encryptString(innerContent, userId);
     const encryptedContentType = data.contentType
       ? encryptString(data.contentType, userId)
       : null;
+
+    let encryptedContent: string;
+    let fileKey: string | null = null;
+    let fileSize: number | null = null;
+
+    // File-based notes → upload to R2
+    if (data.fileBuffer && data.fileName) {
+      const r2Result = await uploadFileToR2(
+        data.fileBuffer,
+        userId,
+        data.fileName,
+        data.contentType || "application/octet-stream",
+      );
+      fileKey = r2Result.fileKey;
+      fileSize = r2Result.fileSize;
+      // Store a placeholder in content (DB doesn't hold the file data)
+      encryptedContent = encryptString("r2-file", userId);
+    } else {
+      // Text-based notes → encrypt content in DB
+      let innerContent = data.content;
+      if (data.isProtected && data.password && data.password.trim() !== "") {
+        innerContent = encryptWithPassword(data.content, data.password);
+      }
+      encryptedContent = encryptString(innerContent, userId);
+    }
 
     return await prisma.note.create({
       data: {
@@ -141,6 +173,8 @@ export async function createNote(
         content: encryptedContent,
         category: (data.category || "TEXT") as PrismaNoteCategory,
         contentType: encryptedContentType,
+        fileKey,
+        fileSize,
         userId: userId,
         isProtected: data.isProtected ?? false,
         tags: {
@@ -163,9 +197,27 @@ export async function createNote(
 
 export async function deleteNote(userId: string, noteId: string) {
   try {
-    return await prisma.note.delete({
+    // Fetch the note first to check for R2 file
+    const note = await prisma.note.findUnique({
+      where: { id: noteId, userId },
+      select: { fileKey: true },
+    });
+
+    // Delete the note from DB
+    const deleted = await prisma.note.delete({
       where: { id: noteId, userId: userId },
     });
+
+    // Clean up R2 file if it exists
+    if (note?.fileKey) {
+      try {
+        await deleteFileFromR2(note.fileKey);
+      } catch (r2Error) {
+        console.error("Failed to delete R2 file (note already deleted):", r2Error);
+      }
+    }
+
+    return deleted;
   } catch (error) {
     console.error("Data Access: Failed to delete note:", error);
     throw new Error("Failed to delete note from database");

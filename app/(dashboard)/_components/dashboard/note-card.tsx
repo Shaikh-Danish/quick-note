@@ -22,6 +22,23 @@ const CATEGORY_ICONS: Record<NoteCategory, keyof typeof Icons> = {
   MARKDOWN: "article",
 };
 
+/**
+ * Returns the file URL for a file-based note.
+ */
+function getFileUrl(noteId: string): string {
+  return `/api/notes/${noteId}/file`;
+}
+
+/**
+ * Formats file size in human-readable form.
+ */
+function formatFileSize(bytes: number | null): string {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 interface NoteCardProps {
   note: Note;
   onCopy?: (note: Note) => void;
@@ -38,6 +55,9 @@ export function NoteCard({
   const [copied, setCopied] = useState(false);
   const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
 
+  const isFileBased = note.category === "IMAGE" || note.category === "DOCUMENT";
+  const hasFileKey = !!note.fileKey;
+
   const handleCopy = () => {
     onCopy?.({ ...note, content: unlockedContent || note.content });
     setCopied(true);
@@ -46,16 +66,32 @@ export function NoteCard({
 
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const contentToDownload = unlockedContent || note.content;
-    const a = document.createElement("a");
-    a.href = contentToDownload;
-    const ext =
-      note.contentType?.split("/")[1] ||
-      (note.category === "IMAGE" ? "png" : "pdf");
-    a.download = `${note.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.${ext}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+
+    if (hasFileKey) {
+      // Download from R2 via API
+      const a = document.createElement("a");
+      a.href = getFileUrl(note.id);
+      const ext =
+        note.contentType?.split("/")[1] ||
+        (note.category === "IMAGE" ? "png" : "pdf");
+      a.download = `${note.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else {
+      // Legacy: base64 data URL download
+      const contentToDownload = unlockedContent || note.content;
+      const a = document.createElement("a");
+      a.href = contentToDownload;
+      const ext =
+        note.contentType?.split("/")[1] ||
+        (note.category === "IMAGE" ? "png" : "pdf");
+      a.download = `${note.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
     onDownload?.(note);
   };
 
@@ -105,13 +141,26 @@ export function NoteCard({
             <ProtectedNoteForm note={note} onSuccess={setUnlockedContent} />
           ) : note.category === "IMAGE" ? (
             <div className="mt-2 flex justify-center bg-muted/20 border border-border/50 max-h-[200px] overflow-hidden rounded-sm">
-              <Image
-                src={unlockedContent || note.content}
-                alt={note.title}
-                width={800}
-                height={400}
-                className="object-cover w-full h-full"
-              />
+              {hasFileKey ? (
+                // R2 file — use API route as image source
+                <Image
+                  src={getFileUrl(note.id)}
+                  alt={note.title}
+                  width={800}
+                  height={400}
+                  className="object-cover w-full h-full"
+                  unoptimized // Skip Next.js image optimization for API routes
+                />
+              ) : (
+                // Legacy: base64 data URL
+                <Image
+                  src={unlockedContent || note.content}
+                  alt={note.title}
+                  width={800}
+                  height={400}
+                  className="object-cover w-full h-full"
+                />
+              )}
             </div>
           ) : note.category === "DOCUMENT" ? (
             <div className="mt-2 flex flex-col items-center justify-center p-4 bg-muted/20 border border-border/50 rounded-sm min-h-[100px]">
@@ -125,6 +174,7 @@ export function NoteCard({
               </span>
               <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground/60">
                 {note.contentType?.split("/")[1] || "File"}
+                {note.fileSize ? ` · ${formatFileSize(note.fileSize)}` : ""}
               </span>
             </div>
           ) : (
@@ -160,18 +210,18 @@ export function NoteCard({
         </div>
 
         <div className="flex gap-1 items-center">
-          {(note.category === "IMAGE" || note.category === "DOCUMENT") && (
+          {isFileBased && (
             <button
               type="button"
               onClick={handleDownload}
-              disabled={note.isProtected && unlockedContent === null}
+              disabled={note.isProtected && unlockedContent === null && !hasFileKey}
               className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
               title="Download file"
             >
               <Icons.download size={12} weight="bold" />
             </button>
           )}
-          {note.category !== "IMAGE" && note.category !== "DOCUMENT" && (
+          {!isFileBased && (
             <button
               type="button"
               onClick={handleCopy}

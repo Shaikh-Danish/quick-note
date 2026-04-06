@@ -31,7 +31,7 @@ export const noteSchema = z.object({
   content: z
     .string()
     .min(1, "Content is required")
-    .max(15_000_000, "Content must be less than 15MB"),
+    .max(50_000_000, "Content must be less than 50MB"),
   category: noteCategorySchema.default("TEXT"),
   contentType: z.string().optional(),
   tags: z.array(z.string()).optional().default([]),

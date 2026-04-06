@@ -92,9 +92,11 @@ enum NoteCategory {
 model Note {
   id          String       @id @default(uuid())
   title       String       // Stores AES-256 encrypted title
-  content     String       // Stores AES-256 encrypted content
+  content     String       // Stores AES-256 encrypted content (empty for file-based notes)
   category    NoteCategory @default(TEXT)
   contentType String?      // Stores AES-256 encrypted MIME type (e.g. image/jpeg, application/pdf)
+  fileKey     String?      // R2 object key for file-based notes (IMAGE, DOCUMENT)
+  fileSize    Int?         // Original file size in bytes
   userId      String
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   tags        NoteTag[]

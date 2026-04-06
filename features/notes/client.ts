@@ -8,6 +8,8 @@ export interface Note {
   content: string;
   category: NoteCategory;
   contentType: string | null;
+  fileKey: string | null;
+  fileSize: number | null;
   createdAt: string;
   useCount: number;
   isProtected?: boolean;
