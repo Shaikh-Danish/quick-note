@@ -2,9 +2,9 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
-import { unlockNoteContent } from "@/features/notes/actions";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
+import { unlockNoteContent } from "@/features/notes/actions";
 import type { Note } from "@/features/notes/client";
 import type { NoteCategory } from "@/lib/schemas/notes";
 import { CATEGORY_LABELS } from "@/lib/schemas/notes";
@@ -26,24 +26,28 @@ interface NoteCardProps {
 
 export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
   const [copied, setCopied] = useState(false);
-  const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
-  const [unlockPassword, setUnlockPassword] = useState("");
-  const [unlocking, setUnlocking] = useState(false);
-  const [unlockError, setUnlockError] = useState("");
+  const [unlockState, setUnlockState] = useState({
+    content: null as string | null,
+    password: "",
+    isPending: false,
+    error: "",
+  });
 
   const handleCopy = () => {
-    onCopy?.({ ...note, content: unlockedContent || note.content });
+    onCopy?.({ ...note, content: unlockState.content || note.content });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const contentToDownload = unlockedContent || note.content;
+    const contentToDownload = unlockState.content || note.content;
     const a = document.createElement("a");
     a.href = contentToDownload;
-    const ext = note.contentType?.split('/')[1] || (note.category === "IMAGE" ? "png" : "pdf");
-    a.download = `${note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${ext}`;
+    const ext =
+      note.contentType?.split("/")[1] ||
+      (note.category === "IMAGE" ? "png" : "pdf");
+    a.download = `${note.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.${ext}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -51,20 +55,22 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
 
   const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!unlockPassword) return;
-    setUnlocking(true);
-    setUnlockError("");
+    if (!unlockState.password) return;
+    setUnlockState((s) => ({ ...s, isPending: true, error: "" }));
     try {
-      const res = await unlockNoteContent(note.content, unlockPassword);
+      const res = await unlockNoteContent(note.content, unlockState.password);
       if (res.success && res.content) {
-        setUnlockedContent(res.content);
+        setUnlockState((s) => ({ ...s, content: res.content }));
       } else {
-        setUnlockError(res.error || "Failed to unlock");
+        setUnlockState((s) => ({
+          ...s,
+          error: res.error || "Failed to unlock",
+        }));
       }
     } catch {
-      setUnlockError("Failed to unlock");
+      setUnlockState((s) => ({ ...s, error: "Failed to unlock" }));
     } finally {
-      setUnlocking(false);
+      setUnlockState((s) => ({ ...s, isPending: false }));
     }
   };
 
@@ -116,7 +122,7 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
           <h3 className="text-xs font-black uppercase tracking-wide text-foreground/90 leading-tight">
             {note.title}
           </h3>
-          {note.isProtected && unlockedContent === null ? (
+          {note.isProtected && unlockState.content === null ? (
             <div className="mt-2 space-y-2 pb-1">
               <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">
                 <Icons.password size={12} weight="bold" />
@@ -127,20 +133,22 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
                   type="password"
                   className="h-7 px-2 text-xs w-full bg-muted/30 border border-border/40 focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground/30"
                   placeholder="Password..."
-                  value={unlockPassword}
-                  onChange={(e) => setUnlockPassword(e.target.value)}
+                  value={unlockState.password}
+                  onChange={(e) =>
+                    setUnlockState((s) => ({ ...s, password: e.target.value }))
+                  }
                 />
                 <button
-                  disabled={unlocking || !unlockPassword}
+                  disabled={unlockState.isPending || !unlockState.password}
                   type="submit"
                   className="h-7 px-3 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest disabled:opacity-50 transition-opacity"
                 >
-                  {unlocking ? "Wait" : "Unlock"}
+                  {unlockState.isPending ? "Wait" : "Unlock"}
                 </button>
               </form>
-              {unlockError && (
+              {unlockState.error && (
                 <p className="text-[10px] text-destructive font-bold uppercase tracking-wider">
-                  {unlockError}
+                  {unlockState.error}
                 </p>
               )}
             </div>
@@ -148,16 +156,16 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
             <p className="text-[11px] leading-relaxed text-muted-foreground/60 break-all line-clamp-5 font-medium">
               {note.category === "URL" ? (
                 <a
-                  href={unlockedContent || note.content}
+                  href={unlockState.content || note.content}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-ring hover:underline"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {unlockedContent || note.content}
+                  {unlockState.content || note.content}
                 </a>
               ) : (
-                unlockedContent || note.content
+                unlockState.content || note.content
               )}
             </p>
           )}
@@ -181,7 +189,7 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
             <button
               type="button"
               onClick={handleDownload}
-              disabled={note.isProtected && unlockedContent === null}
+              disabled={note.isProtected && unlockState.content === null}
               className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/20 hover:text-foreground hover:bg-muted/40"
               title="Download file"
             >
@@ -191,7 +199,7 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
           <button
             type="button"
             onClick={handleCopy}
-            disabled={note.isProtected && unlockedContent === null}
+            disabled={note.isProtected && unlockState.content === null}
             className={cn(
               "p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
               copied
