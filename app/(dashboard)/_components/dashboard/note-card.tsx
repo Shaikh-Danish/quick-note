@@ -1,30 +1,18 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
 import { useState } from "react";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
-import { Input } from "@/components/ui/input";
 
-import { unlockNoteContent } from "@/features/notes/actions";
 import type { Note } from "@/features/notes/client";
-
 import type { NoteCategory } from "@/lib/schemas/notes";
 import { CATEGORY_LABELS } from "@/lib/schemas/notes";
 import { cn } from "@/lib/utils";
+import { DeleteNoteDialog } from "./delete-note-dialog";
+import { ProtectedNoteForm } from "./protected-note-form";
 
 const CATEGORY_ICONS: Record<NoteCategory, keyof typeof Icons> = {
   TEXT: "textT",
@@ -48,22 +36,17 @@ export function NoteCard({
   onDelete,
 }: NoteCardProps) {
   const [copied, setCopied] = useState(false);
-  const [unlockState, setUnlockState] = useState({
-    content: null as string | null,
-    password: "",
-    isPending: false,
-    error: "",
-  });
+  const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
 
   const handleCopy = () => {
-    onCopy?.({ ...note, content: unlockState.content || note.content });
+    onCopy?.({ ...note, content: unlockedContent || note.content });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const contentToDownload = unlockState.content || note.content;
+    const contentToDownload = unlockedContent || note.content;
     const a = document.createElement("a");
     a.href = contentToDownload;
     const ext =
@@ -74,27 +57,6 @@ export function NoteCard({
     a.click();
     document.body.removeChild(a);
     onDownload?.(note);
-  };
-
-  const handleUnlock = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!unlockState.password) return;
-    setUnlockState((s) => ({ ...s, isPending: true, error: "" }));
-    try {
-      const res = await unlockNoteContent(note.content, unlockState.password);
-      if (res.success && res.content) {
-        setUnlockState((s) => ({ ...s, content: res.content }));
-      } else {
-        setUnlockState((s) => ({
-          ...s,
-          error: res.error || "Failed to unlock",
-        }));
-      }
-    } catch {
-      setUnlockState((s) => ({ ...s, error: "Failed to unlock" }));
-    } finally {
-      setUnlockState((s) => ({ ...s, isPending: false }));
-    }
   };
 
   const CategoryIcon = Icons[CATEGORY_ICONS[note.category]];
@@ -132,100 +94,22 @@ export function NoteCard({
               </Badge>
             ))}
           </div>
-          <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10 group-hover:bg-background/80 backdrop-blur-sm p-1 rounded-sm">
-            <AlertDialog>
-              <AlertDialogTrigger>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-muted-foreground/30 hover:text-destructive rounded-sm transition-all opacity-0 group-hover:opacity-100"
-                  title="Delete Note"
-                >
-                  <Icons.trash size={14} weight="bold" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    your note.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onDelete?.(note)}>
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+          <DeleteNoteDialog note={note} onDelete={onDelete} />
         </div>
 
         <div className="space-y-1.5">
           <h3 className="text-xs font-black uppercase tracking-wide text-foreground/90 leading-tight">
             {note.title}
           </h3>
-          {note.isProtected && unlockState.content === null ? (
-            <div className="mt-3 relative flex flex-col items-center justify-center min-h-[140px] rounded-md overflow-hidden bg-muted/5 border border-border/20 p-4">
-              <div className="absolute inset-0 bg-gradient-to-br from-background/60 to-muted/20 backdrop-blur-sm z-0" />
-              <div className="relative z-10 flex flex-col items-center w-full max-w-[200px] space-y-4">
-                <div className="flex flex-col items-center gap-1.5">
-                  <div className="w-8 h-8 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center shadow-sm">
-                    <Icons.password
-                      size={16}
-                      weight="duotone"
-                      className="text-primary/70"
-                    />
-                  </div>
-                  <span className="text-[10px] font-bold text-foreground/70 uppercase tracking-widest">
-                    {note.category === "IMAGE"
-                      ? "Protected Image"
-                      : note.category === "DOCUMENT"
-                        ? "Protected Document"
-                        : "Protected Note"}
-                  </span>
-                </div>
-
-                <form
-                  onSubmit={handleUnlock}
-                  className="flex flex-col w-full gap-2 relative"
-                >
-                  <div className="relative group">
-                    <Input
-                      type="password"
-                      className="h-8 px-3 text-xs w-full bg-background border border-border/50 rounded-sm focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground/30 text-center tracking-widest shadow-inner"
-                      placeholder="••••••••"
-                      value={unlockState.password}
-                      onChange={(e) =>
-                        setUnlockState((s) => ({
-                          ...s,
-                          password: e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-                  <Button
-                    disabled={unlockState.isPending || !unlockState.password}
-                    type="submit"
-                    className="h-8 w-full text-[10px] font-black uppercase tracking-widest rounded-sm disabled:opacity-50 transition-all shadow-sm"
-                  >
-                    {unlockState.isPending ? "Validating" : "Unlock"}
-                  </Button>
-                </form>
-                {unlockState.error && (
-                  <p className="text-[9px] text-destructive/90 font-bold uppercase tracking-wider text-center bg-destructive/10 px-2 py-0.5 rounded-sm w-full">
-                    {unlockState.error}
-                  </p>
-                )}
-              </div>
-            </div>
+          {note.isProtected && unlockedContent === null ? (
+            <ProtectedNoteForm note={note} onSuccess={setUnlockedContent} />
           ) : note.category === "IMAGE" ? (
             <div className="mt-2 flex justify-center bg-muted/20 border border-border/50 max-h-[200px] overflow-hidden rounded-sm">
-              <img
-                src={unlockState.content || note.content}
+              <Image
+                src={unlockedContent || note.content}
                 alt={note.title}
+                width={800}
+                height={400}
                 className="object-cover w-full h-full"
               />
             </div>
@@ -247,16 +131,16 @@ export function NoteCard({
             <p className="text-[11px] leading-relaxed text-muted-foreground/60 break-all line-clamp-5 font-medium">
               {note.category === "URL" ? (
                 <a
-                  href={unlockState.content || note.content}
+                  href={unlockedContent || note.content}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-ring hover:underline"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {unlockState.content || note.content}
+                  {unlockedContent || note.content}
                 </a>
               ) : (
-                unlockState.content || note.content
+                unlockedContent || note.content
               )}
             </p>
           )}
@@ -280,7 +164,7 @@ export function NoteCard({
             <button
               type="button"
               onClick={handleDownload}
-              disabled={note.isProtected && unlockState.content === null}
+              disabled={note.isProtected && unlockedContent === null}
               className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
               title="Download file"
             >
@@ -291,7 +175,7 @@ export function NoteCard({
             <button
               type="button"
               onClick={handleCopy}
-              disabled={note.isProtected && unlockState.content === null}
+              disabled={note.isProtected && unlockedContent === null}
               className={cn(
                 "p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
                 copied
