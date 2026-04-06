@@ -54,8 +54,37 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const result = noteSchema.safeParse(body);
+    const contentTypeHeader = req.headers.get("content-type") || "";
+    let result: { success: true; data: any } | { success: false; error: any };
+
+    if (contentTypeHeader.includes("multipart/form-data")) {
+      const formData = await req.formData();
+      const file = formData.get("file") as File | null;
+      if (!file) {
+        return NextResponse.json(
+          { error: "Invalid payload", details: "No file provided" },
+          { status: 400 },
+        );
+      }
+
+      const fileBuffer = Buffer.from(await file.arrayBuffer());
+      const base64 = `data:${file.type};base64,${fileBuffer.toString("base64")}`;
+
+      const payload = {
+        title: formData.get("title"),
+        content: base64,
+        category: formData.get("category"),
+        contentType: formData.get("contentType") || file.type,
+        tags: formData.get("tags") ? JSON.parse(formData.get("tags") as string) : [],
+        isProtected: formData.get("isProtected") === "true",
+        password: formData.get("password") || undefined,
+      };
+
+      result = noteSchema.safeParse(payload);
+    } else {
+      const body = await req.json();
+      result = noteSchema.safeParse(body);
+    }
 
     if (!result.success) {
       return NextResponse.json(

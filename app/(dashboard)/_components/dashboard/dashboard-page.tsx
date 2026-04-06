@@ -1,7 +1,7 @@
 "use client";
 
 import { Icons } from "@/components/ui/icons";
-import { useIncrementCopyCount, useNotes } from "@/features/notes/client";
+import { useIncrementUseCount, useNotes } from "@/features/notes/client";
 import { useNotesFilter } from "@/hooks/use-notes-filter";
 import { DashboardHeader } from "./dashboard-header";
 import { NoteCard } from "./note-card";
@@ -30,7 +30,7 @@ export default function DashboardPage({ user }: { user: User | null }) {
   const notes = data?.notes ?? [];
   const totalPages = data?.totalPages ?? 1;
   const total = data?.total ?? 0;
-  const incrementCopy = useIncrementCopyCount();
+  const incrementUse = useIncrementUseCount();
 
   const hasActiveFilters = !!filter.debouncedSearch || !!filter.category;
 
@@ -84,7 +84,10 @@ export default function DashboardPage({ user }: { user: User | null }) {
                     note={note}
                     onCopy={(n) => {
                       navigator.clipboard.writeText(n.content);
-                      incrementCopy.mutate(n.id);
+                      incrementUse.mutate(n.id);
+                    }}
+                    onDownload={(n) => {
+                      incrementUse.mutate(n.id);
                     }}
                   />
                 ))}

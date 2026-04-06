@@ -21,10 +21,11 @@ const CATEGORY_ICONS: Record<NoteCategory, keyof typeof Icons> = {
 interface NoteCardProps {
   note: Note;
   onCopy?: (note: Note) => void;
+  onDownload?: (note: Note) => void;
   onAction?: (id: string) => void;
 }
 
-export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
+export function NoteCard({ note, onCopy, onDownload, onAction }: NoteCardProps) {
   const [copied, setCopied] = useState(false);
   const [unlockState, setUnlockState] = useState({
     content: null as string | null,
@@ -44,13 +45,12 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
     const contentToDownload = unlockState.content || note.content;
     const a = document.createElement("a");
     a.href = contentToDownload;
-    const ext =
-      note.contentType?.split("/")[1] ||
-      (note.category === "IMAGE" ? "png" : "pdf");
-    a.download = `${note.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.${ext}`;
+    const ext = note.contentType?.split('/')[1] || (note.category === "IMAGE" ? "png" : "pdf");
+    a.download = `${note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${ext}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    onDownload?.(note);
   };
 
   const handleUnlock = async (e: React.FormEvent) => {
@@ -123,10 +123,10 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
             {note.title}
           </h3>
           {note.isProtected && unlockState.content === null ? (
-            <div className="mt-2 space-y-2 pb-1">
+            <div className="mt-2 space-y-2 pb-1 bg-muted/20 p-3 border border-border/50 flex flex-col items-center justify-center min-h-[100px] rounded-sm">
               <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">
-                <Icons.password size={12} weight="bold" />
-                Protected Content
+                <Icons.password size={16} weight="bold" className="text-primary/50" />
+                Protected {note.category === "IMAGE" ? "Image" : note.category === "DOCUMENT" ? "Document" : "Content"}
               </div>
               <form onSubmit={handleUnlock} className="flex gap-1.5">
                 <input
@@ -152,6 +152,16 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
                 </p>
               )}
             </div>
+          ) : note.category === "IMAGE" ? (
+            <div className="mt-2 flex justify-center bg-muted/20 border border-border/50 max-h-[200px] overflow-hidden rounded-sm">
+              <img src={unlockState.content || note.content} alt={note.title} className="object-cover w-full h-full" />
+            </div>
+          ) : note.category === "DOCUMENT" ? (
+            <div className="mt-2 flex flex-col items-center justify-center p-4 bg-muted/20 border border-border/50 rounded-sm min-h-[100px]">
+              <Icons.fileText size={32} weight="bold" className="text-primary/50 mb-1" />
+              <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">{note.title}</span>
+              <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground/60">{note.contentType?.split('/')[1] || "File"}</span>
+            </div>
           ) : (
             <p className="text-[11px] leading-relaxed text-muted-foreground/60 break-all line-clamp-5 font-medium">
               {note.category === "URL" ? (
@@ -174,12 +184,12 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
 
       <div className="flex justify-between items-center pt-3 mt-3 border-t border-border/20 pl-1">
         <div className="flex items-center gap-2">
-          <span className="text-[9px] font-mono text-muted-foreground/70">
+          <span className="text-[10px] font-medium font-mono text-muted-foreground">
             {formatDistanceToNow(new Date(note.createdAt), { addSuffix: true })}
           </span>
-          {note.copiedCount > 0 && (
-            <span className="text-[8px] font-mono text-muted-foreground/60">
-              · {note.copiedCount}×
+          {note.useCount > 0 && (
+            <span className="text-[9px] font-medium font-mono text-muted-foreground/80">
+              · {note.useCount}×
             </span>
           )}
         </div>
@@ -190,30 +200,32 @@ export function NoteCard({ note, onCopy, onAction }: NoteCardProps) {
               type="button"
               onClick={handleDownload}
               disabled={note.isProtected && unlockState.content === null}
-              className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/20 hover:text-foreground hover:bg-muted/40"
+              className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
               title="Download file"
             >
               <Icons.download size={12} weight="bold" />
             </button>
           )}
-          <button
-            type="button"
-            onClick={handleCopy}
-            disabled={note.isProtected && unlockState.content === null}
-            className={cn(
-              "p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
-              copied
-                ? "text-green-500"
-                : "text-muted-foreground/20 hover:text-foreground hover:bg-muted/40",
-            )}
-            title="Copy to clipboard"
-          >
-            {copied ? (
-              <Icons.check size={12} weight="bold" />
-            ) : (
-              <Icons.copy size={12} weight="bold" />
-            )}
-          </button>
+          {note.category !== "IMAGE" && note.category !== "DOCUMENT" && (
+            <button
+              type="button"
+              onClick={handleCopy}
+              disabled={note.isProtected && unlockState.content === null}
+              className={cn(
+                "p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
+                copied
+                  ? "text-green-500"
+                  : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/40",
+              )}
+              title="Copy to clipboard"
+            >
+              {copied ? (
+                <Icons.check size={12} weight="bold" />
+              ) : (
+                <Icons.copy size={12} weight="bold" />
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

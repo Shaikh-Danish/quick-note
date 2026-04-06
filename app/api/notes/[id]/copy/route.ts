@@ -22,7 +22,7 @@ export async function POST(
 
     const updated = await incrementNoteCopyCount(session.user.id, id);
 
-    return NextResponse.json({ success: true, copiedCount: updated.copiedCount });
+    return NextResponse.json({ success: true, useCount: updated.useCount });
   } catch (error) {
     console.error("API Error (POST /api/notes/[id]/copy):", error);
     return NextResponse.json(

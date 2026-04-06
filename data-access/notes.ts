@@ -11,7 +11,7 @@ export interface NoteResult {
   contentType: string | null;
   createdAt: Date;
   updatedAt: Date;
-  copiedCount: number;
+  useCount: number;
   isProtected: boolean;
   tags: { id: string; name: string }[];
 }
@@ -46,8 +46,8 @@ export async function getUserNotes(
           },
         },
         orderBy:
-          query.sort === "most_copied"
-            ? { copiedCount: "desc" }
+          query.sort === "most_used"
+            ? { useCount: "desc" }
             : { createdAt: "desc" },
         skip: (query.page - 1) * query.limit,
         take: query.limit,
@@ -65,7 +65,7 @@ export async function getUserNotes(
         : null,
       createdAt: note.createdAt,
       updatedAt: note.updatedAt,
-      copiedCount: note.copiedCount,
+      useCount: note.useCount,
       isProtected: note.isProtected,
       tags: note.tags.map((t) => t.tag),
     }));
@@ -100,7 +100,7 @@ export async function incrementNoteCopyCount(userId: string, noteId: string) {
     return await prisma.note.update({
       where: { id: noteId, userId: userId },
       data: {
-        copiedCount: {
+        useCount: {
           increment: 1,
         },
       },

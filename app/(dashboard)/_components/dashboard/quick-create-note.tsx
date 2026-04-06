@@ -39,6 +39,7 @@ interface QuickCreateNoteProps {
 
 export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
   const [open, setOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const createNote = useCreateNote();
 
   const form = useZodForm<NoteSchema>(noteSchema, {
@@ -58,14 +59,29 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
   } = form;
 
   const onSubmit = (data: NoteSchema) => {
-    // Auto-assign default content type based on category
     const contentType =
       data.contentType || CATEGORY_CONTENT_TYPES[internalCategory];
+
+    let payload: NoteSchema | FormData = { ...data, category: internalCategory, contentType };
+
+    if (selectedFile && (internalCategory === "IMAGE" || internalCategory === "DOCUMENT")) {
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("category", internalCategory);
+      if (contentType) formData.append("contentType", contentType);
+      formData.append("file", selectedFile);
+      if (data.isProtected) formData.append("isProtected", "true");
+      if (data.password) formData.append("password", data.password);
+      if (data.tags && data.tags.length > 0) formData.append("tags", JSON.stringify(data.tags));
+      payload = formData as unknown as NoteSchema;
+    }
+
     createNote.mutate(
-      { ...data, category: internalCategory, contentType },
+      payload,
       {
         onSuccess: () => {
           reset();
+          setSelectedFile(null);
           setOpen(false);
           onSuccess?.();
         },
@@ -170,21 +186,19 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                           shouldValidate: true,
                         });
 
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                          const result = event.target?.result;
-                          if (typeof result === "string") {
-                            setValue("content", result, {
-                              shouldValidate: true,
-                            });
-                          }
-                        };
-                        reader.readAsDataURL(file);
+                        const currentTitle = form.getValues("title");
+                        if (!currentTitle || currentTitle.trim() === "") {
+                          const baseName = file.name.replace(/\.[^/.]+$/, "");
+                          setValue("title", baseName, { shouldValidate: true });
+                        }
+
+                        setSelectedFile(file);
+                        setValue("content", "file-upload", { shouldValidate: true });
                       }}
                       className="block w-full text-xs text-muted-foreground/70 file:mr-4 file:py-1.5 file:px-4 file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer focus:outline-none transition-colors"
                     />
                     <p className="text-[9px] text-muted-foreground/40 uppercase font-medium tracking-wider">
-                      Selecting a file will read it as base64 data into the content area above.
+                      Selecting a file will upload it securely without frontend base64 conversion.
                     </p>
                   </div>
                 )}
@@ -192,36 +206,36 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
               {(internalCategory === "IMAGE" ||
                 internalCategory === "DOCUMENT") && (
                   <div className="flex flex-col gap-3 p-4 border border-border/40 bg-muted/5">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <label htmlFor="isProtected" className="text-xs font-bold uppercase tracking-wide cursor-pointer">
-                        Password Protection
-                      </label>
-                      <p className="text-[10px] text-muted-foreground/60">
-                        Require a password to view this file
-                      </p>
-                    </div>
-                    <Switch
-                      id="isProtected"
-                      checked={watch("isProtected")}
-                      onCheckedChange={(val) => {
-                        setValue("isProtected", val, { shouldValidate: true });
-                        if (!val) setValue("password", "", { shouldValidate: true });
-                      }}
-                    />
-                  </div>
-                  {watch("isProtected") && (
-                    <div className="pt-2">
-                      <Input
-                        type="password"
-                        placeholder="Enter password..."
-                        {...register("password")}
-                        className="h-8 text-xs bg-background"
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <label htmlFor="isProtected" className="text-xs font-bold uppercase tracking-wide cursor-pointer">
+                          Password Protection
+                        </label>
+                        <p className="text-[10px] text-muted-foreground/60">
+                          Require a password to view this file
+                        </p>
+                      </div>
+                      <Switch
+                        id="isProtected"
+                        checked={watch("isProtected")}
+                        onCheckedChange={(val) => {
+                          setValue("isProtected", val, { shouldValidate: true });
+                          if (!val) setValue("password", "", { shouldValidate: true });
+                        }}
                       />
                     </div>
-                  )}
-                </div>
-              )}
+                    {watch("isProtected") && (
+                      <div className="pt-2">
+                        <Input
+                          type="password"
+                          placeholder="Enter password..."
+                          {...register("password")}
+                          className="h-8 text-xs bg-background"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
             </div>
           </div>
 

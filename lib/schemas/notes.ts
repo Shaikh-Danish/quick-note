@@ -31,7 +31,7 @@ export const noteSchema = z.object({
   content: z
     .string()
     .min(1, "Content is required")
-    .max(5000, "Content must be less than 5000 characters"),
+    .max(15_000_000, "Content must be less than 15MB"),
   category: noteCategorySchema.default("TEXT"),
   contentType: z.string().optional(),
   tags: z.array(z.string()).optional().default([]),
@@ -43,7 +43,7 @@ export type NoteSchema = z.infer<typeof noteSchema>;
 
 /** Query params for listing notes */
 export const notesQuerySchema = z.object({
-  sort: z.enum(["latest", "most_copied"]).default("latest"),
+  sort: z.enum(["latest", "most_used"]).default("latest"),
   category: noteCategorySchema.optional(),
   search: z.string().optional(),
   page: z.coerce.number().int().positive().default(1),

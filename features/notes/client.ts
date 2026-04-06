@@ -9,7 +9,7 @@ export interface Note {
   category: NoteCategory;
   contentType: string | null;
   createdAt: string;
-  copiedCount: number;
+  useCount: number;
   isProtected?: boolean;
   tags?: { id: string; name: string }[];
 }
@@ -23,7 +23,7 @@ export interface PaginatedNotesResponse {
 }
 
 export interface NotesFilter {
-  sort?: "latest" | "most_copied";
+  sort?: "latest" | "most_used";
   category?: NoteCategory;
   search?: string;
   page?: number;
@@ -50,7 +50,7 @@ export function useNotes(filter: NotesFilter = {}) {
   });
 }
 
-export function useIncrementCopyCount() {
+export function useIncrementUseCount() {
   return useMutation({
     mutationFn: async (id: string) => {
       const response = await fetch(`/api/notes/${id}/copy`, {
@@ -74,11 +74,12 @@ export function useCreateNote() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (note: NoteSchema) => {
+    mutationFn: async (payload: NoteSchema | FormData) => {
+      const isFormData = payload instanceof FormData;
       const response = await fetch("/api/notes", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(note),
+        headers: isFormData ? undefined : { "Content-Type": "application/json" },
+        body: isFormData ? payload : JSON.stringify(payload),
       });
 
       if (!response.ok) {

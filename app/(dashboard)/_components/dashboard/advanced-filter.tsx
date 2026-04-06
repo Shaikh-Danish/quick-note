@@ -26,8 +26,8 @@ const CATEGORY_ICONS: Record<NoteCategory, keyof typeof Icons> = {
 interface AdvancedFilterProps {
   category: NoteCategory | undefined;
   onCategoryChange: (category: NoteCategory | undefined) => void;
-  sortBy: "latest" | "most_copied";
-  onSortChange: (sort: "latest" | "most_copied") => void;
+  sortBy: "latest" | "most_used";
+  onSortChange: (sort: "latest" | "most_used") => void;
 }
 
 export function AdvancedFilter({
@@ -36,7 +36,7 @@ export function AdvancedFilter({
   sortBy,
   onSortChange,
 }: AdvancedFilterProps) {
-  const activeFiltersCount = (category ? 1 : 0) + (sortBy !== "most_copied" ? 1 : 0);
+  const activeFiltersCount = (category ? 1 : 0) + (sortBy !== "latest" ? 1 : 0);
 
   return (
     <DropdownMenu>
@@ -66,9 +66,9 @@ export function AdvancedFilter({
         </DropdownMenuGroup>
         <DropdownMenuRadioGroup
           value={sortBy}
-          onValueChange={(v) => onSortChange(v as "latest" | "most_copied")}
+          onValueChange={(v) => onSortChange(v as "latest" | "most_used")}
         >
-          <DropdownMenuRadioItem value="most_copied" className="px-2 py-1.5 cursor-pointer">
+          <DropdownMenuRadioItem value="most_used" className="px-2 py-1.5 cursor-pointer">
             <span className="text-[10px] font-bold uppercase tracking-widest">Top / Most Used</span>
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="latest" className="px-2 py-1.5 cursor-pointer">

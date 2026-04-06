@@ -2,7 +2,7 @@ import { useReducer, useRef, useCallback } from "react";
 import type { NoteCategory } from "@/lib/schemas/notes";
 
 interface NotesFilterState {
-  sortBy: "latest" | "most_copied";
+  sortBy: "latest" | "most_used";
   category: NoteCategory | undefined;
   search: string;
   debouncedSearch: string;
@@ -10,14 +10,14 @@ interface NotesFilterState {
 }
 
 type NotesFilterAction =
-  | { type: "SET_SORT"; sort: "latest" | "most_copied" }
+  | { type: "SET_SORT"; sort: "latest" | "most_used" }
   | { type: "SET_CATEGORY"; category: NoteCategory | undefined }
   | { type: "SET_SEARCH"; search: string }
   | { type: "SET_DEBOUNCED_SEARCH"; search: string }
   | { type: "SET_PAGE"; page: number };
 
 const initialState: NotesFilterState = {
-  sortBy: "most_copied",
+  sortBy: "latest",
   category: undefined,
   search: "",
   debouncedSearch: "",
@@ -47,7 +47,7 @@ export function useNotesFilter() {
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const setSortBy = useCallback(
-    (sort: "latest" | "most_copied") => dispatch({ type: "SET_SORT", sort }),
+    (sort: "latest" | "most_used") => dispatch({ type: "SET_SORT", sort }),
     [],
   );
 

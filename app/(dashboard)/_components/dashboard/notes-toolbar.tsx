@@ -8,8 +8,8 @@ import { QuickCreateNote } from "./quick-create-note";
 interface NotesToolbarProps {
   total: number;
   isLoading: boolean;
-  sortBy: "latest" | "most_copied";
-  onSortChange: (sort: "latest" | "most_copied") => void;
+  sortBy: "latest" | "most_used";
+  onSortChange: (sort: "latest" | "most_used") => void;
   category: NoteCategory | undefined;
   onCategoryChange: (category: NoteCategory | undefined) => void;
   search: string;
@@ -28,7 +28,7 @@ export function NotesToolbar({
 }: NotesToolbarProps) {
   return (
     <div className="flex flex-col gap-4 mb-6">
-      
+
       {/* Top Row: Title */}
       <div className="flex items-baseline gap-2">
         <h2 className="text-sm font-black uppercase tracking-widest text-foreground">
@@ -41,7 +41,7 @@ export function NotesToolbar({
 
       {/* Bottom Row: Search, Filter, Add Note */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        
+
         {/* Left side: Search */}
         <div className="relative flex-1 max-w-sm">
           <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-muted-foreground/30">
