@@ -32,6 +32,7 @@ import {
   TextTIcon,
   UserIcon,
   UserPlusIcon,
+  Trash,
 } from "@phosphor-icons/react";
 
 export const Icons = {
@@ -69,4 +70,5 @@ export const Icons = {
   loader2: CircleNotchIcon,
   tag: TagIcon,
   textT: TextTIcon,
+  trash: Trash,
 };

@@ -2,10 +2,26 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
+import { Input } from "@/components/ui/input";
+
 import { unlockNoteContent } from "@/features/notes/actions";
 import type { Note } from "@/features/notes/client";
+
 import type { NoteCategory } from "@/lib/schemas/notes";
 import { CATEGORY_LABELS } from "@/lib/schemas/notes";
 import { cn } from "@/lib/utils";
@@ -22,10 +38,15 @@ interface NoteCardProps {
   note: Note;
   onCopy?: (note: Note) => void;
   onDownload?: (note: Note) => void;
-  onAction?: (id: string) => void;
+  onDelete?: (note: Note) => void;
 }
 
-export function NoteCard({ note, onCopy, onDownload, onAction }: NoteCardProps) {
+export function NoteCard({
+  note,
+  onCopy,
+  onDownload,
+  onDelete,
+}: NoteCardProps) {
   const [copied, setCopied] = useState(false);
   const [unlockState, setUnlockState] = useState({
     content: null as string | null,
@@ -45,8 +66,10 @@ export function NoteCard({ note, onCopy, onDownload, onAction }: NoteCardProps) 
     const contentToDownload = unlockState.content || note.content;
     const a = document.createElement("a");
     a.href = contentToDownload;
-    const ext = note.contentType?.split('/')[1] || (note.category === "IMAGE" ? "png" : "pdf");
-    a.download = `${note.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${ext}`;
+    const ext =
+      note.contentType?.split("/")[1] ||
+      (note.category === "IMAGE" ? "png" : "pdf");
+    a.download = `${note.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.${ext}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -109,13 +132,35 @@ export function NoteCard({ note, onCopy, onDownload, onAction }: NoteCardProps) 
               </Badge>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => onAction?.(note.id)}
-            className="p-0.5 text-muted-foreground/15 hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
-          >
-            <Icons.dotsThree size={16} weight="bold" />
-          </button>
+          <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10 group-hover:bg-background/80 backdrop-blur-sm p-1 rounded-sm">
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-muted-foreground/30 hover:text-destructive rounded-sm transition-all opacity-0 group-hover:opacity-100"
+                  title="Delete Note"
+                >
+                  <Icons.trash size={14} weight="bold" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your note.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => onDelete?.(note)}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
 
         <div className="space-y-1.5">
@@ -123,44 +168,80 @@ export function NoteCard({ note, onCopy, onDownload, onAction }: NoteCardProps) 
             {note.title}
           </h3>
           {note.isProtected && unlockState.content === null ? (
-            <div className="mt-2 space-y-2 pb-1 bg-muted/20 p-3 border border-border/50 flex flex-col items-center justify-center min-h-[100px] rounded-sm">
-              <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">
-                <Icons.password size={16} weight="bold" className="text-primary/50" />
-                Protected {note.category === "IMAGE" ? "Image" : note.category === "DOCUMENT" ? "Document" : "Content"}
-              </div>
-              <form onSubmit={handleUnlock} className="flex gap-1.5">
-                <input
-                  type="password"
-                  className="h-7 px-2 text-xs w-full bg-muted/30 border border-border/40 focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground/30"
-                  placeholder="Password..."
-                  value={unlockState.password}
-                  onChange={(e) =>
-                    setUnlockState((s) => ({ ...s, password: e.target.value }))
-                  }
-                />
-                <button
-                  disabled={unlockState.isPending || !unlockState.password}
-                  type="submit"
-                  className="h-7 px-3 bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest disabled:opacity-50 transition-opacity"
+            <div className="mt-3 relative flex flex-col items-center justify-center min-h-[140px] rounded-md overflow-hidden bg-muted/5 border border-border/20 p-4">
+              <div className="absolute inset-0 bg-gradient-to-br from-background/60 to-muted/20 backdrop-blur-sm z-0" />
+              <div className="relative z-10 flex flex-col items-center w-full max-w-[200px] space-y-4">
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="w-8 h-8 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center shadow-sm">
+                    <Icons.password
+                      size={16}
+                      weight="duotone"
+                      className="text-primary/70"
+                    />
+                  </div>
+                  <span className="text-[10px] font-bold text-foreground/70 uppercase tracking-widest">
+                    {note.category === "IMAGE"
+                      ? "Protected Image"
+                      : note.category === "DOCUMENT"
+                        ? "Protected Document"
+                        : "Protected Note"}
+                  </span>
+                </div>
+
+                <form
+                  onSubmit={handleUnlock}
+                  className="flex flex-col w-full gap-2 relative"
                 >
-                  {unlockState.isPending ? "Wait" : "Unlock"}
-                </button>
-              </form>
-              {unlockState.error && (
-                <p className="text-[10px] text-destructive font-bold uppercase tracking-wider">
-                  {unlockState.error}
-                </p>
-              )}
+                  <div className="relative group">
+                    <Input
+                      type="password"
+                      className="h-8 px-3 text-xs w-full bg-background border border-border/50 rounded-sm focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground/30 text-center tracking-widest shadow-inner"
+                      placeholder="••••••••"
+                      value={unlockState.password}
+                      onChange={(e) =>
+                        setUnlockState((s) => ({
+                          ...s,
+                          password: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                  <Button
+                    disabled={unlockState.isPending || !unlockState.password}
+                    type="submit"
+                    className="h-8 w-full text-[10px] font-black uppercase tracking-widest rounded-sm disabled:opacity-50 transition-all shadow-sm"
+                  >
+                    {unlockState.isPending ? "Validating" : "Unlock"}
+                  </Button>
+                </form>
+                {unlockState.error && (
+                  <p className="text-[9px] text-destructive/90 font-bold uppercase tracking-wider text-center bg-destructive/10 px-2 py-0.5 rounded-sm w-full">
+                    {unlockState.error}
+                  </p>
+                )}
+              </div>
             </div>
           ) : note.category === "IMAGE" ? (
             <div className="mt-2 flex justify-center bg-muted/20 border border-border/50 max-h-[200px] overflow-hidden rounded-sm">
-              <img src={unlockState.content || note.content} alt={note.title} className="object-cover w-full h-full" />
+              <img
+                src={unlockState.content || note.content}
+                alt={note.title}
+                className="object-cover w-full h-full"
+              />
             </div>
           ) : note.category === "DOCUMENT" ? (
             <div className="mt-2 flex flex-col items-center justify-center p-4 bg-muted/20 border border-border/50 rounded-sm min-h-[100px]">
-              <Icons.fileText size={32} weight="bold" className="text-primary/50 mb-1" />
-              <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">{note.title}</span>
-              <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground/60">{note.contentType?.split('/')[1] || "File"}</span>
+              <Icons.fileText
+                size={32}
+                weight="bold"
+                className="text-primary/50 mb-1"
+              />
+              <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+                {note.title}
+              </span>
+              <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground/60">
+                {note.contentType?.split("/")[1] || "File"}
+              </span>
             </div>
           ) : (
             <p className="text-[11px] leading-relaxed text-muted-foreground/60 break-all line-clamp-5 font-medium">
