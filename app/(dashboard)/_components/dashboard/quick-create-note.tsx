@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  useComboboxAnchor,
+} from "@/components/ui/combobox";
 import {
   Dialog,
   DialogContent,
@@ -13,17 +22,8 @@ import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateNote, useCategories } from "@/features/notes/client";
+import { useCategories, useCreateNote } from "@/features/notes/client";
 import { useZodForm } from "@/hooks/use-zod-form";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox";
-import { useComboboxAnchor } from "@/components/ui/combobox";
-import { Controller } from "react-hook-form";
 import {
   NOTE_TYPES,
   type NoteSchema,
@@ -153,17 +153,18 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                 const IconComponent = Icons[TYPE_ICONS[type]];
                 const isActive = internalType === type;
                 return (
-                  <button
+                  <Button
                     key={type}
                     type="button"
+                    variant={isActive ? "default" : "ghost"}
                     onClick={(e) => {
                       e.preventDefault();
                       setInternalType(type);
                     }}
                     className={cn(
-                      "flex flex-col items-center justify-center py-3 gap-2 transition-all duration-150 border border-transparent",
+                      "flex flex-col items-center justify-center h-auto py-3 gap-2 transition-all duration-150 border-none rounded-none",
                       isActive
-                        ? "bg-primary text-primary-foreground border-primary"
+                        ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground/40 hover:text-foreground hover:bg-muted/40",
                     )}
                   >
@@ -174,7 +175,7 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                     <span className="text-[8px] font-black uppercase tracking-[0.15em]">
                       {TYPE_LABELS[type]}
                     </span>
-                  </button>
+                  </Button>
                 );
               })}
             </div>

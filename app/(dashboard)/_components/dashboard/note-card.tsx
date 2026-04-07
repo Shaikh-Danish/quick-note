@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 
 import type { Note } from "@/features/notes/client";
@@ -222,35 +223,41 @@ export function NoteCard({
         <div className="flex gap-1 items-center">
           {isFileBased && (
             <>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => window.open(getFileUrl(note.id), "_blank")}
                 disabled={note.isProtected && unlockedContent === null && !hasFileKey}
-                className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
+                className="h-8 w-8 text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
                 title="Open in new tab"
               >
                 <Icons.arrowSquareOut size={12} weight="bold" />
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={handleDownload}
                 disabled={note.isProtected && unlockedContent === null && !hasFileKey}
-                className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
+                className="h-8 w-8 text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
                 title="Download file"
               >
                 <Icons.download size={12} weight="bold" />
-              </button>
+              </Button>
             </>
           )}
           {!isFileBased && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={handleCopy}
               disabled={note.isProtected && unlockedContent === null}
               className={cn(
-                "p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
+                "h-8 w-8 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
                 copied
-                  ? "text-green-500"
+                  ? "text-green-500 hover:text-green-600 hover:bg-green-50/50"
                   : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/40",
               )}
               title="Copy to clipboard"
@@ -260,7 +267,7 @@ export function NoteCard({
               ) : (
                 <Icons.copy size={12} weight="bold" />
               )}
-            </button>
+            </Button>
           )}
         </div>
       </div>

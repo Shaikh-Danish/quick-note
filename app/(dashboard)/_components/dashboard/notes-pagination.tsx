@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
@@ -19,19 +20,21 @@ export function NotesPagination({ page, totalPages, onPageChange }: NotesPaginat
       </span>
 
       <div className="flex items-center gap-1">
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="icon-sm"
           onClick={() => onPageChange(Math.max(1, page - 1))}
           disabled={page <= 1}
           className={cn(
-            "p-1.5 border border-border/40 transition-all cursor-pointer",
+            "border-border/40 transition-all cursor-pointer rounded-none",
             page <= 1
               ? "opacity-30 cursor-not-allowed"
               : "hover:bg-muted/40 hover:border-border",
           )}
         >
           <Icons.arrowLeft size={12} weight="bold" />
-        </button>
+        </Button>
 
         {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
           let pageNum: number;
@@ -45,35 +48,39 @@ export function NotesPagination({ page, totalPages, onPageChange }: NotesPaginat
             pageNum = page - 2 + i;
           }
           return (
-            <button
+            <Button
               key={pageNum}
               type="button"
+              variant={pageNum === page ? "default" : "outline"}
+              size="sm"
               onClick={() => onPageChange(pageNum)}
               className={cn(
-                "min-w-[28px] h-7 text-[10px] font-bold border border-border/40 transition-all cursor-pointer",
+                "min-w-[28px] h-7 px-2 text-[10px] font-bold border border-border/40 transition-all cursor-pointer rounded-none",
                 pageNum === page
                   ? "bg-primary text-primary-foreground border-primary"
                   : "text-muted-foreground/50 hover:bg-muted/40 hover:border-border",
               )}
             >
               {pageNum}
-            </button>
+            </Button>
           );
         })}
 
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="icon-sm"
           onClick={() => onPageChange(Math.min(totalPages, page + 1))}
           disabled={page >= totalPages}
           className={cn(
-            "p-1.5 border border-border/40 transition-all cursor-pointer",
+            "border-border/40 transition-all cursor-pointer rounded-none",
             page >= totalPages
               ? "opacity-30 cursor-not-allowed"
               : "hover:bg-muted/40 hover:border-border",
           )}
         >
           <Icons.arrowRight size={12} weight="bold" />
-        </button>
+        </Button>
       </div>
     </div>
   );
