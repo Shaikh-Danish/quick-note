@@ -221,15 +221,26 @@ export function NoteCard({
 
         <div className="flex gap-1 items-center">
           {isFileBased && (
-            <button
-              type="button"
-              onClick={handleDownload}
-              disabled={note.isProtected && unlockedContent === null && !hasFileKey}
-              className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
-              title="Download file"
-            >
-              <Icons.download size={12} weight="bold" />
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => window.open(getFileUrl(note.id), "_blank")}
+                disabled={note.isProtected && unlockedContent === null && !hasFileKey}
+                className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
+                title="Open in new tab"
+              >
+                <Icons.arrowSquareOut size={12} weight="bold" />
+              </button>
+              <button
+                type="button"
+                onClick={handleDownload}
+                disabled={note.isProtected && unlockedContent === null && !hasFileKey}
+                className="p-1.5 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
+                title="Download file"
+              >
+                <Icons.download size={12} weight="bold" />
+              </button>
+            </>
           )}
           {!isFileBased && (
             <button
