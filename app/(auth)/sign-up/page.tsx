@@ -156,6 +156,32 @@ export default function SignUp() {
 
               <div className="group space-y-2">
                 <Label
+                  htmlFor="inviteToken"
+                  className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1"
+                >
+                  Invite Token
+                </Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-foreground dark:group-focus-within:text-primary-foreground transition-colors">
+                    <Icons.ticket size={18} weight="duotone" />
+                  </div>
+                  <Input
+                    id="inviteToken"
+                    type="password"
+                    {...register("inviteToken")}
+                    className="block w-full h-11 pl-11 pr-4 border border-border bg-background/50 text-foreground placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-ring transition-all font-mono"
+                    placeholder="Enter your special invite code"
+                  />
+                </div>
+                {errors.inviteToken && (
+                  <p className="text-xs font-semibold text-destructive ml-1 mt-1">
+                    {errors.inviteToken.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="group space-y-2">
+                <Label
                   htmlFor="password"
                   className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1"
                 >

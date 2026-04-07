@@ -11,6 +11,7 @@ export const signUpSchema = z.object({
     ),
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
+  inviteToken: z.string().min(1, "Invite token is required"),
 });
 
 export type SignUpValues = z.infer<typeof signUpSchema>;

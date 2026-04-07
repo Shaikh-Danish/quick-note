@@ -32,6 +32,7 @@ import {
   SunIcon,
   TagIcon,
   TextTIcon,
+  TicketIcon,
   Trash,
   UserIcon,
   UserPlusIcon,
@@ -74,5 +75,6 @@ export const Icons = {
   loader2: CircleNotchIcon,
   tag: TagIcon,
   textT: TextTIcon,
+  ticket: TicketIcon,
   trash: Trash,
 };
