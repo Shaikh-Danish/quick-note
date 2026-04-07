@@ -64,7 +64,7 @@ export function TypeFilter({ value, onChange }: TypeFilterProps) {
         >
           <DropdownMenuRadioItem
             value="ALL"
-            className="px-2 py-1.5 cursor-pointer"
+            className="px-3 py-2 cursor-pointer"
           >
             <span className="text-[10px] font-bold uppercase tracking-widest">
               All
@@ -76,7 +76,7 @@ export function TypeFilter({ value, onChange }: TypeFilterProps) {
               <DropdownMenuRadioItem
                 key={type}
                 value={type}
-                className="px-2 py-1.5 cursor-pointer"
+                className="px-3 py-2 cursor-pointer"
               >
                 <TypeIcon size={12} weight="bold" className="mr-1.5" />
                 <span className="text-[10px] font-bold uppercase tracking-widest">

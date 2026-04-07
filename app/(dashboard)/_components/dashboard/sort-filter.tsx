@@ -47,10 +47,10 @@ export function SortFilter({
           value={sortBy}
           onValueChange={(v) => onSortChange(v as "latest" | "most_used")}
         >
-          <DropdownMenuRadioItem value="most_used" className="px-2 py-1.5 cursor-pointer">
+          <DropdownMenuRadioItem value="most_used" className="px-3 py-2 cursor-pointer">
             <span className="text-[10px] font-bold uppercase tracking-widest">Most Used</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="latest" className="px-2 py-1.5 cursor-pointer">
+          <DropdownMenuRadioItem value="latest" className="px-3 py-2 cursor-pointer">
             <span className="text-[10px] font-bold uppercase tracking-widest">Latest</span>
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>

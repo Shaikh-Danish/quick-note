@@ -57,7 +57,7 @@ export function CategoryFilter({ value, onChange }: CategoryFilterProps) {
         >
           <DropdownMenuRadioItem
             value="ALL"
-            className="px-2 py-1.5 cursor-pointer"
+            className="px-3 py-2 cursor-pointer"
           >
             <span className="text-[10px] font-bold uppercase tracking-widest">
               All Categories
@@ -67,7 +67,7 @@ export function CategoryFilter({ value, onChange }: CategoryFilterProps) {
             <DropdownMenuRadioItem
               key={cat.id}
               value={cat.name}
-              className="px-2 py-1.5 cursor-pointer"
+              className="px-3 py-2 cursor-pointer"
             >
               <span className="text-[10px] font-bold uppercase tracking-widest">
                 {cat.name}
