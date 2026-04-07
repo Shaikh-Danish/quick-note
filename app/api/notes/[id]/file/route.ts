@@ -40,7 +40,6 @@ export async function GET(
     }
 
     const tDb = performance.now();
-    console.log(`[GET /api/notes/${id}/file] ⏱ DB lookup: ${(tDb - t0).toFixed(1)}ms`);
 
     // Download and decrypt from R2
     const decryptedBuffer = await downloadFileFromR2(note.fileKey, session.user.id);

@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-export const NOTE_CATEGORIES = ["TEXT", "URL", "IMAGE", "DOCUMENT", "MARKDOWN"] as const;
-export type NoteCategory = (typeof NOTE_CATEGORIES)[number];
+export const NOTE_TYPES = ["TEXT", "URL", "IMAGE", "DOCUMENT", "MARKDOWN"] as const;
+export type NoteType = (typeof NOTE_TYPES)[number];
 
-/** Maps each category to its default MIME/content type */
-export const CATEGORY_CONTENT_TYPES: Record<NoteCategory, string> = {
+/** Maps each type to its default MIME/content type */
+export const TYPE_CONTENT_TYPES: Record<NoteType, string> = {
   TEXT: "text/plain",
   URL: "text/uri-list",
   IMAGE: "image/png",
@@ -13,7 +13,7 @@ export const CATEGORY_CONTENT_TYPES: Record<NoteCategory, string> = {
 };
 
 /** Human-readable labels for display */
-export const CATEGORY_LABELS: Record<NoteCategory, string> = {
+export const TYPE_LABELS: Record<NoteType, string> = {
   TEXT: "Text",
   URL: "URL",
   IMAGE: "Image",
@@ -21,7 +21,12 @@ export const CATEGORY_LABELS: Record<NoteCategory, string> = {
   MARKDOWN: "Markdown",
 };
 
-export const noteCategorySchema = z.enum(NOTE_CATEGORIES);
+/** Aliases for backward compatibility during transition from Category to Type */
+export type NoteCategory = NoteType;
+export const CATEGORY_LABELS = TYPE_LABELS;
+export const NOTE_CATEGORIES = NOTE_TYPES;
+
+export const noteTypeSchema = z.enum(NOTE_TYPES);
 
 export const noteSchema = z.object({
   title: z
@@ -32,7 +37,8 @@ export const noteSchema = z.object({
     .string()
     .min(1, "Content is required")
     .max(50_000_000, "Content must be less than 50MB"),
-  category: noteCategorySchema.default("TEXT"),
+  type: noteTypeSchema.default("TEXT"),
+  category: z.string().optional(),
   contentType: z.string().optional(),
   tags: z.array(z.string()).optional().default([]),
   isProtected: z.boolean().optional().default(false),
@@ -44,7 +50,8 @@ export type NoteSchema = z.infer<typeof noteSchema>;
 /** Query params for listing notes */
 export const notesQuerySchema = z.object({
   sort: z.enum(["latest", "most_used"]).default("latest"),
-  category: noteCategorySchema.optional(),
+  type: noteTypeSchema.optional(),
+  category: z.string().optional(),
   search: z.string().optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().min(1).max(50).default(12),

@@ -4,7 +4,7 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
 }
 
@@ -25,6 +25,7 @@ model User {
   sessions        Session[]
   accounts        Account[]
   notes           Note[]
+  categories      Category[]
 
   @@unique([email])
   @@unique([username])
@@ -91,12 +92,14 @@ enum NoteCategory {
 
 model Note {
   id          String       @id @default(uuid())
-  title       String       // Stores AES-256 encrypted title
-  content     String       // Stores AES-256 encrypted content (empty for file-based notes)
-  category    NoteCategory @default(TEXT)
-  contentType String?      // Stores AES-256 encrypted MIME type (e.g. image/jpeg, application/pdf)
-  fileKey     String?      // R2 object key for file-based notes (IMAGE, DOCUMENT)
-  fileSize    Int?         // Original file size in bytes
+  title       String // Stores AES-256 encrypted title
+  content     String // Stores AES-256 encrypted content (empty for file-based notes)
+  type        NoteCategory @default(TEXT)
+  categoryId  String? // Linked category
+  category    Category?    @relation(fields: [categoryId], references: [id])
+  contentType String? // Stores AES-256 encrypted MIME type (e.g. image/jpeg, application/pdf)
+  fileKey     String? // R2 object key for file-based notes (IMAGE, DOCUMENT)
+  fileSize    Int? // Original file size in bytes
   userId      String
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   tags        NoteTag[]
@@ -106,9 +109,24 @@ model Note {
   isProtected Boolean      @default(false)
 
   @@index([userId])
-  @@index([userId, category])
+  @@index([userId, type])
+  @@index([userId, categoryId])
   @@index([useCount(sort: Desc)])
   @@map("note")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notes     Note[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("category")
 }
 
 model Tag {

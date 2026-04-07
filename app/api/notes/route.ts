@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const rawQuery = {
       sort: searchParams.get("sort") ?? undefined,
+      type: searchParams.get("type") ?? undefined,
       category: searchParams.get("category") ?? undefined,
       search: searchParams.get("search") ?? undefined,
       page: searchParams.get("page") ?? undefined,
@@ -95,7 +96,8 @@ export async function POST(req: NextRequest) {
       const tBuffer = performance.now();
       console.log(`[POST /api/notes] ⏱ File → Buffer: ${(tBuffer - tFormParse).toFixed(1)}ms`);
 
-      const category = (formData.get("category") as string) || "IMAGE";
+      const type = (formData.get("type") as string) || "IMAGE";
+      const category = (formData.get("category") as string) || undefined;
       const contentType = (formData.get("contentType") as string) || file.type;
       const tags = formData.get("tags") ? JSON.parse(formData.get("tags") as string) : [];
       const isProtected = formData.get("isProtected") === "true";
@@ -105,7 +107,8 @@ export async function POST(req: NextRequest) {
       const note = await createNote(session.user.id, {
         title,
         content: "", // No content for file uploads
-        category: category as "IMAGE" | "DOCUMENT",
+        type: type as "IMAGE" | "DOCUMENT",
+        category,
         contentType,
         tags,
         isProtected,

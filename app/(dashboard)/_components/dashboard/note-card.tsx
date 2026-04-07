@@ -8,13 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/ui/icons";
 
 import type { Note } from "@/features/notes/client";
-import type { NoteCategory } from "@/lib/schemas/notes";
-import { CATEGORY_LABELS } from "@/lib/schemas/notes";
+import type { NoteType } from "@/lib/schemas/notes";
+import { TYPE_LABELS } from "@/lib/schemas/notes";
 import { cn } from "@/lib/utils";
 import { DeleteNoteDialog } from "./delete-note-dialog";
 import { ProtectedNoteForm } from "./protected-note-form";
 
-const CATEGORY_ICONS: Record<NoteCategory, keyof typeof Icons> = {
+const TYPE_ICONS: Record<NoteType, keyof typeof Icons> = {
   TEXT: "textT",
   URL: "link",
   IMAGE: "image",
@@ -55,7 +55,7 @@ export function NoteCard({
   const [copied, setCopied] = useState(false);
   const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
 
-  const isFileBased = note.category === "IMAGE" || note.category === "DOCUMENT";
+  const isFileBased = note.type === "IMAGE" || note.type === "DOCUMENT";
   const hasFileKey = !!note.fileKey;
 
   const handleCopy = () => {
@@ -73,7 +73,7 @@ export function NoteCard({
       a.href = getFileUrl(note.id);
       const ext =
         note.contentType?.split("/")[1] ||
-        (note.category === "IMAGE" ? "png" : "pdf");
+        (note.type === "IMAGE" ? "png" : "pdf");
       a.download = `${note.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.${ext}`;
       document.body.appendChild(a);
       a.click();
@@ -85,7 +85,7 @@ export function NoteCard({
       a.href = contentToDownload;
       const ext =
         note.contentType?.split("/")[1] ||
-        (note.category === "IMAGE" ? "png" : "pdf");
+        (note.type === "IMAGE" ? "png" : "pdf");
       a.download = `${note.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.${ext}`;
       document.body.appendChild(a);
       a.click();
@@ -95,7 +95,7 @@ export function NoteCard({
     onDownload?.(note);
   };
 
-  const CategoryIcon = Icons[CATEGORY_ICONS[note.category]];
+  const TypeIcon = Icons[TYPE_ICONS[note.type]];
 
   return (
     <div
@@ -111,14 +111,24 @@ export function NoteCard({
       <div className="space-y-3 pl-1">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-1.5">
-            {/* Category badge */}
+            {/* Type badge */}
             <Badge
               variant="outline"
               className="rounded-none px-1.5 py-0.5 text-[8px] uppercase tracking-widest font-black border-border/30 bg-muted/30 text-muted-foreground/50 gap-1"
             >
-              <CategoryIcon size={10} weight="bold" />
-              {CATEGORY_LABELS[note.category]}
+              <TypeIcon size={10} weight="bold" />
+              {TYPE_LABELS[note.type]}
             </Badge>
+            {/* Category badge */}
+            {note.category && (
+              <Badge
+                variant="outline"
+                className="rounded-none px-1.5 py-0.5 text-[8px] uppercase tracking-widest font-black border-primary/20 bg-primary/5 text-primary/60 gap-1"
+              >
+                <Icons.tag size={10} weight="bold" />
+                {note.category}
+              </Badge>
+            )}
             {/* Tags */}
             {note.tags?.map((tag) => (
               <Badge
@@ -139,7 +149,7 @@ export function NoteCard({
           </h3>
           {note.isProtected && unlockedContent === null ? (
             <ProtectedNoteForm note={note} onSuccess={setUnlockedContent} />
-          ) : note.category === "IMAGE" ? (
+          ) : note.type === "IMAGE" ? (
             <div className="mt-2 flex justify-center bg-muted/20 border border-border/50 max-h-[200px] overflow-hidden rounded-sm">
               {hasFileKey ? (
                 // R2 file — use API route as image source
@@ -162,7 +172,7 @@ export function NoteCard({
                 />
               )}
             </div>
-          ) : note.category === "DOCUMENT" ? (
+          ) : note.type === "DOCUMENT" ? (
             <div className="mt-2 flex flex-col items-center justify-center p-4 bg-muted/20 border border-border/50 rounded-sm min-h-[100px]">
               <Icons.fileText
                 size={32}
@@ -179,7 +189,7 @@ export function NoteCard({
             </div>
           ) : (
             <p className="text-[11px] leading-relaxed text-muted-foreground/60 break-all line-clamp-5 font-medium">
-              {note.category === "URL" ? (
+              {note.type === "URL" ? (
                 <a
                   href={unlockedContent || note.content}
                   target="_blank"

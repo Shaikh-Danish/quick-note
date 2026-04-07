@@ -13,19 +13,28 @@ import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateNote } from "@/features/notes/client";
+import { useCreateNote, useCategories } from "@/features/notes/client";
 import { useZodForm } from "@/hooks/use-zod-form";
 import {
-  CATEGORY_CONTENT_TYPES,
-  CATEGORY_LABELS,
-  NOTE_CATEGORIES,
-  type NoteCategory,
+  Combobox,
+  ComboboxContent,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
+import { useComboboxAnchor } from "@/components/ui/combobox";
+import { Controller } from "react-hook-form";
+import {
+  NOTE_TYPES,
   type NoteSchema,
+  type NoteType,
   noteSchema,
+  TYPE_CONTENT_TYPES,
+  TYPE_LABELS,
 } from "@/lib/schemas/notes";
 import { cn } from "@/lib/utils";
 
-const CATEGORY_ICONS: Record<NoteCategory, keyof typeof Icons> = {
+const TYPE_ICONS: Record<NoteType, keyof typeof Icons> = {
   TEXT: "textT",
   URL: "link",
   IMAGE: "image",
@@ -41,20 +50,23 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const createNote = useCreateNote();
+  const { data: categories = [] } = useCategories();
+  const comboboxAnchor = useComboboxAnchor();
 
   const form = useZodForm<NoteSchema>(noteSchema, {
     defaultValues: {
       title: "",
       content: "",
-      category: "TEXT",
+      type: "TEXT",
+      category: "",
       tags: [],
       isProtected: false,
-      password: ""
+      password: "",
     },
     mode: "onChange",
   });
 
-  const [internalCategory, setInternalCategory] = useState<NoteCategory>("TEXT");
+  const [internalType, setInternalType] = useState<NoteType>("TEXT");
 
   const {
     register,
@@ -67,42 +79,48 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
   const [isProtected, setIsProtected] = useState(false);
 
   const onSubmit = (data: NoteSchema) => {
-    const contentType =
-      data.contentType || CATEGORY_CONTENT_TYPES[internalCategory];
+    const contentType = data.contentType || TYPE_CONTENT_TYPES[internalType];
 
-    let payload: NoteSchema | FormData = { ...data, category: internalCategory, contentType };
+    let payload: NoteSchema | FormData = {
+      ...data,
+      type: internalType,
+      category: data.category || "",
+      contentType,
+    };
 
-    if (selectedFile && (internalCategory === "IMAGE" || internalCategory === "DOCUMENT")) {
+    if (
+      selectedFile &&
+      (internalType === "IMAGE" || internalType === "DOCUMENT")
+    ) {
       const formData = new FormData();
 
       formData.append("title", data.title);
-      formData.append("category", internalCategory);
+      formData.append("type", internalType);
+      if (data.category) formData.append("category", data.category);
       if (contentType) formData.append("contentType", contentType);
 
       formData.append("file", selectedFile);
 
       if (data.isProtected) formData.append("isProtected", "true");
       if (data.password) formData.append("password", data.password);
-      if (data.tags && data.tags.length > 0) formData.append("tags", JSON.stringify(data.tags));
+      if (data.tags && data.tags.length > 0)
+        formData.append("tags", JSON.stringify(data.tags));
 
       payload = formData as unknown as NoteSchema;
     }
 
-    createNote.mutate(
-      payload,
-      {
-        onSuccess: () => {
-          reset();
-          setSelectedFile(null);
-          setIsProtected(false);
-          setOpen(false);
-          onSuccess?.();
-        },
+    createNote.mutate(payload, {
+      onSuccess: () => {
+        reset();
+        setSelectedFile(null);
+        setIsProtected(false);
+        setOpen(false);
+        onSuccess?.();
       },
-    );
+    });
   };
 
-  const contentPlaceholder: Record<NoteCategory, string> = {
+  const contentPlaceholder: Record<NoteType, string> = {
     TEXT: "Write your note here...",
     URL: "https://example.com",
     IMAGE: "Paste image URL or base64 data...",
@@ -128,51 +146,119 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
             </DialogTitle>
           </DialogHeader>
 
-          <div className="px-6 pb-3">
-            {/* Category selector */}
-            <div className="flex items-center gap-1 border border-border/40 p-0.5 w-fit">
-              {NOTE_CATEGORIES.map((cat) => {
-                const IconComponent = Icons[CATEGORY_ICONS[cat]];
+          <div className="px-6 space-y-5">
+            {/* Type selector - Industrial Grid */}
+            <div className="grid grid-cols-5 border border-border/40 p-1 bg-muted/20">
+              {NOTE_TYPES.map((type) => {
+                const IconComponent = Icons[TYPE_ICONS[type]];
+                const isActive = internalType === type;
                 return (
                   <button
-                    key={cat}
+                    key={type}
                     type="button"
                     onClick={(e) => {
                       e.preventDefault();
-                      setInternalCategory(cat);
+                      setInternalType(type);
                     }}
                     className={cn(
-                      "flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest transition-all duration-150 cursor-pointer",
-                      internalCategory === cat
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground/50 hover:text-foreground hover:bg-muted/40",
+                      "flex flex-col items-center justify-center py-3 gap-2 transition-all duration-150 border border-transparent",
+                      isActive
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "text-muted-foreground/40 hover:text-foreground hover:bg-muted/40",
                     )}
                   >
-                    <IconComponent size={12} weight="bold" />
-                    {CATEGORY_LABELS[cat]}
+                    <IconComponent
+                      size={16}
+                      weight={isActive ? "fill" : "bold"}
+                    />
+                    <span className="text-[8px] font-black uppercase tracking-[0.15em]">
+                      {TYPE_LABELS[type]}
+                    </span>
                   </button>
                 );
               })}
             </div>
+
+            <div className="space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="flex-1 flex flex-col space-y-1.5">
+                  <label
+                    htmlFor="title-input"
+                    className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1"
+                  >
+                    Title
+                  </label>
+                  <Input
+                    id="title-input"
+                    autoFocus
+                    placeholder="Enter note title..."
+                    {...register("title")}
+                    className="h-10 border-border/40 bg-transparent text-sm font-bold tracking-tight px-3 focus-visible:ring-1 focus-visible:ring-primary/30 placeholder:text-muted-foreground/20 rounded-none font-mono"
+                  />
+                </div>
+                <div className="w-1/3 space-y-1.5 flex flex-col">
+                  <label
+                    htmlFor="category-input"
+                    className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1"
+                  >
+                    Category
+                  </label>
+                  <Controller
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <Combobox
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        onInputValueChange={field.onChange}
+                        inputValue={field.value || ""}
+                      >
+                        <div ref={comboboxAnchor} className="w-full">
+                          <ComboboxInput
+                            placeholder="Optional..."
+                            className="h-10 border-border/40 bg-transparent text-[10px] font-bold tracking-widest px-3 focus-visible:ring-1 focus-visible:ring-primary/30 border-dashed rounded-none font-mono"
+                          />
+                        </div>
+                        <ComboboxContent anchor={comboboxAnchor}>
+                          <ComboboxList className="p-1">
+                            {categories.length > 0 ? (
+                              categories.map((cat) => (
+                                <ComboboxItem
+                                  key={cat.id}
+                                  value={cat.name}
+                                  className="text-[10px] uppercase font-bold tracking-wider"
+                                >
+                                  {cat.name}
+                                </ComboboxItem>
+                              ))
+                            ) : (
+                              <div className="p-2 text-[9px] text-muted-foreground/40 uppercase font-bold text-center">
+                                No existing categories
+                              </div>
+                            )}
+                          </ComboboxList>
+                        </ComboboxContent>
+                      </Combobox>
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="p-6 pt-2 space-y-4">
-            <div className="space-y-1">
-              <Input
-                autoFocus
-                placeholder="Note Title"
-                {...register("title")}
-                className="border-none shadow-none text-lg font-bold px-2 focus-visible:ring-0 placeholder:text-muted-foreground/30 bg-transparent"
-              />
-            </div>
-
-            <div className="h-px bg-border/40" />
-
-            <div className="space-y-3">
+          <div className="p-6 pt-4 space-y-4">
+            <div className="space-y-1.5 flex flex-col">
+              <label
+                htmlFor="content-input"
+                className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1 mb-1.5"
+              >
+                Content
+              </label>
               <Textarea
-                placeholder={contentPlaceholder[internalCategory]}
+                id="content-input"
+                placeholder={contentPlaceholder[internalType]}
                 {...register("content")}
-                className="border-none shadow-none resize-none min-h-[140px] p-2 focus-visible:ring-0 text-sm placeholder:text-muted-foreground/30 bg-transparent leading-relaxed"
+                className="border border-border/40 min-h-[140px] p-3 focus-visible:ring-1 focus-visible:ring-primary/30 text-sm placeholder:text-muted-foreground/30 bg-transparent leading-relaxed rounded-none resize-none font-mono"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                     e.preventDefault();
@@ -180,77 +266,86 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                   }
                 }}
               />
+            </div>
 
-              {(internalCategory === "IMAGE" ||
-                internalCategory === "DOCUMENT") && (
-                  <div className="p-4 border border-dashed border-border/40 bg-muted/10 flex flex-col gap-3">
-                    <input
-                      type="file"
-                      accept={
-                        internalCategory === "IMAGE"
-                          ? "image/*"
-                          : ".pdf,.doc,.docx,.txt"
-                      }
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
+            {(internalType === "IMAGE" || internalType === "DOCUMENT") && (
+              <div className="p-4 border border-dashed border-border/40 bg-muted/10 flex flex-col gap-3">
+                <input
+                  type="file"
+                  accept={
+                    internalType === "IMAGE"
+                      ? "image/*"
+                      : ".pdf,.doc,.docx,.txt"
+                  }
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
 
-                        setValue("contentType", file.type, {
-                          shouldValidate: true,
-                        });
+                    setValue("contentType", file.type, {
+                      shouldValidate: true,
+                    });
 
-                        const currentTitle = form.getValues("title");
-                        if (!currentTitle || currentTitle.trim() === "") {
-                          const baseName = file.name.replace(/\.[^/.]+$/, "");
-                          setValue("title", baseName, { shouldValidate: true });
-                        }
+                    const currentTitle = form.getValues("title");
+                    if (!currentTitle || currentTitle.trim() === "") {
+                      const baseName = file.name.replace(/\.[^/.]+$/, "");
+                      setValue("title", baseName, { shouldValidate: true });
+                    }
 
-                        setSelectedFile(file);
-                        setValue("content", "file-upload", { shouldValidate: true });
-                      }}
-                      className="block w-full text-xs text-muted-foreground/70 file:mr-4 file:py-1.5 file:px-4 file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer focus:outline-none transition-colors"
-                    />
-                    <p className="text-[9px] text-muted-foreground/40 uppercase font-medium tracking-wider">
-                      Selecting a file will upload it securely without frontend base64 conversion.
+                    setSelectedFile(file);
+                    setValue("content", "file-upload", {
+                      shouldValidate: true,
+                    });
+                  }}
+                  className="block w-full text-xs text-muted-foreground/70 file:mr-4 file:py-1.5 file:px-4 file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer focus:outline-none transition-colors"
+                />
+                <p className="text-[9px] text-muted-foreground/40 uppercase font-medium tracking-wider">
+                  Selecting a file will upload it securely without frontend
+                  base64 conversion.
+                </p>
+              </div>
+            )}
+
+            {(internalType === "IMAGE" || internalType === "DOCUMENT") && (
+              <div className="flex flex-col gap-3 p-4 border border-border/40 bg-muted/5">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <label
+                      htmlFor="isProtected"
+                      className="text-xs font-bold uppercase tracking-wide cursor-pointer"
+                    >
+                      Password Protection
+                    </label>
+                    <p className="text-[10px] text-muted-foreground/60">
+                      Require a password to view this file
                     </p>
                   </div>
-                )}
+                  <Switch
+                    id="isProtected"
+                    checked={isProtected}
+                    onCheckedChange={(checked) => {
+                      setIsProtected(checked);
+                      setValue("isProtected", checked, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                      if (!checked)
+                        setValue("password", "", { shouldValidate: true });
+                    }}
+                  />
+                </div>
 
-              {(internalCategory === "IMAGE" ||
-                internalCategory === "DOCUMENT") && (
-                  <div className="flex flex-col gap-3 p-4 border border-border/40 bg-muted/5">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <label htmlFor="isProtected" className="text-xs font-bold uppercase tracking-wide cursor-pointer">
-                          Password Protection
-                        </label>
-                        <p className="text-[10px] text-muted-foreground/60">
-                          Require a password to view this file
-                        </p>
-                      </div>
-                      <Switch
-                        checked={isProtected}
-                        onCheckedChange={(checked) => {
-                          setIsProtected(checked);
-                          setValue("isProtected", checked, { shouldValidate: true, shouldDirty: true });
-                          if (!checked) setValue("password", "", { shouldValidate: true });
-                        }}
-                      />
-                    </div>
-
-                    {isProtected && (
-                      <div className="pt-2">
-                        <Input
-                          type="password"
-                          placeholder="Enter password..."
-                          {...register("password")}
-                          className="h-8 text-xs bg-background"
-                        />
-                      </div>
-                    )}
+                {isProtected && (
+                  <div className="pt-2">
+                    <Input
+                      type="password"
+                      placeholder="Enter password..."
+                      {...register("password")}
+                      className="h-8 text-xs bg-background font-mono"
+                    />
                   </div>
                 )}
-            </div>
+              </div>
+            )}
           </div>
 
           <div className="px-6 py-4 bg-muted/30 flex items-center justify-between border-t border-border/30">

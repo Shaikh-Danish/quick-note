@@ -1,12 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/toast";
-import type { NoteCategory, NoteSchema } from "@/lib/schemas/notes";
+import type { NoteType, NoteSchema } from "@/lib/schemas/notes";
+
+export interface Category {
+  id: string;
+  name: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface Note {
   id: string;
   title: string;
   content: string;
-  category: NoteCategory;
+  type: NoteType;
+  category: string | null;
   contentType: string | null;
   fileKey: string | null;
   fileSize: number | null;
@@ -26,28 +35,41 @@ export interface PaginatedNotesResponse {
 
 export interface NotesFilter {
   sort?: "latest" | "most_used";
-  category?: NoteCategory;
+  type?: NoteType;
+  category?: string;
   search?: string;
   page?: number;
   limit?: number;
 }
 
 export function useNotes(filter: NotesFilter = {}) {
-  const { sort = "latest", category, search, page = 1, limit = 12 } = filter;
+  const { sort = "latest", type, category, search, page = 1, limit = 12 } = filter;
 
   return useQuery({
-    queryKey: ["notes", sort, category, search, page, limit],
+    queryKey: ["notes", sort, type, category, search, page, limit],
     queryFn: async () => {
       const params = new URLSearchParams();
       params.set("sort", sort);
       params.set("page", String(page));
       params.set("limit", String(limit));
+      if (type) params.set("type", type);
       if (category) params.set("category", category);
       if (search) params.set("search", search);
 
       const response = await fetch(`/api/notes?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to fetch notes");
       return (await response.json()) as PaginatedNotesResponse;
+    },
+  });
+}
+
+export function useCategories() {
+  return useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const response = await fetch("/api/categories");
+      if (!response.ok) throw new Error("Failed to fetch categories");
+      return (await response.json()) as Category[];
     },
   });
 }
@@ -93,6 +115,7 @@ export function useCreateNote() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
       toast.success("Note created successfully!");
     },
     onError: (error: Error) => {

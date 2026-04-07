@@ -21,6 +21,7 @@ export default function DashboardPage({ user }: { user: User | null }) {
 
   const { data, isLoading } = useNotes({
     sort: filter.sortBy,
+    type: filter.type,
     category: filter.category,
     search: filter.debouncedSearch || undefined,
     page: filter.page,
@@ -33,7 +34,7 @@ export default function DashboardPage({ user }: { user: User | null }) {
   const incrementUse = useIncrementUseCount();
   const deleteNote = useDeleteNote();
 
-  const hasActiveFilters = !!filter.debouncedSearch || !!filter.category;
+  const hasActiveFilters = !!filter.debouncedSearch || !!filter.type || !!filter.category;
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
@@ -46,6 +47,8 @@ export default function DashboardPage({ user }: { user: User | null }) {
             isLoading={isLoading}
             sortBy={filter.sortBy}
             onSortChange={filter.setSortBy}
+            type={filter.type}
+            onTypeChange={filter.setType}
             category={filter.category}
             onCategoryChange={filter.setCategory}
             search={filter.search}

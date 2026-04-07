@@ -38,7 +38,7 @@ export function ProtectedNoteForm({ note, onSuccess }: ProtectedNoteFormProps) {
 
   return (
     <div className="mt-3 relative flex flex-col items-center justify-center min-h-[140px] rounded-md overflow-hidden bg-muted/5 border border-border/20 p-4">
-      <div className="absolute inset-0 bg-gradient-to-br from-background/60 to-muted/20 backdrop-blur-sm z-0" />
+      <div className="absolute inset-0 bg-linear-to-br from-background/60 to-muted/20 backdrop-blur-sm z-0" />
       <div className="relative z-10 flex flex-col items-center w-full max-w-[200px] space-y-4">
         <div className="flex flex-col items-center gap-1.5">
           <div className="w-8 h-8 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center shadow-sm">

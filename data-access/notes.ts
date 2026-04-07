@@ -1,14 +1,19 @@
-import { decryptString, encryptString, encryptWithPassword } from "@/lib/encryption";
+import {
+  decryptString,
+  encryptString,
+  encryptWithPassword,
+} from "@/lib/encryption";
 import type { NoteCategory as PrismaNoteCategory } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { uploadFileToR2, deleteFileFromR2 } from "@/lib/r2";
-import type { NoteCategory, NotesQuery } from "@/lib/schemas/notes";
+import { deleteFileFromR2, uploadFileToR2 } from "@/lib/r2";
+import type { NotesQuery, NoteType } from "@/lib/schemas/notes";
 
 export interface NoteResult {
   id: string;
   title: string;
   content: string;
-  category: NoteCategory;
+  type: NoteType;
+  category: string | null;
   contentType: string | null;
   fileKey: string | null;
   fileSize: number | null;
@@ -34,14 +39,21 @@ export async function getUserNotes(
   try {
     const where: Record<string, unknown> = { userId };
 
+    if (query.type) {
+      where.type = query.type as PrismaNoteCategory;
+    }
+
     if (query.category) {
-      where.category = query.category as PrismaNoteCategory;
+      where.category = {
+        name: { equals: query.category, mode: "insensitive" },
+      };
     }
 
     const [notes, total] = await Promise.all([
       prisma.note.findMany({
         where,
         include: {
+          category: true,
           tags: {
             include: {
               tag: true,
@@ -63,7 +75,8 @@ export async function getUserNotes(
       title: decryptString(note.title, userId),
       // For file-based notes, content is just a placeholder — actual file is in R2
       content: note.fileKey ? "" : decryptString(note.content, userId),
-      category: note.category as NoteCategory,
+      type: note.type as NoteType,
+      category: note.category?.name || null,
       contentType: note.contentType
         ? decryptString(note.contentType, userId)
         : null,
@@ -83,7 +96,8 @@ export async function getUserNotes(
       decryptedNotes = decryptedNotes.filter(
         (n) =>
           n.title.toLowerCase().includes(term) ||
-          n.content.toLowerCase().includes(term),
+          n.content.toLowerCase().includes(term) ||
+          n.category?.toLowerCase().includes(term) === true,
       );
       filteredTotal = decryptedNotes.length;
     }
@@ -126,7 +140,8 @@ export async function createNote(
   data: {
     title: string;
     content: string;
-    category?: NoteCategory;
+    type?: NoteType;
+    category?: string;
     contentType?: string;
     tags?: string[];
     isProtected?: boolean;
@@ -171,11 +186,27 @@ export async function createNote(
       data: {
         title: encryptedTitle,
         content: encryptedContent,
-        category: (data.category || "TEXT") as PrismaNoteCategory,
+        type: (data.type || "TEXT") as PrismaNoteCategory,
+        category: data.category
+          ? {
+            connectOrCreate: {
+              where: {
+                userId_name: {
+                  userId: userId,
+                  name: data.category,
+                },
+              },
+              create: {
+                name: data.category,
+                userId: userId,
+              },
+            },
+          }
+          : undefined,
         contentType: encryptedContentType,
         fileKey,
         fileSize,
-        userId: userId,
+        user: { connect: { id: userId } },
         isProtected: data.isProtected ?? false,
         tags: {
           create: (data.tags || []).map((t) => ({
@@ -213,7 +244,10 @@ export async function deleteNote(userId: string, noteId: string) {
       try {
         await deleteFileFromR2(note.fileKey);
       } catch (r2Error) {
-        console.error("Failed to delete R2 file (note already deleted):", r2Error);
+        console.error(
+          "Failed to delete R2 file (note already deleted):",
+          r2Error,
+        );
       }
     }
 

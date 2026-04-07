@@ -1,9 +1,10 @@
 import { useReducer, useRef, useCallback } from "react";
-import type { NoteCategory } from "@/lib/schemas/notes";
+import type { NoteType } from "@/lib/schemas/notes";
 
 interface NotesFilterState {
   sortBy: "latest" | "most_used";
-  category: NoteCategory | undefined;
+  type: NoteType | undefined;
+  category: string | undefined;
   search: string;
   debouncedSearch: string;
   page: number;
@@ -11,13 +12,15 @@ interface NotesFilterState {
 
 type NotesFilterAction =
   | { type: "SET_SORT"; sort: "latest" | "most_used" }
-  | { type: "SET_CATEGORY"; category: NoteCategory | undefined }
+  | { type: "SET_TYPE"; noteType: NoteType | undefined }
+  | { type: "SET_CATEGORY"; category: string | undefined }
   | { type: "SET_SEARCH"; search: string }
   | { type: "SET_DEBOUNCED_SEARCH"; search: string }
   | { type: "SET_PAGE"; page: number };
 
 const initialState: NotesFilterState = {
   sortBy: "latest",
+  type: undefined,
   category: undefined,
   search: "",
   debouncedSearch: "",
@@ -31,6 +34,8 @@ function filterReducer(
   switch (action.type) {
     case "SET_SORT":
       return { ...state, sortBy: action.sort, page: 1 };
+    case "SET_TYPE":
+      return { ...state, type: action.noteType, page: 1 };
     case "SET_CATEGORY":
       return { ...state, category: action.category, page: 1 };
     case "SET_SEARCH":
@@ -51,8 +56,14 @@ export function useNotesFilter() {
     [],
   );
 
+  const setType = useCallback(
+    (noteType: NoteType | undefined) =>
+      dispatch({ type: "SET_TYPE", noteType }),
+    [],
+  );
+
   const setCategory = useCallback(
-    (category: NoteCategory | undefined) =>
+    (category: string | undefined) =>
       dispatch({ type: "SET_CATEGORY", category }),
     [],
   );
@@ -73,6 +84,7 @@ export function useNotesFilter() {
   return {
     ...state,
     setSortBy,
+    setType,
     setCategory,
     setSearch,
     setPage,
