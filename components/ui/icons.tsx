@@ -16,11 +16,13 @@ import {
   DownloadSimpleIcon,
   EnvelopeIcon,
   FileIcon,
+  FilePdfIcon,
   FileTextIcon,
   FunnelIcon,
   GlobeIcon,
   IdentificationCardIcon,
   ImageIcon,
+  InfoIcon,
   LinkIcon,
   LockIcon,
   MagnifyingGlassIcon,
@@ -28,6 +30,7 @@ import {
   NotebookIcon,
   PaletteIcon,
   PlusIcon,
+  PrinterIcon,
   SignOutIcon,
   SunIcon,
   TagIcon,
@@ -36,6 +39,7 @@ import {
   Trash,
   UserIcon,
   UserPlusIcon,
+  WarningIcon,
 } from "@phosphor-icons/react";
 
 export const Icons = {
@@ -77,4 +81,9 @@ export const Icons = {
   textT: TextTIcon,
   ticket: TicketIcon,
   trash: Trash,
+  printer: PrinterIcon,
+  warning: WarningIcon,
+  filePdf: FilePdfIcon,
+  lock: LockIcon,
+  info: InfoIcon,
 };

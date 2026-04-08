@@ -107,12 +107,27 @@ model Note {
   updatedAt   DateTime     @updatedAt
   useCount    Int          @default(0)
   isProtected Boolean      @default(false)
+  printTokens SecurePrintToken[]
 
   @@index([userId])
   @@index([userId, type])
   @@index([userId, categoryId])
   @@index([useCount(sort: Desc)])
   @@map("note")
+}
+
+model SecurePrintToken {
+  id              String    @id @default(uuid())
+  token           String    @unique @default(dbgenerated("gen_random_uuid()"))
+  noteId          String
+  note            Note      @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  expiresAt       DateTime
+  firstAccessedAt DateTime?
+  isUsed          Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+
+  @@index([noteId])
+  @@map("secure_print_token")
 }
 
 model Category {

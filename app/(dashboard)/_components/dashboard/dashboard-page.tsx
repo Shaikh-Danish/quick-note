@@ -3,11 +3,8 @@
 import { Icons } from "@/components/ui/icons";
 import { useDeleteNote, useIncrementUseCount, useNotes } from "@/features/notes/client";
 import { useNotesFilter } from "@/hooks/use-notes-filter";
-import { DashboardHeader } from "./dashboard-header";
-import { NoteCard } from "./note-card";
-import { NotesPagination } from "./notes-pagination";
-import { NotesToolbar } from "./notes-toolbar";
-import { QuickCreateNote } from "./quick-create-note";
+import { DashboardHeader } from "./layout";
+import { NoteCard, NotesPagination, NotesToolbar, QuickCreateNote } from "./notes";
 
 interface User {
   name?: string | null;

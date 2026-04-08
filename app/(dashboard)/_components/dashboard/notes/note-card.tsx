@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 
 import type { Note } from "@/features/notes/client";
+import { useGeneratePrintLink } from "@/features/print/client";
 import type { NoteType } from "@/lib/schemas/notes";
 import { TYPE_LABELS } from "@/lib/schemas/notes";
 import { cn } from "@/lib/utils";
 import { DeleteNoteDialog } from "./delete-note-dialog";
 import { ProtectedNoteForm } from "./protected-note-form";
+import { PrintLinkDialog } from "./print-link-dialog";
 
 const TYPE_ICONS: Record<NoteType, keyof typeof Icons> = {
   TEXT: "textT",
@@ -55,6 +57,9 @@ export function NoteCard({
 }: NoteCardProps) {
   const [copied, setCopied] = useState(false);
   const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
+  const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
+
+  const generatePrintMutation = useGeneratePrintLink();
 
   const isFileBased = note.type === "IMAGE" || note.type === "DOCUMENT";
   const hasFileKey = !!note.fileKey;
@@ -94,6 +99,15 @@ export function NoteCard({
     }
 
     onDownload?.(note);
+  };
+
+  const handleShareForPrint = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    generatePrintMutation.mutate(note.id, {
+      onSuccess: () => {
+        setIsPrintDialogOpen(true);
+      },
+    });
   };
 
   const TypeIcon = Icons[TYPE_ICONS[note.type]];
@@ -221,6 +235,25 @@ export function NoteCard({
         </div>
 
         <div className="flex gap-1 items-center">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleShareForPrint}
+            disabled={
+              generatePrintMutation.isPending ||
+              (note.isProtected && unlockedContent === null)
+            }
+            className="h-8 w-8 text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
+            title="Generate secure one-time print link"
+          >
+            {generatePrintMutation.isPending ? (
+              <Icons.loader2 size={12} className="animate-spin" />
+            ) : (
+              <Icons.printer size={12} weight="bold" />
+            )}
+          </Button>
+
           {isFileBased && (
             <>
               <Button
@@ -228,7 +261,9 @@ export function NoteCard({
                 variant="ghost"
                 size="icon"
                 onClick={() => window.open(getFileUrl(note.id), "_blank")}
-                disabled={note.isProtected && unlockedContent === null && !hasFileKey}
+                disabled={
+                  note.isProtected && unlockedContent === null && !hasFileKey
+                }
                 className="h-8 w-8 text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
                 title="Open in new tab"
               >
@@ -239,7 +274,9 @@ export function NoteCard({
                 variant="ghost"
                 size="icon"
                 onClick={handleDownload}
-                disabled={note.isProtected && unlockedContent === null && !hasFileKey}
+                disabled={
+                  note.isProtected && unlockedContent === null && !hasFileKey
+                }
                 className="h-8 w-8 text-muted-foreground/60 hover:text-foreground hover:bg-muted/40"
                 title="Download file"
               >
@@ -271,6 +308,12 @@ export function NoteCard({
           )}
         </div>
       </div>
+
+      <PrintLinkDialog
+        url={generatePrintMutation.data?.url || ""}
+        open={isPrintDialogOpen}
+        onOpenChange={setIsPrintDialogOpen}
+      />
     </div>
   );
 }

@@ -2,10 +2,8 @@
 
 import { Icons } from "@/components/ui/icons";
 import type { NoteType } from "@/lib/schemas/notes";
-import { CategoryFilter } from "./category-filter";
+import { CategoryFilter, SortFilter, TypeFilter } from "../filters";
 import { QuickCreateNote } from "./quick-create-note";
-import { SortFilter } from "./sort-filter";
-import { TypeFilter } from "./type-filter";
 
 interface NotesToolbarProps {
   total: number;
