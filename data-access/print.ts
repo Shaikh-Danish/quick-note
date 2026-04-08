@@ -4,7 +4,11 @@ import { prisma } from "@/lib/prisma";
  * Creates a secure, one-time-use print token for a specific note.
  * Returns the unique token UUID.
  */
-export async function createPrintToken(noteId: string, userId: string): Promise<string> {
+export async function createPrintToken(
+  noteId: string, 
+  userId: string, 
+  accessKey?: string
+): Promise<string> {
   // Verify ownership before generating token
   const note = await prisma.note.findUnique({
     where: { id: noteId, userId },
@@ -21,6 +25,7 @@ export async function createPrintToken(noteId: string, userId: string): Promise<
     data: {
       noteId,
       expiresAt,
+      accessKey,
     },
     select: {
       token: true,

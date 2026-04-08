@@ -4,7 +4,7 @@ import {
   burnPrintToken,
   validateAndFetchPrintToken,
 } from "@/features/print/server";
-import { decryptString } from "@/lib/encryption";
+import { decryptString, decryptWithPassword } from "@/lib/encryption";
 import { downloadFileFromR2 } from "@/lib/r2";
 
 /**
@@ -27,17 +27,29 @@ export async function GET(
       );
     }
 
-    const { note } = record;
+    const { note, accessKey } = record;
     const userId = note.user.id; // Owner's ID for decryption
 
-    const title = decryptString(note.title, userId);
+    // 1. Initial System Decryption
+    let title = decryptString(note.title, userId);
+    let contentType = note.contentType
+      ? decryptString(note.contentType, userId)
+      : "application/octet-stream";
+
+    // 2. Secondary Password Decryption (if applicable)
+    if (note.isProtected && accessKey) {
+      try {
+        title = decryptWithPassword(title, accessKey);
+        contentType = note.contentType ? decryptWithPassword(contentType, accessKey) : contentType;
+      } catch (_err) {
+        // If title/contentType weren't password-encrypted (some old notes), keep original
+      }
+    }
+
     const isFile = note.type === "IMAGE" || note.type === "DOCUMENT";
 
     if (isFile && note.fileKey) {
       const decryptedBuffer = await downloadFileFromR2(note.fileKey, userId);
-      const contentType = note.contentType
-        ? decryptString(note.contentType, userId)
-        : "application/octet-stream";
 
       return new NextResponse(new Uint8Array(decryptedBuffer), {
         headers: {
@@ -47,7 +59,16 @@ export async function GET(
         },
       });
     } else {
-      const content = decryptString(note.content, userId);
+      let content = decryptString(note.content, userId);
+      
+      if (note.isProtected && accessKey) {
+        try {
+          content = decryptWithPassword(content, accessKey);
+        } catch (_err) {
+            return NextResponse.json({ error: "Access key mismatch for protected document" }, { status: 403 });
+        }
+      }
+
       return NextResponse.json({
         success: true,
         title,

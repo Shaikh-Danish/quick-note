@@ -8,11 +8,11 @@ import type { PrintDocResponse, PrintTokenResponse } from "@/lib/schemas/print";
  */
 export function useGeneratePrintLink() {
   return useMutation({
-    mutationFn: async (noteId: string) => {
+    mutationFn: async ({ noteId, password }: { noteId: string; password?: string }) => {
       const response = await fetch("/api/print/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ noteId }),
+        body: JSON.stringify({ noteId, password }),
       });
 
       if (!response.ok) {

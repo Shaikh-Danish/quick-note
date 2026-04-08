@@ -4,8 +4,12 @@ import * as PrintData from "@/data-access/print";
  * Orchestrates the creation of a secure print token.
  * This can be expanded to include logging, usage metrics, or secondary encryption.
  */
-export async function generateSecurePrintLink(noteId: string, userId: string): Promise<string> {
-  return PrintData.createPrintToken(noteId, userId);
+export async function generateSecurePrintLink(
+  noteId: string, 
+  userId: string, 
+  password?: string
+): Promise<string> {
+  return PrintData.createPrintToken(noteId, userId, password);
 }
 
 /**

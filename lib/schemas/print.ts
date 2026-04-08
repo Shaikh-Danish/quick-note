@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const generatePrintTokenSchema = z.object({
   noteId: z.string().uuid("Invalid Note ID format"),
+  password: z.string().optional(),
 });
 
 export type GeneratePrintTokenSchema = z.infer<typeof generatePrintTokenSchema>;

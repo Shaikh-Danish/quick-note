@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
+import { toast } from "@/components/ui/toast";
 
 import type { Note } from "@/features/notes/client";
 import { useGeneratePrintLink } from "@/features/print/client";
@@ -15,6 +16,7 @@ import { TYPE_LABELS } from "@/lib/schemas/notes";
 import { cn } from "@/lib/utils";
 import { DeleteNoteDialog } from "./delete-note-dialog";
 import { PrintLinkDialog } from "./print-link-dialog";
+import { PrintPasswordDialog } from "./print-password-dialog";
 import { ProtectedNoteForm } from "./protected-note-form";
 
 const TYPE_ICONS: Record<NoteType, keyof typeof Icons> = {
@@ -58,6 +60,7 @@ export function NoteCard({
   const [copied, setCopied] = useState(false);
   const [unlockedContent, setUnlockedContent] = useState<string | null>(null);
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
+  const [isPrintPasswordOpen, setIsPrintPasswordOpen] = useState(false);
 
   const generatePrintMutation = useGeneratePrintLink();
 
@@ -103,10 +106,28 @@ export function NoteCard({
 
   const handleShareForPrint = (e: React.MouseEvent) => {
     e.stopPropagation();
-    generatePrintMutation.mutate(note.id, {
+    if (note.isProtected) {
+      setIsPrintPasswordOpen(true);
+    } else {
+      generatePrintMutation.mutate({ noteId: note.id }, {
+        onSuccess: () => {
+          setIsPrintDialogOpen(true);
+        },
+      });
+    }
+  };
+
+  const handleConfirmPrintPassword = (password: string) => {
+    generatePrintMutation.mutate({ noteId: note.id, password }, {
       onSuccess: () => {
+        setIsPrintPasswordOpen(false);
         setIsPrintDialogOpen(true);
       },
+      onError: (err) => {
+        // If password is wrong or other error
+        setIsPrintPasswordOpen(false);
+        toast.error(err.message || "Invalid password or authorized action failed");
+      }
     });
   };
 
@@ -313,6 +334,13 @@ export function NoteCard({
         url={generatePrintMutation.data?.url || ""}
         open={isPrintDialogOpen}
         onOpenChange={setIsPrintDialogOpen}
+      />
+
+      <PrintPasswordDialog
+        open={isPrintPasswordOpen}
+        onOpenChange={setIsPrintPasswordOpen}
+        onConfirm={handleConfirmPrintPassword}
+        isPending={generatePrintMutation.isPending}
       />
     </div>
   );

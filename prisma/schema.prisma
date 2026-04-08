@@ -121,6 +121,7 @@ model SecurePrintToken {
   token           String    @unique @default(dbgenerated("gen_random_uuid()"))
   noteId          String
   note            Note      @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  accessKey       String? // Temporary decryption key for protected notes
   expiresAt       DateTime
   firstAccessedAt DateTime?
   isUsed          Boolean   @default(false)

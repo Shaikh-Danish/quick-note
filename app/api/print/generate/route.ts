@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
     const token = await generateSecurePrintLink(
       parsed.data.noteId,
       session.user.id,
+      parsed.data.password,
     );
 
     // Build the full public URL
