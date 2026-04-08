@@ -145,7 +145,7 @@ export function NoteCard({
         </div>
 
         <div className="space-y-1.5">
-          <h3 className="text-xs font-black uppercase tracking-wide text-foreground/90 leading-tight">
+          <h3 className="text-xs font-black tracking-wide text-foreground/90 leading-tight">
             {note.title}
           </h3>
           {note.isProtected && unlockedContent === null ? (
