@@ -14,8 +14,8 @@ import type { NoteType } from "@/lib/schemas/notes";
 import { TYPE_LABELS } from "@/lib/schemas/notes";
 import { cn } from "@/lib/utils";
 import { DeleteNoteDialog } from "./delete-note-dialog";
-import { ProtectedNoteForm } from "./protected-note-form";
 import { PrintLinkDialog } from "./print-link-dialog";
+import { ProtectedNoteForm } from "./protected-note-form";
 
 const TYPE_ICONS: Record<NoteType, keyof typeof Icons> = {
   TEXT: "textT",
