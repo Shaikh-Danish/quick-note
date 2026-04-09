@@ -22,7 +22,6 @@ import {
   TextT,
 } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function LandingPage() {
@@ -80,7 +79,7 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section className="relative overflow-hidden pt-32 pb-24 md:pt-40 md:pb-32">
           <div className="max-w-6xl mx-auto px-6 relative z-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
@@ -134,15 +133,15 @@ export default function LandingPage() {
             </motion.div>
 
             {/* MOCK DASHBOARD INSERTED HERE */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 80, scale: 0.95, rotateX: 10, filter: "blur(10px)" }}
               animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0, filter: "blur(0px)" }}
               transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-20 mx-auto max-w-5xl relative z-20 group" 
+              className="mt-20 mx-auto max-w-5xl relative z-20 group"
               style={{ perspective: "2000px" }}
             >
               <div className="relative rounded-xl border border-border/50 bg-background/30 backdrop-blur-3xl shadow-[0_0_80px_rgba(0,0,0,0.1)] dark:shadow-[0_0_80px_rgba(0,0,0,0.5)] overflow-hidden ring-1 ring-white/10 transition-transform duration-700 ease-out hover:rotate-x-2 hover:scale-[1.01] text-zinc-900 dark:text-zinc-100">
-                
+
                 {/* Mock Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-border/30 bg-background/50 backdrop-blur-md">
                   <div className="flex items-center gap-2">
@@ -252,7 +251,7 @@ export default function LandingPage() {
                     </div>
 
                     {/* Card 2 - Active */}
-                    <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md p-5 shadow-md border-l-4 border-[#3c3855] border-y border-r border-border/50 flex flex-col relative rounded-none">
+                    <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md p-5 shadow-md border-l-4 border-[#3c3855] border-y border-r flex flex-col relative rounded-none">
                       <div className="flex items-center gap-2 mb-4">
                         <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-muted-foreground bg-muted/50 px-2 py-1 border border-border/50 rounded-none">
                           <TextT size={12} /> Text
@@ -295,7 +294,7 @@ export default function LandingPage() {
                       <h3 className="text-lg font-bold text-[#3c3855] dark:text-white mb-2">
                         Workflow PAT
                       </h3>
-                      <p className="text-sm text-muted-foreground flex-1 mb-6 font-mono text-xs truncate">
+                      <p className="text-muted-foreground flex-1 mb-6 font-mono text-xs truncate">
                         ghp_aB3x9YqL1mZ...
                       </p>
                       <div className="flex items-center justify-between text-muted-foreground text-xs font-bold border-t border-border/20 pt-4">
@@ -315,7 +314,7 @@ export default function LandingPage() {
                   </div>
 
                   {/* Gradient to fade out the bottom seamlessly */}
-                  <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
+                  <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-background via-background/80 to-transparent pointer-events-none" />
                 </div>
               </div>
             </motion.div>
@@ -337,7 +336,7 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-full md:h-[600px]">
               {/* Feature 1: Large Card */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
                 whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 viewport={{ once: true, margin: "-100px" }}
@@ -371,7 +370,7 @@ export default function LandingPage() {
               </motion.div>
 
               {/* Feature 2: Shield */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
                 whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 viewport={{ once: true, margin: "-100px" }}
@@ -402,7 +401,7 @@ export default function LandingPage() {
               </motion.div>
 
               {/* Feature 3: Folders */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
                 whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 viewport={{ once: true, margin: "-100px" }}
@@ -428,7 +427,7 @@ export default function LandingPage() {
               </motion.div>
 
               {/* Feature 4: Layout */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
                 whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 viewport={{ once: true, margin: "-100px" }}

@@ -3,7 +3,7 @@ import { fetchQuickDropFeature } from "@/features/quick-drop/server";
 import { fetchQuickDropSchema } from "@/lib/schemas/quick-drop";
 
 export async function GET(
-  req: NextRequest,
+  _: NextRequest,
   { params }: { params: Promise<{ code: string }> | { code: string } },
 ) {
   try {
