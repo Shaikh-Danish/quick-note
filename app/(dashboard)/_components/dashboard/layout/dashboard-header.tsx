@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ user }: DashboardHeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
 
   const toggleTheme = () => {
@@ -50,6 +51,21 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             </h1>
           </div>
 
+          {/* Navigation */}
+          <div className="hidden md:flex items-center gap-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-8 flex-1">
+            <Button
+              onClick={() => router.push("/")}
+              className={`hover:text-primary transition-colors ${pathname === "/" ? "text-foreground" : ""}`}
+            >
+              Notes
+            </Button>
+            <Button
+              onClick={() => router.push("/quickdrop")}
+              className={`hover:text-primary transition-colors ${pathname?.startsWith("/quickdrop") ? "text-foreground" : ""}`}
+            >
+              QuickDrop
+            </Button>
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-3">

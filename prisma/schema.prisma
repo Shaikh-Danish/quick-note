@@ -26,6 +26,7 @@ model User {
   accounts        Account[]
   notes           Note[]
   categories      Category[]
+  quickDrops      QuickDrop[]
 
   @@unique([email])
   @@unique([username])
@@ -174,4 +175,19 @@ model InviteToken {
   updatedAt DateTime @updatedAt
 
   @@map("invite_token")
+}
+
+model QuickDrop {
+  id              String   @id @default(uuid())
+  content         String   // Stores AES-256 encrypted content
+  accessCode      String   @unique
+  expiresAt       DateTime
+  isBurnAfterRead Boolean  @default(true)
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([accessCode])
+  @@map("quick_drop")
 }
