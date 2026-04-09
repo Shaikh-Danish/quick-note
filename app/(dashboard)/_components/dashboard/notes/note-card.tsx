@@ -11,9 +11,11 @@ import { toast } from "@/components/ui/toast";
 
 import type { Note } from "@/features/notes/client";
 import { useGeneratePrintLink } from "@/features/print/client";
+
 import type { NoteType } from "@/lib/schemas/notes";
 import { TYPE_LABELS } from "@/lib/schemas/notes";
 import { cn } from "@/lib/utils";
+
 import { DeleteNoteDialog } from "./delete-note-dialog";
 import { PrintLinkDialog } from "./print-link-dialog";
 import { PrintPasswordDialog } from "./print-password-dialog";
