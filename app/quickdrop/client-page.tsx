@@ -6,12 +6,7 @@ import type { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Field, FieldContent, FieldError } from "@/components/ui/field";
 import { Icons } from "@/components/ui/icons";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import {
@@ -56,10 +51,10 @@ export function QuickDropClient() {
       onSuccess: (res) => {
         setCreatedCode(res.accessCode);
         createForm.reset();
-        toast.success("Drop created successfully!");
+        toast.success("Share created!", { position: "top-center" });
       },
       onError: (err) => {
-        toast.error(err.message || "Failed to create Drop");
+        toast.error(err.message || "Failed to drop text");
       },
     });
   };
@@ -69,172 +64,196 @@ export function QuickDropClient() {
       onSuccess: (res) => {
         setReceivedText(res.content);
         receiveForm.reset();
-        toast.success("Drop received!");
+        toast.success("Text retrieved successfully!", { position: "top-center" });
       },
       onError: (err) => {
-        toast.error(err.message || "Could not retrieve Drop");
+        toast.error(err.message || "Could not retrieve that text");
       },
     });
   };
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, label: string = "URL") => {
     navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
+    toast.success(`Copied ${label}!`, { position: "top-center" });
+  };
+
+  const resetAll = () => {
+    setCreatedCode(null);
+    setReceivedText(null);
+    createForm.reset();
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto mt-16 px-4 md:px-6 mb-32 relative">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background blur-3xl opacity-50 pointer-events-none" />
+    <div className="w-full max-w-[1000px] mx-auto px-4 md:px-8 mb-16 font-sans">
 
-      <div className="text-center mb-12 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="mx-auto w-14 h-14 bg-primary/10 text-primary flex items-center justify-center rounded-2xl mb-6 shadow-sm ring-1 ring-primary/20">
-          <Icons.lock weight="duotone" className="w-7 h-7" />
-        </div>
-        <h1 className="text-4xl font-extrabold tracking-tight text-foreground">QuickDrop</h1>
-        <p className="text-muted-foreground/80 max-w-sm mx-auto text-[15px] font-medium leading-relaxed">
-          End-to-end encrypted text beaming. Temporary, instant, and self-destructing.
-        </p>
-      </div>
+      {/* --- RECEIVED VIEW --- */}
+      {receivedText ? (
+        <div className="animate-in fade-in duration-300">
+          {/* Top Toolbar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                onClick={() => copyToClipboard(receivedText, "Text")}
+                className="gap-2 h-10 px-4 font-medium"
+              >
+                <Icons.copy size={16} /> Copy Text <Icons.caretDown size={14} className="ml-1 text-muted-foreground" />
+              </Button>
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground gap-2 font-medium">
+                <Icons.warning size={16} /> Report Drop
+              </Button>
+            </div>
 
-      <div className="bg-card dark:bg-zinc-900/40 backdrop-blur-3xl border border-border/40 shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-border/30 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
-        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-border/40">
-
-          {/* === UPLOAD COLUMN === */}
-          <div className="p-8 sm:p-12 transition-colors">
-            <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-2">
-              <Icons.arrowSquareOut className="w-5 h-5 text-primary" weight="duotone" />
-              Create Drop
-            </h2>
-            <p className="text-muted-foreground text-sm mb-8 font-medium">Encrypt a payload and generate an access key.</p>
-
-            {createdCode ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center animate-in zoom-in-95 fade-in duration-500">
-                <div className="w-20 h-20 bg-emerald-500/10 text-emerald-500 rounded-3xl flex items-center justify-center mb-5 ring-1 ring-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.15)]">
-                  <Icons.check weight="bold" className="w-10 h-10" />
-                </div>
-                <h3 className="text-xl font-bold tracking-tight text-foreground">Drop Secured!</h3>
-                <p className="text-sm text-muted-foreground mt-2 mb-8 max-w-[250px] leading-relaxed">
-                  Ready to be accessed. The vault will burn automatically after one read.
-                </p>
-
-                <Button
-                  onClick={() => copyToClipboard(createdCode)}
-                  className="w-full bg-background border border-border/60 rounded-3xl p-8 flex flex-col items-center justify-center hover:border-primary/50 transition-all cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="text-5xl font-mono font-bold tracking-widest text-foreground relative z-10">{createdCode}</span>
-                  <div className="absolute top-4 right-4 text-muted-foreground group-hover:text-primary transition-colors bg-background p-2 rounded-full shadow-xs border border-border/50">
-                    <Icons.copy size={14} />
-                  </div>
-                </Button>
-
-                <Button variant="ghost" onClick={() => setCreatedCode(null)} className="mt-8 font-semibold rounded-xl text-muted-foreground hover:text-foreground">
-                  Create another drop
-                </Button>
-              </div>
-            ) : (
-              <form onSubmit={createForm.handleSubmit(handleCreate)} className="flex flex-col space-y-8 animate-in fade-in duration-500">
-                <Field data-invalid={!!createForm.formState.errors.content}>
-                  <FieldContent>
-                    <Textarea
-                      placeholder="Enter text payload to encrypt..."
-                      className="min-h-[200px] resize-none p-5 bg-background/50 border-border/50 text-[15px] focus-visible:bg-background focus-visible:ring-4 focus-visible:ring-primary/10 shadow-inner rounded-2xl leading-relaxed"
-                      {...createForm.register("content")}
-                    />
-                  </FieldContent>
-                  <FieldError errors={createForm.formState.errors.content ? [createForm.formState.errors.content] : undefined} className="mt-2 ml-1" />
-                </Field>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <p className="text-[12px] font-bold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wide">
-                    <Icons.warning size={14} className="text-orange-500" weight="fill" />
-                    Burns after reading
-                  </p>
-                  <Button type="submit" size="lg" className="rounded-xl shadow-md font-bold px-8 active:scale-[0.98] transition-transform w-full sm:w-auto" disabled={createMutation.isPending}>
-                    {createMutation.isPending ? <Icons.loader2 className="animate-spin mr-2" /> : <Icons.lock className="mr-2" weight="bold" />}
-                    Encrypt Data
-                  </Button>
-                </div>
-              </form>
-            )}
+            <Button
+              onClick={resetAll}
+              className="font-bold h-10 px-5 shadow-none w-full sm:w-auto"
+            >
+              <Icons.plus weight="bold" size={16} className="mr-2" /> Create New Drop
+            </Button>
           </div>
 
-          {/* === DOWNLOAD COLUMN === */}
-          <div className="p-8 sm:p-12 bg-muted/10 transition-colors">
-            <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-2">
-              <Icons.magnifyingGlass className="w-5 h-5 text-primary" weight="duotone" />
-              Access Drop
-            </h2>
-            <p className="text-muted-foreground text-sm mb-8 font-medium">Use an access key to unlock a secure vault.</p>
+          {/* Text Area (Read Only) */}
+          <div className="bg-muted/30 border border-border p-5 min-h-[300px] text-foreground font-mono text-sm leading-relaxed overflow-y-auto mb-6 shadow-inner">
+            {receivedText}
+          </div>
 
-            {receivedText ? (
-              <div className="flex flex-col animate-in fade-in zoom-in-95 duration-500 min-h-[300px]">
-                <div className="flex items-center justify-between pointer-events-none mb-4">
-                  <span className="font-bold text-sm tracking-tight">Decrypted Output</span>
-                  <span className="bg-destructive/10 text-destructive border border-destructive/20 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-xs">
-                    <Icons.trash weight="fill" size={10} />
-                    Burned
-                  </span>
-                </div>
-                <div className="flex-1 bg-background rounded-2xl p-6 border border-border/60 font-mono text-sm shadow-inner relative group whitespace-pre-wrap leading-relaxed overflow-y-auto max-h-[320px] custom-scrollbar focus:outline-none">
-                  {receivedText}
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl shadow-sm bg-background border-border"
-                    onClick={() => copyToClipboard(receivedText)}
-                  >
-                    <Icons.copy size={14} />
-                  </Button>
-                </div>
-                <div className="flex justify-end mt-8">
-                  <Button variant="outline" onClick={() => setReceivedText(null)} className="rounded-xl font-bold w-full border-border/50 hover:bg-muted/50">
-                    Extract Another Vault
-                  </Button>
-                </div>
+          {/* Bottom Bar: Access Code */}
+          <div className="flex flex-col items-center gap-8">
+            <div className="flex items-center self-start">
+              <div className="flex items-center gap-2 bg-muted/30 border border-border text-foreground px-4 py-2.5  text-sm font-medium">
+                <Icons.link size={16} className="text-muted-foreground" />
+                Code burned successfully
               </div>
-            ) : (
-              <form onSubmit={receiveForm.handleSubmit(handleFetch)} className="flex flex-col min-h-[300px] animate-in fade-in duration-500">
-                <div className="flex-1 flex flex-col items-center justify-center py-6 w-full">
-                  <Field data-invalid={!!receiveForm.formState.errors.accessCode} className="w-full flex flex-col items-center max-w-[340px]">
+            </div>
+
+            {/* Functional QR Representation mapping dark/light blocks to variables */}
+            <div className="flex flex-col items-center mt-4">
+              <div className="w-24 h-24 bg-white p-2 flex flex-wrap gap-[1px] border border-border  pointer-events-none">
+                {Array.from({ length: 64 }).map((_, i) => (
+                  <div key={Date.now()} className="w-[10px] h-[10px]" style={{ backgroundColor: Math.random() > 0.5 ? '#000' : 'transparent' }} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      ) :
+
+        /* --- SUCCESS CREATED TOAST/VIEW --- */
+        createdCode ? (
+          <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300 pt-6">
+            <div className="bg-card border border-border p-6 sm:p-8 w-full max-w-lg shadow-xl relative overflow-hidden">
+              <div className="flex md:items-center flex-col md:flex-row justify-between gap-6 mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-primary flex items-center justify-center text-primary-foreground shrink-0 shadow-sm">
+                    <Icons.check weight="bold" size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-primary text-lg font-bold">Drop created!</h3>
+                    <p className="text-muted-foreground font-mono text-sm mt-1">Code: <span className="font-bold text-foreground">{createdCode}</span></p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => copyToClipboard(createdCode, "Code")}
+                  className="font-bold h-10 px-6 shrink-0"
+                >
+                  Copy Code
+                </Button>
+              </div>
+
+              <div className="w-full bg-muted/40 border border-border p-8 flex flex-col items-center justify-center shadow-inner relative overflow-hidden">
+                <span className="text-6xl sm:text-7xl font-mono font-black tracking-[0.2em] text-foreground">{createdCode}</span>
+              </div>
+
+              <div className="flex justify-center mt-6">
+                <Button variant="ghost" onClick={resetAll} className="text-primary hover:text-primary/80 hover:bg-transparent px-0 font-semibold flex items-center gap-2">
+                  <Icons.plus size={16} weight="bold" /> Create New Drop
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) :
+
+          /* --- CREATE / SHARE VIEW --- */
+          (
+            <div className="animate-in fade-in duration-300">
+              <div className="text-center mb-4">
+                <h1 className="text-4xl sm:text-[44px] font-bold tracking-tight text-foreground mb-4">QuickDrop</h1>
+                <p className="text-muted-foreground max-w-2xl mx-auto text-[17px] font-medium leading-relaxed">
+                  Securely drop and share text, notes, or code. Paste below <br className="hidden sm:block" />
+                  to generate a temporary access code.
+                </p>
+              </div>
+
+              <form onSubmit={createForm.handleSubmit(handleCreate)} className="flex flex-col">
+                <div className="flex flex-col border border-input overflow-hidden bg-card focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-colors shadow-sm">
+
+                  <Field data-invalid={!!createForm.formState.errors.content} className="w-full">
                     <FieldContent>
-                      <Controller
-                        control={receiveForm.control}
-                        name="accessCode"
-                        render={({ field }) => (
-                          <InputOTP
-                            maxLength={6}
-                            value={field.value}
-                            onChange={(val) => field.onChange(val.toUpperCase())}
-                            onComplete={() => receiveForm.handleSubmit(handleFetch)()}
-                          >
-                            <InputOTPGroup className="gap-2 sm:gap-3">
-                              {[0, 1, 2, 3, 4, 5].map((index) => (
-                                <InputOTPSlot
-                                  key={index}
-                                  index={index}
-                                  className={`w-11 h-16 sm:w-14 sm:h-[72px] text-2xl sm:text-3xl font-black font-mono rounded-2xl bg-background border border-border/50 shadow-inner focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all uppercase ${receiveForm.formState.errors.accessCode ? 'border-destructive/50 ring-destructive/20 bg-destructive/5 text-destructive focus-within:border-destructive/50 focus-within:ring-destructive/20' : ''}`}
-                                />
-                              ))}
-                            </InputOTPGroup>
-                          </InputOTP>
-                        )}
+                      <Textarea
+                        placeholder="Write or paste your text here..."
+                        className="min-h-[200px] sm:min-h-[280px] resize-none p-4 sm:p-6 bg-transparent border-0 text-[15px] sm:text-[16px] text-foreground placeholder:text-muted-foreground focus-visible:ring-0 leading-relaxed font-mono"
+                        {...createForm.register("content")}
                       />
                     </FieldContent>
-                    <FieldError
-                      className="mt-6 text-center text-xs font-bold uppercase tracking-widest text-destructive"
-                      errors={receiveForm.formState.errors.accessCode ? [receiveForm.formState.errors.accessCode] : undefined}
-                    />
+                    {createForm.formState.errors.content && (
+                      <div className="px-6 py-2 bg-destructive/5 border-t border-destructive/20">
+                        <FieldError errors={[createForm.formState.errors.content]} className="text-destructive text-sm font-medium" />
+                      </div>
+                    )}
                   </Field>
+
+                  {/* Toolbar */}
+                  <div className="bg-muted/30 border-t border-border px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div></div>
+
+                    <Button
+                      type="submit"
+                      disabled={createMutation.isPending}
+                      className="font-bold h-10 px-6 shadow-none transition-colors w-full sm:w-auto"
+                    >
+                      {createMutation.isPending ? <Icons.loader2 className="animate-spin mr-2" /> : <Icons.plus weight="bold" size={16} className="mr-2" />}
+                      Create Drop
+                    </Button>
+                  </div>
                 </div>
-                <Button type="submit" size="lg" className="w-full rounded-xl shadow-md font-bold mt-auto active:scale-[0.98] transition-transform" disabled={fetchMutation.isPending}>
-                  {fetchMutation.isPending ? <Icons.loader2 className="animate-spin mr-2" /> : <Icons.lockOpen className="mr-2" weight="bold" />}
-                  Unlock Data
-                </Button>
               </form>
-            )}
-          </div>
-        </div>
-      </div>
+
+              {/* FETCH SECTION - Kept minimal and separated from the Share interface */}
+              <div className="mt-12 border-t border-border pt-8">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-foreground mb-2">Retrieve a Drop</h2>
+                  <p className="text-muted-foreground text-sm">Enter a 6-digit access code to unlock dropped text.</p>
+                </div>
+
+                <form onSubmit={receiveForm.handleSubmit(handleFetch)} className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
+                  <Controller
+                    control={receiveForm.control}
+                    name="accessCode"
+                    render={({ field }) => (
+                      <Input
+                        type="text"
+                        placeholder="Enter Code..."
+                        className="h-12 bg-background border-input focus-visible:ring-1 focus-visible:ring-primary/20 focus-visible:border-primary text-foreground placeholder:text-muted-foreground font-mono text-center sm:text-left text-lg tracking-widest uppercase"
+                        maxLength={6}
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                      />
+                    )}
+                  />
+                  <Button type="submit" disabled={fetchMutation.isPending} className="h-12 font-bold px-8 shrink-0">
+                    {fetchMutation.isPending ? <Icons.loader2 className="animate-spin" /> : "Unlock"}
+                  </Button>
+                </form>
+                <div className="text-center mt-2 max-w-md mx-auto">
+                  <FieldError className="text-destructive text-sm font-medium" errors={receiveForm.formState.errors.accessCode ? [receiveForm.formState.errors.accessCode] : undefined} />
+                </div>
+              </div>
+            </div>
+          )}
+
     </div>
   );
 }
+

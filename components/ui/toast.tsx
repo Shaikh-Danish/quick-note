@@ -1,12 +1,12 @@
 "use client";
 
-import toastLib, { Toaster as HotToaster } from "react-hot-toast";
+import toastLib, { Toaster as HotToaster, type ToastOptions } from "react-hot-toast";
 
 // A wrapper object so you can seamlessly swap the toast dependency
 export const toast = {
-  success: (message: string) => toastLib.success(message),
-  error: (message: string) => toastLib.error(message),
-  loading: (message: string) => toastLib.loading(message),
+  success: (message: string, options?: ToastOptions) => toastLib.success(message, options),
+  error: (message: string, options?: ToastOptions) => toastLib.error(message, options),
+  loading: (message: string, options?: ToastOptions) => toastLib.loading(message, options),
   dismiss: (id?: string) => toastLib.dismiss(id),
 };
 

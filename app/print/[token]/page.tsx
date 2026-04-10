@@ -186,14 +186,14 @@ export default function PrintPage() {
       </main>
 
       <div className="max-w-4xl mx-auto mt-6 flex items-center justify-center gap-4 print:hidden">
-         <div className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-zinc-400">
-            <div className="size-1 rounded-full bg-red-500 animate-pulse" />
-            Ephemeral Session
-         </div>
-         <div className="w-px h-2.5 bg-zinc-200" />
-         <p className="text-[8px] font-medium text-zinc-300 uppercase tracking-widest">
-            All data will be purged on exit
-         </p>
+        <div className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-widest text-zinc-400">
+          <div className="size-1 rounded-full bg-red-500 animate-pulse" />
+          Ephemeral Session
+        </div>
+        <div className="w-px h-2.5 bg-zinc-200" />
+        <p className="text-[8px] font-medium text-zinc-300 uppercase tracking-widest">
+          All data will be purged on exit
+        </p>
       </div>
     </div>
   );
