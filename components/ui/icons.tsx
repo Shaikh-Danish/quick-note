@@ -25,6 +25,7 @@ import {
   InfoIcon,
   LinkIcon,
   LockIcon,
+  LockOpenIcon,
   MagnifyingGlassIcon,
   MoonIcon,
   NotebookIcon,
@@ -86,4 +87,6 @@ export const Icons = {
   filePdf: FilePdfIcon,
   lock: LockIcon,
   info: InfoIcon,
+  lockOpen: LockOpenIcon
 };
+

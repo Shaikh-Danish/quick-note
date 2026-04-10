@@ -11,7 +11,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import {
@@ -83,201 +83,158 @@ export function QuickDropClient() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto mt-12 bg-card border border-border shadow-sm rounded-none overflow-hidden">
-      <div className="p-8 pb-0 text-center">
-        <h2 className="text-3xl font-black mb-2 uppercase tracking-tighter">
-          QuickDrop
-        </h2>
-        <p className="text-muted-foreground text-sm font-medium">
-          Share text across devices securely via a 6-digit code.
+    <div className="w-full max-w-5xl mx-auto mt-16 px-4 md:px-6 mb-32 relative">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background blur-3xl opacity-50 pointer-events-none" />
+
+      <div className="text-center mb-12 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="mx-auto w-14 h-14 bg-primary/10 text-primary flex items-center justify-center rounded-2xl mb-6 shadow-sm ring-1 ring-primary/20">
+          <Icons.lock weight="duotone" className="w-7 h-7" />
+        </div>
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground">QuickDrop</h1>
+        <p className="text-muted-foreground/80 max-w-sm mx-auto text-[15px] font-medium leading-relaxed">
+          End-to-end encrypted text beaming. Temporary, instant, and self-destructing.
         </p>
       </div>
 
-      <Tabs defaultValue="drop" className="w-full p-8 pt-6">
-        <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted rounded-none">
-          <TabsTrigger
-            value="drop"
-            className="rounded-none font-bold uppercase tracking-widest text-xs"
-            onClick={() => setCreatedCode(null)}
-          >
-            Drop Data
-          </TabsTrigger>
-          <TabsTrigger
-            value="receive"
-            className="rounded-none font-bold uppercase tracking-widest text-xs"
-            onClick={() => setReceivedText(null)}
-          >
-            Receive Data
-          </TabsTrigger>
-        </TabsList>
+      <div className="bg-card dark:bg-zinc-900/40 backdrop-blur-3xl border border-border/40 shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-border/30 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
+        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-border/40">
 
-        <TabsContent value="drop">
-          {createdCode ? (
-            <div className="flex flex-col items-center justify-center p-8 space-y-6">
-              <div className="w-16 h-16 bg-primary/10 flex items-center justify-center border border-border">
-                <Icons.check className="w-8 h-8 text-primary" weight="bold" />
-              </div>
-              <h3 className="text-2xl font-black tracking-tighter uppercase">
-                Ready!
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4 max-w-[280px] text-center">
-                Use this code on another device. It will expire after one read.
-              </p>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(createdCode)}
-                className="text-5xl font-mono font-black tracking-widest text-foreground px-8 py-6 bg-muted/50 border border-border cursor-pointer hover:bg-muted transition-colors flex items-center gap-4 group"
-              >
-                {createdCode}
-                <Icons.copy
-                  size={20}
-                  className="text-muted-foreground opacity-50 group-hover:opacity-100"
-                />
-              </button>
-              <Button
-                variant="outline"
-                onClick={() => setCreatedCode(null)}
-                className="mt-4 rounded-none border border-border"
-              >
-                Create Another Drop
-              </Button>
-            </div>
-          ) : (
-            <form
-              onSubmit={createForm.handleSubmit(handleCreate)}
-              className="space-y-4"
-            >
-              <Field data-invalid={!!createForm.formState.errors.content}>
-                <FieldContent>
-                  <Textarea
-                    placeholder="Type or paste the text you want to share..."
-                    className={`min-h-[200px] resize-none text-base p-4 rounded-none border ${createForm.formState.errors.content ? "border-destructive" : "border-border/50"} focus-visible:ring-1 focus-visible:ring-primary`}
-                    {...createForm.register("content")}
-                  />
-                </FieldContent>
-                <FieldError
-                  errors={
-                    createForm.formState.errors.content
-                      ? [createForm.formState.errors.content]
-                      : undefined
-                  }
-                />
-              </Field>
-              <Button
-                type="submit"
-                className="w-full font-black h-12 uppercase tracking-widest rounded-none"
-                disabled={createMutation.isPending}
-              >
-                {createMutation.isPending ? (
-                  <Icons.loader2 className="animate-spin" />
-                ) : (
-                  "Generate Code"
-                )}
-              </Button>
-              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-[0.2em] font-bold">
-                Burns after reading
-              </p>
-            </form>
-          )}
-        </TabsContent>
+          {/* === UPLOAD COLUMN === */}
+          <div className="p-8 sm:p-12 transition-colors">
+            <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-2">
+              <Icons.arrowSquareOut className="w-5 h-5 text-primary" weight="duotone" />
+              Create Drop
+            </h2>
+            <p className="text-muted-foreground text-sm mb-8 font-medium">Encrypt a payload and generate an access key.</p>
 
-        <TabsContent value="receive">
-          {receivedText ? (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-bold text-foreground tracking-tight uppercase">
-                  Decoded Data
-                </span>
-                <span className="text-[10px] uppercase font-bold text-muted-foreground bg-muted/50 px-2 py-1 border border-border/50">
-                  Burned 🔥
-                </span>
-              </div>
-              <div className="bg-muted/30 border border-border/50 p-4 font-mono text-sm whitespace-pre-wrap min-h-[160px] relative group/card">
-                {receivedText}
+            {createdCode ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center animate-in zoom-in-95 fade-in duration-500">
+                <div className="w-20 h-20 bg-emerald-500/10 text-emerald-500 rounded-3xl flex items-center justify-center mb-5 ring-1 ring-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.15)]">
+                  <Icons.check weight="bold" className="w-10 h-10" />
+                </div>
+                <h3 className="text-xl font-bold tracking-tight text-foreground">Drop Secured!</h3>
+                <p className="text-sm text-muted-foreground mt-2 mb-8 max-w-[250px] leading-relaxed">
+                  Ready to be accessed. The vault will burn automatically after one read.
+                </p>
+
                 <Button
-                  size="icon"
-                  variant="ghost"
-                  className="absolute top-2 right-2 opacity-50 group-hover/card:opacity-100 transition-opacity rounded-none"
-                  onClick={() => copyToClipboard(receivedText)}
+                  onClick={() => copyToClipboard(createdCode)}
+                  className="w-full bg-background border border-border/60 rounded-3xl p-8 flex flex-col items-center justify-center hover:border-primary/50 transition-all cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden"
                 >
-                  <Icons.copy size={14} />
+                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="text-5xl font-mono font-bold tracking-widest text-foreground relative z-10">{createdCode}</span>
+                  <div className="absolute top-4 right-4 text-muted-foreground group-hover:text-primary transition-colors bg-background p-2 rounded-full shadow-xs border border-border/50">
+                    <Icons.copy size={14} />
+                  </div>
+                </Button>
+
+                <Button variant="ghost" onClick={() => setCreatedCode(null)} className="mt-8 font-semibold rounded-xl text-muted-foreground hover:text-foreground">
+                  Create another drop
                 </Button>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => setReceivedText(null)}
-                className="w-full mt-4 rounded-none uppercase font-bold text-xs tracking-widest border border-border"
-              >
-                Receive Another
-              </Button>
-            </div>
-          ) : (
-            <form
-              onSubmit={receiveForm.handleSubmit(handleFetch)}
-              className="flex flex-col items-center justify-center p-8 space-y-8"
-            >
-              <div className="text-center space-y-2">
-                <h3 className="text-xl font-black tracking-tight uppercase">
-                  Retrieve Data
-                </h3>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Enter the 6-character access code
-                </p>
+            ) : (
+              <form onSubmit={createForm.handleSubmit(handleCreate)} className="flex flex-col space-y-8 animate-in fade-in duration-500">
+                <Field data-invalid={!!createForm.formState.errors.content}>
+                  <FieldContent>
+                    <Textarea
+                      placeholder="Enter text payload to encrypt..."
+                      className="min-h-[200px] resize-none p-5 bg-background/50 border-border/50 text-[15px] focus-visible:bg-background focus-visible:ring-4 focus-visible:ring-primary/10 shadow-inner rounded-2xl leading-relaxed"
+                      {...createForm.register("content")}
+                    />
+                  </FieldContent>
+                  <FieldError errors={createForm.formState.errors.content ? [createForm.formState.errors.content] : undefined} className="mt-2 ml-1" />
+                </Field>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <p className="text-[12px] font-bold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wide">
+                    <Icons.warning size={14} className="text-orange-500" weight="fill" />
+                    Burns after reading
+                  </p>
+                  <Button type="submit" size="lg" className="rounded-xl shadow-md font-bold px-8 active:scale-[0.98] transition-transform w-full sm:w-auto" disabled={createMutation.isPending}>
+                    {createMutation.isPending ? <Icons.loader2 className="animate-spin mr-2" /> : <Icons.lock className="mr-2" weight="bold" />}
+                    Encrypt Data
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          {/* === DOWNLOAD COLUMN === */}
+          <div className="p-8 sm:p-12 bg-muted/10 transition-colors">
+            <h2 className="text-xl font-bold tracking-tight mb-2 flex items-center gap-2">
+              <Icons.magnifyingGlass className="w-5 h-5 text-primary" weight="duotone" />
+              Access Drop
+            </h2>
+            <p className="text-muted-foreground text-sm mb-8 font-medium">Use an access key to unlock a secure vault.</p>
+
+            {receivedText ? (
+              <div className="flex flex-col animate-in fade-in zoom-in-95 duration-500 min-h-[300px]">
+                <div className="flex items-center justify-between pointer-events-none mb-4">
+                  <span className="font-bold text-sm tracking-tight">Decrypted Output</span>
+                  <span className="bg-destructive/10 text-destructive border border-destructive/20 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-xs">
+                    <Icons.trash weight="fill" size={10} />
+                    Burned
+                  </span>
+                </div>
+                <div className="flex-1 bg-background rounded-2xl p-6 border border-border/60 font-mono text-sm shadow-inner relative group whitespace-pre-wrap leading-relaxed overflow-y-auto max-h-[320px] custom-scrollbar focus:outline-none">
+                  {receivedText}
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl shadow-sm bg-background border-border"
+                    onClick={() => copyToClipboard(receivedText)}
+                  >
+                    <Icons.copy size={14} />
+                  </Button>
+                </div>
+                <div className="flex justify-end mt-8">
+                  <Button variant="outline" onClick={() => setReceivedText(null)} className="rounded-xl font-bold w-full border-border/50 hover:bg-muted/50">
+                    Extract Another Vault
+                  </Button>
+                </div>
               </div>
-
-              <Field data-invalid={!!receiveForm.formState.errors.accessCode}>
-                <FieldContent>
-                  <Controller
-                    control={receiveForm.control}
-                    name="accessCode"
-                    render={({ field }) => (
-                      <InputOTP
-                        maxLength={6}
-                        value={field.value}
-                        onChange={(val) => {
-                          field.onChange(val.toUpperCase());
-                        }}
-                        onComplete={() =>
-                          receiveForm.handleSubmit(handleFetch)()
-                        }
-                      >
-                        <InputOTPGroup className="gap-2">
-                          {[0, 1, 2, 3, 4, 5].map((index) => (
-                            <InputOTPSlot
-                              key={index}
-                              index={index}
-                              className={`w-12 h-14 text-xl font-bold uppercase rounded-none border ${receiveForm.formState.errors.accessCode ? "border-destructive text-destructive" : "border-border"}`}
-                            />
-                          ))}
-                        </InputOTPGroup>
-                      </InputOTP>
-                    )}
-                  />
-                </FieldContent>
-                <FieldError
-                  errors={
-                    receiveForm.formState.errors.accessCode
-                      ? [receiveForm.formState.errors.accessCode]
-                      : undefined
-                  }
-                />
-              </Field>
-
-              <Button
-                type="submit"
-                className="w-full font-black h-12 mt-4 uppercase tracking-widest rounded-none"
-                disabled={fetchMutation.isPending}
-              >
-                {fetchMutation.isPending ? (
-                  <Icons.loader2 className="animate-spin" />
-                ) : (
-                  "Access Data"
-                )}
-              </Button>
-            </form>
-          )}
-        </TabsContent>
-      </Tabs>
+            ) : (
+              <form onSubmit={receiveForm.handleSubmit(handleFetch)} className="flex flex-col min-h-[300px] animate-in fade-in duration-500">
+                <div className="flex-1 flex flex-col items-center justify-center py-6 w-full">
+                  <Field data-invalid={!!receiveForm.formState.errors.accessCode} className="w-full flex flex-col items-center max-w-[340px]">
+                    <FieldContent>
+                      <Controller
+                        control={receiveForm.control}
+                        name="accessCode"
+                        render={({ field }) => (
+                          <InputOTP
+                            maxLength={6}
+                            value={field.value}
+                            onChange={(val) => field.onChange(val.toUpperCase())}
+                            onComplete={() => receiveForm.handleSubmit(handleFetch)()}
+                          >
+                            <InputOTPGroup className="gap-2 sm:gap-3">
+                              {[0, 1, 2, 3, 4, 5].map((index) => (
+                                <InputOTPSlot
+                                  key={index}
+                                  index={index}
+                                  className={`w-11 h-16 sm:w-14 sm:h-[72px] text-2xl sm:text-3xl font-black font-mono rounded-2xl bg-background border border-border/50 shadow-inner focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all uppercase ${receiveForm.formState.errors.accessCode ? 'border-destructive/50 ring-destructive/20 bg-destructive/5 text-destructive focus-within:border-destructive/50 focus-within:ring-destructive/20' : ''}`}
+                                />
+                              ))}
+                            </InputOTPGroup>
+                          </InputOTP>
+                        )}
+                      />
+                    </FieldContent>
+                    <FieldError
+                      className="mt-6 text-center text-xs font-bold uppercase tracking-widest text-destructive"
+                      errors={receiveForm.formState.errors.accessCode ? [receiveForm.formState.errors.accessCode] : undefined}
+                    />
+                  </Field>
+                </div>
+                <Button type="submit" size="lg" className="w-full rounded-xl shadow-md font-bold mt-auto active:scale-[0.98] transition-transform" disabled={fetchMutation.isPending}>
+                  {fetchMutation.isPending ? <Icons.loader2 className="animate-spin mr-2" /> : <Icons.lockOpen className="mr-2" weight="bold" />}
+                  Unlock Data
+                </Button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -40,7 +40,7 @@
   --font-sans: Geist, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Geist Mono, monospace;
-  --radius: 0rem;
+  --radius: 0.75rem;
   --shadow-x: 0px;
   --shadow-y: 1px;
   --shadow-blur: 2px;
@@ -100,7 +100,7 @@
   --font-sans: Geist, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Geist Mono, monospace;
-  --radius: 0rem;
+  --radius: 0.75rem;
   --shadow-x: 0px;
   --shadow-y: 1px;
   --shadow-blur: 2px;
@@ -181,5 +181,21 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  button, a {
+    @apply cursor-pointer transition-all duration-200 ease-in-out;
+  }
+
+  @media (hover: hover) {
+    button:not(:disabled):hover,
+    a:not([disabled]):hover {
+      @apply opacity-80;
+    }
+  }
+
+  button:not(:disabled):active,
+  a:not([disabled]):active {
+    @apply scale-[0.98];
   }
 }
