@@ -180,7 +180,7 @@ model InviteToken {
 model QuickDrop {
   id              String   @id @default(uuid())
   content         String   // Stores AES-256 encrypted content
-  accessCode      String   @unique
+  url             String   @unique
   expiresAt       DateTime
   isBurnAfterRead Boolean  @default(true)
   userId          String?
@@ -188,6 +188,6 @@ model QuickDrop {
   createdAt       DateTime @default(now())
 
   @@index([userId])
-  @@index([accessCode])
+  @@index([url])
   @@map("quick_drop")
 }

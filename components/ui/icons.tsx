@@ -23,6 +23,7 @@ import {
   IdentificationCardIcon,
   ImageIcon,
   InfoIcon,
+  KeyIcon,
   LinkIcon,
   LockIcon,
   LockOpenIcon,
@@ -87,6 +88,6 @@ export const Icons = {
   filePdf: FilePdfIcon,
   lock: LockIcon,
   info: InfoIcon,
-  lockOpen: LockOpenIcon
+  lockOpen: LockOpenIcon,
+  key: KeyIcon
 };
-

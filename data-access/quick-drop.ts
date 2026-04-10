@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function createQuickDropDal(data: {
   content: string;
-  accessCode: string;
+  url: string;
   expiresAt: Date;
   isBurnAfterRead: boolean;
   userId?: string;
@@ -12,9 +12,9 @@ export async function createQuickDropDal(data: {
   });
 }
 
-export async function getQuickDropByCodeDal(accessCode: string) {
+export async function getQuickDropByUrlDal(url: string) {
   return prisma.quickDrop.findUnique({
-    where: { accessCode },
+    where: { url },
   });
 }
 

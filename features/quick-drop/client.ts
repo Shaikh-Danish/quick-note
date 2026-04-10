@@ -13,16 +13,16 @@ export function useCreateQuickDrop() {
       const result = await response.json();
       if (!response.ok)
         throw new Error(result.error || "Failed to create quick drop");
-      return result.data as { accessCode: string; expiresAt: string };
+      return result.data as { url: string; expiresAt: string };
     },
   });
 }
 
 export function useFetchQuickDrop() {
-  // We use mutation here instead of query because fetching a code might burn it.
+  // We use mutation here instead of query because fetching a url might burn it.
   return useMutation({
-    mutationFn: async (code: string) => {
-      const response = await fetch(`/api/quickdrop/${code}`);
+    mutationFn: async (url: string) => {
+      const response = await fetch(`/api/quickdrop/${url}`);
       const result = await response.json();
       if (!response.ok)
         throw new Error(result.error || "Failed to fetch quick drop");
