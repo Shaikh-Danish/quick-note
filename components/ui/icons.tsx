@@ -29,6 +29,7 @@ import {
   LockOpenIcon,
   MagnifyingGlassIcon,
   MoonIcon,
+  List,
   NotebookIcon,
   PaletteIcon,
   PlusIcon,
@@ -46,6 +47,7 @@ import {
 
 export const Icons = {
   logo: NotebookIcon,
+  list: List,
   arrowLeft: ArrowLeftIcon,
   arrowRight: ArrowRightIcon,
   arrowSquareOut: ArrowSquareOutIcon,

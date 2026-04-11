@@ -38,12 +38,12 @@ export default function LandingPage() {
                 size={16}
               />
             </div>
-            <span className="font-bold text-sm tracking-tight hidden sm:block">
+            <span className="font-bold text-sm tracking-tight sm:block whitespace-nowrap">
               Quick Note
             </span>
           </div>
 
-          <div className="flex items-center gap-6 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+          <div className="hidden md:flex items-center gap-6 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
             <a
               href="#features"
               className="hover:text-primary transition-colors"
@@ -96,7 +96,7 @@ export default function LandingPage() {
                 </span>
               </div>
 
-              <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-6 leading-[0.85] text-foreground">
+              <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-6 leading-[0.9] sm:leading-[0.85] text-foreground">
                 Your useful data.
                 <br />
                 Always within{" "}
@@ -156,8 +156,8 @@ export default function LandingPage() {
                       Quick Note
                     </span>
                   </div>
-                  <div className="flex items-center gap-6">
-                    <div className="text-right hidden sm:block">
+                  <div className="flex items-center gap-2 sm:gap-6">
+                    <div className="text-right hidden xs:block">
                       <p className="text-sm font-bold leading-none text-[#3c3855] dark:text-white">
                         Danish Shaikh
                       </p>
@@ -165,13 +165,13 @@ export default function LandingPage() {
                         danish.quick.note@gmail.com
                       </p>
                     </div>
-                    <div className="flex items-center gap-4 text-muted-foreground border-l border-border/50 pl-6">
+                    <div className="flex items-center gap-3 sm:gap-4 text-muted-foreground border-l border-border/50 pl-4 sm:pl-6">
                       <Sun
-                        size={20}
+                        size={18}
                         className="hover:text-[#3c3855] dark:hover:text-white cursor-pointer transition-colors"
                       />
                       <SignOut
-                        size={20}
+                        size={18}
                         className="hover:text-[#3c3855] dark:hover:text-white cursor-pointer transition-colors"
                       />
                     </div>
@@ -205,14 +205,14 @@ export default function LandingPage() {
                     </div>
 
                     <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
-                      <div className="flex items-center gap-2 px-3 py-2.5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-border/50 text-xs font-bold text-muted-foreground uppercase cursor-pointer shrink-0 rounded-none transform transition hover:bg-muted/50">
-                        <Tag size={14} /> All Categories <CaretDown size={14} />
+                      <div className="flex items-center gap-2 px-3 py-2.5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-border/50 text-[10px] sm:text-xs font-bold text-muted-foreground uppercase cursor-pointer shrink-0 rounded-none transform transition hover:bg-muted/50">
+                        <Tag size={12} className="sm:size-14" /> <span className="hidden xs:inline">All Categories</span> <CaretDown size={14} />
                       </div>
-                      <div className="flex items-center gap-2 px-3 py-2.5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-border/50 text-xs font-bold text-muted-foreground uppercase cursor-pointer shrink-0 rounded-none transform transition hover:bg-muted/50">
-                        <Folders size={14} /> All Types <CaretDown size={14} />
+                      <div className="flex items-center gap-2 px-3 py-2.5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-border/50 text-[10px] sm:text-xs font-bold text-muted-foreground uppercase cursor-pointer shrink-0 rounded-none transform transition hover:bg-muted/50">
+                        <Folders size={12} className="sm:size-14" /> <span className="hidden xs:inline">All Types</span> <CaretDown size={14} />
                       </div>
-                      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#3c3855] dark:bg-[#5b5480] backdrop-blur-md text-white text-sm font-bold uppercase cursor-pointer hover:bg-[#2a273c] transition-colors shrink-0 rounded-none">
-                        <Plus size={16} weight="bold" /> Add Note
+                      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#3c3855] dark:bg-[#5b5480] backdrop-blur-md text-white text-xs sm:text-sm font-bold uppercase cursor-pointer hover:bg-[#2a273c] transition-colors shrink-0 rounded-none">
+                        <Plus size={14} weight="bold" /> Add Note
                       </div>
                     </div>
                   </div>
@@ -281,8 +281,8 @@ export default function LandingPage() {
                       </div>
                     </div>
 
-                    {/* Card 3 */}
-                    <div className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm p-5 shadow-sm border border-border/50 flex flex-col hover:border-[#3c3855] transition-colors group/card rounded-none">
+                    {/* Card 3 (Hidden on mobile) */}
+                    <div className="hidden lg:flex bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm p-5 shadow-sm border border-border/50 flex flex-col hover:border-[#3c3855] transition-colors group/card rounded-none">
                       <div className="flex items-center gap-2 mb-4">
                         <span className="flex items-center gap-1 text-[10px] uppercase font-bold text-muted-foreground bg-muted/50 px-2 py-1 border border-border/50 rounded-none">
                           <TextT size={12} /> Text
@@ -544,7 +544,7 @@ export default function LandingPage() {
         {/* Final CTA */}
         <section className="py-24 bg-primary text-primary-foreground">
           <div className="max-w-4xl mx-auto px-6 text-center">
-            <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-12 leading-[0.9]">
+            <h2 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter mb-12 leading-[1] sm:leading-[0.9]">
               Access your useful
               <br />
               data instantly.

@@ -61,7 +61,7 @@ export function QuickDropViewClient({
                 onClick={() => copyToClipboard(receivedText, "Text")}
                 className="gap-2 h-10 px-4 font-medium rounded-none"
               >
-                <Icons.copy size={16} /> Copy Text{" "}
+                <Icons.copy size={16} /> <span className="xs:inline md:inline">Copy Text</span>
                 <Icons.caretDown
                   size={14}
                   className="ml-1 text-muted-foreground"
@@ -69,9 +69,9 @@ export function QuickDropViewClient({
               </Button>
               <Button
                 variant="ghost"
-                className="text-muted-foreground hover:text-foreground gap-2 font-medium rounded-none"
+                className="text-muted-foreground hover:text-foreground gap-2 font-medium rounded-none px-2 sm:px-4"
               >
-                <Icons.warning size={16} /> Report Drop
+                <Icons.warning size={16} /> <span className="hidden xs:inline">Report Drop</span>
               </Button>
             </div>
 
@@ -85,7 +85,7 @@ export function QuickDropViewClient({
           </div>
 
           {/* Text Area (Read Only) */}
-          <div className="bg-transparent border border-[#ff9b66]/60 p-5 min-h-[300px] text-foreground font-mono text-sm leading-relaxed overflow-y-auto mb-6 shadow-inner rounded-none">
+          <div className="bg-transparent border border-[#ff9b66]/60 p-4 sm:p-5 min-h-[200px] sm:min-h-[300px] text-foreground font-mono text-[13px] sm:text-sm leading-relaxed overflow-y-auto mb-6 shadow-inner rounded-none">
             {receivedText}
           </div>
 
@@ -95,10 +95,10 @@ export function QuickDropViewClient({
               <button
                 type="button"
                 onClick={() => copyToClipboard(getShareUrl(), "URL")}
-                className="flex items-center gap-2 bg-transparent border border-border text-muted-foreground hover:text-foreground px-4 py-2.5 text-sm font-medium rounded-none transition-colors"
+                className="flex items-center gap-2 bg-transparent border border-border text-muted-foreground hover:text-foreground px-4 py-2.5 text-[12px] sm:text-sm font-medium rounded-none transition-colors w-full sm:w-auto overflow-hidden"
               >
-                <Icons.link size={16} className="text-muted-foreground" />
-                {getShareUrl()}
+                <Icons.link size={16} className="text-muted-foreground shrink-0" />
+                <span className="truncate">{getShareUrl()}</span>
               </button>
             </div>
             {/* Functional QR Representation */}

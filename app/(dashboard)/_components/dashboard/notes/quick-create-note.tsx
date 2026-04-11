@@ -148,7 +148,7 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
 
           <div className="px-6 space-y-5">
             {/* Type selector - Industrial Grid */}
-            <div className="grid grid-cols-5 border border-border/40 p-1 bg-muted/20">
+            <div className="grid grid-cols-3 xs:grid-cols-5 border border-border/40 p-1 bg-muted/20">
               {NOTE_TYPES.map((type) => {
                 const IconComponent = Icons[TYPE_ICONS[type]];
                 const isActive = internalType === type;
@@ -181,7 +181,7 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-4">
                 <div className="flex-1 flex flex-col space-y-1.5">
                   <label
                     htmlFor="title-input"
@@ -197,7 +197,7 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                     className="h-10 border-border/40 bg-transparent text-sm font-bold tracking-tight px-3 focus-visible:ring-1 focus-visible:ring-primary/30 placeholder:text-muted-foreground/20 rounded-none font-mono"
                   />
                 </div>
-                <div className="w-1/3 space-y-1.5 flex flex-col">
+                <div className="w-full sm:w-1/3 space-y-1.5 flex flex-col">
                   <label
                     htmlFor="category-input"
                     className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1"

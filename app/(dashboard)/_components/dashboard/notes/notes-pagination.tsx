@@ -36,16 +36,17 @@ export function NotesPagination({ page, totalPages, onPageChange }: NotesPaginat
           <Icons.arrowLeft size={12} weight="bold" />
         </Button>
 
-        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+        {Array.from({ length: Math.min(totalPages, typeof window !== 'undefined' && window.innerWidth < 640 ? 3 : 5) }, (_, i) => {
+          let visiblePages = typeof window !== 'undefined' && window.innerWidth < 640 ? 3 : 5;
           let pageNum: number;
-          if (totalPages <= 5) {
+          if (totalPages <= visiblePages) {
             pageNum = i + 1;
-          } else if (page <= 3) {
+          } else if (page <= Math.ceil(visiblePages / 2)) {
             pageNum = i + 1;
-          } else if (page >= totalPages - 2) {
-            pageNum = totalPages - 4 + i;
+          } else if (page >= totalPages - Math.floor(visiblePages / 2)) {
+            pageNum = totalPages - visiblePages + 1 + i;
           } else {
-            pageNum = page - 2 + i;
+            pageNum = page - Math.floor(visiblePages / 2) + i;
           }
           return (
             <Button

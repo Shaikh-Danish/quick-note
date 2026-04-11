@@ -148,14 +148,14 @@ export function NoteCard({
 
       <div className="space-y-3 pl-1">
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap px-0.5">
             {/* Type badge */}
             <Badge
               variant="outline"
               className="rounded-none px-1.5 py-0.5 text-[8px] uppercase tracking-widest font-black border-border/30 bg-muted/30 text-muted-foreground/50 gap-1"
             >
               <TypeIcon size={10} weight="bold" />
-              {TYPE_LABELS[note.type]}
+              <span className="hidden xs:inline">{TYPE_LABELS[note.type]}</span>
             </Badge>
             {/* Category badge */}
             {note.category && (
@@ -164,7 +164,7 @@ export function NoteCard({
                 className="rounded-none px-1.5 py-0.5 text-[8px] uppercase tracking-widest font-black border-primary/20 bg-primary/5 text-primary/60 gap-1"
               >
                 <Icons.tag size={10} weight="bold" />
-                {note.category}
+                <span className="truncate max-w-[60px] xs:max-w-none">{note.category}</span>
               </Badge>
             )}
             {/* Tags */}

@@ -71,11 +71,11 @@ export function QuickDropClient() {
               <div className="w-6 h-6 bg-white text-black flex items-center justify-center shrink-0 rounded-full">
                 <Icons.check weight="bold" size={14} />
               </div>
-              <div>
-                <DialogTitle className="text-foreground text-base font-semibold font-sans">
+              <div className="min-w-0">
+                <DialogTitle className="text-foreground text-sm font-semibold font-sans">
                   Drop created!
                 </DialogTitle>
-                <div className="text-muted-foreground font-sans text-[15px] mt-0.5 break-all">
+                <div className="text-muted-foreground font-sans text-xs mt-0.5 break-all line-clamp-1">
                   {getShareUrl()}
                 </div>
               </div>
@@ -111,9 +111,9 @@ export function QuickDropClient() {
               </Button>
               <Button
                 variant="ghost"
-                className="text-muted-foreground hover:text-foreground gap-2 font-medium rounded-none"
+                className="text-muted-foreground hover:text-foreground gap-2 font-medium rounded-none h-10 px-2 sm:px-4"
               >
-                <Icons.warning size={16} /> Report Drop
+                <Icons.warning size={16} /> <span className="hidden xs:inline">Report Drop</span>
               </Button>
             </div>
 
@@ -127,7 +127,7 @@ export function QuickDropClient() {
           </div>
 
           {/* Text Area (Read Only) */}
-          <div className="bg-transparent border border-[#ff9b66]/60 p-5 min-h-[300px] text-foreground font-mono text-sm leading-relaxed overflow-y-auto mb-6 shadow-inner rounded-none">
+          <div className="bg-transparent border border-[#ff9b66]/60 p-4 sm:p-5 min-h-[200px] sm:min-h-[300px] text-foreground font-mono text-[13px] sm:text-sm leading-relaxed overflow-y-auto mb-6 shadow-inner rounded-none">
             {createForm.getValues("content")}
           </div>
 
@@ -137,10 +137,10 @@ export function QuickDropClient() {
               <button
                 type="button"
                 onClick={() => copyToClipboard(getShareUrl(), "URL")}
-                className="flex items-center gap-2 bg-transparent border border-border text-muted-foreground hover:text-foreground px-4 py-2.5 text-sm font-medium rounded-none transition-colors"
+                className="flex items-center gap-2 bg-transparent border border-border text-muted-foreground hover:text-foreground px-4 py-2.5 text-[12px] sm:text-sm font-medium rounded-none transition-colors w-full sm:w-auto overflow-hidden"
               >
-                <Icons.link size={16} className="text-muted-foreground" />
-                {getShareUrl()}
+                <Icons.link size={16} className="text-muted-foreground shrink-0" />
+                <span className="truncate">{getShareUrl()}</span>
               </button>
             </div>
 

@@ -43,9 +43,9 @@ export function NotesToolbar({
       </div>
 
       {/* Bottom Row: Search, Filter, Add Note */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
         {/* Left side: Search & Category Filter */}
-        <div className="flex flex-1 items-center gap-2 max-w-xl">
+        <div className="flex flex-1 items-center gap-2 w-full lg:max-w-xl">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-muted-foreground/30">
               <Icons.magnifyingGlass size={12} />
@@ -63,10 +63,11 @@ export function NotesToolbar({
         </div>
 
         {/* Right side: Type Filter, Sort, Add button */}
-        <div className="flex items-center gap-3 self-end sm:self-auto shrink-0">
-          <TypeFilter value={type} onChange={onTypeChange} />
-
-          <SortFilter sortBy={sortBy} onSortChange={onSortChange} />
+        <div className="flex items-center gap-2 sm:gap-3 justify-between sm:justify-end shrink-0 w-full lg:w-auto">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <TypeFilter value={type} onChange={onTypeChange} />
+            <SortFilter sortBy={sortBy} onSortChange={onSortChange} />
+          </div>
 
           <div className="w-px h-5 bg-border/40 hidden sm:block" />
 
