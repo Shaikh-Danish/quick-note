@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import { useState } from "react";
 import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Field, FieldContent, FieldError } from "@/components/ui/field";
 import { Icons } from "@/components/ui/icons";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
+
 import { useCreateQuickDrop } from "@/features/quick-drop/client";
 import { useZodForm } from "@/hooks/use-zod-form";
 import { createQuickDropSchema } from "@/lib/schemas/quick-drop";
@@ -17,13 +19,6 @@ export function QuickDropClient() {
   const [createdCode, setCreatedCode] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const createMutation = useCreateQuickDrop();
-
-  const qrBlocks = useMemo(() => {
-    return Array.from({ length: 64 }).map(() => ({
-      id: Math.random().toString(36).substring(2, 9),
-      isDark: Math.random() > 0.5,
-    }));
-  }, []);
 
   const createForm = useZodForm<z.infer<typeof createQuickDropSchema>>(
     createQuickDropSchema,
@@ -68,7 +63,7 @@ export function QuickDropClient() {
     <div className="w-full max-w-[1000px] mx-auto px-4 md:px-8 mb-16 font-sans">
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent
-          className="max-w-md bg-[#0a0a0a] border-[#222] text-white rounded-none p-5"
+          className="max-w-md bg-background border-border text-foreground rounded-none p-6 shadow-2xl"
           showCloseButton={false}
         >
           <div className="flex items-center justify-between">
@@ -77,10 +72,10 @@ export function QuickDropClient() {
                 <Icons.check weight="bold" size={14} />
               </div>
               <div>
-                <DialogTitle className="text-white text-base font-semibold font-sans">
+                <DialogTitle className="text-foreground text-base font-semibold font-sans">
                   Drop created!
                 </DialogTitle>
-                <div className="text-zinc-400 font-sans text-[15px] mt-0.5">
+                <div className="text-muted-foreground font-sans text-[15px] mt-0.5 break-all">
                   {getShareUrl()}
                 </div>
               </div>
@@ -88,7 +83,7 @@ export function QuickDropClient() {
             <Button
               variant="outline"
               onClick={() => copyToClipboard(getShareUrl(), "URL")}
-              className="font-semibold h-9 px-4 shrink-0 bg-white text-black hover:bg-zinc-200 border-none rounded-none text-sm"
+              className="font-bold h-10 px-4 shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 border-none rounded-none text-sm transition-colors"
             >
               Copy URL
             </Button>
@@ -149,19 +144,23 @@ export function QuickDropClient() {
               </button>
             </div>
 
-            {/* Functional QR Representation mapping dark/light blocks to variables */}
+            {/* Functional QR Representation */}
             <div className="flex flex-col items-center mt-4">
-              <div className="w-24 h-24 bg-white p-2 flex flex-wrap gap-[1px] border border-border pointer-events-none rounded-none">
-                {qrBlocks.map((block) => (
-                  <div
-                    key={block.id}
-                    className="w-[10px] h-[10px]"
-                    style={{
-                      backgroundColor:
-                        block.isDark ? "#000" : "transparent",
-                    }}
-                  />
-                ))}
+              <div className="bg-white p-3 border border-border rounded-none shadow-sm dark:bg-white">
+                <QRCodeSVG
+                  value={getShareUrl()}
+                  size={120}
+                  level="H"
+                  includeMargin={false}
+                  imageSettings={{
+                    src: "/favicon.ico",
+                    x: undefined,
+                    y: undefined,
+                    height: 24,
+                    width: 24,
+                    excavate: true,
+                  }}
+                />
               </div>
             </div>
           </div>

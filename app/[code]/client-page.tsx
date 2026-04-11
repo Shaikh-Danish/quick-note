@@ -1,38 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
-
+import { QRCodeSVG } from "qrcode.react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { toast } from "@/components/ui/toast";
-import { useFetchQuickDrop } from "@/features/quick-drop/client";
 
-export function QuickDropViewClient({ url }: { url: string }) {
+export function QuickDropViewClient({
+  url,
+  initialContent,
+  initialError,
+}: {
+  url: string;
+  initialContent: string | null;
+  initialError: string | null;
+}) {
   const router = useRouter();
-  const [receivedText, setReceivedText] = useState<string | null>(null);
-  const fetchMutation = useFetchQuickDrop();
-
-  const qrBlocks = useMemo(() => {
-    return Array.from({ length: 64 }).map(() => ({
-      id: Math.random().toString(36).substring(2, 9),
-      isDark: Math.random() > 0.5,
-    }));
-  }, []);
-
-  const handleFetch = () => {
-    fetchMutation.mutate(url, {
-      onSuccess: (res) => {
-        setReceivedText(res.content);
-        toast.success("Text retrieved successfully!", {
-          position: "top-center",
-        });
-      },
-      onError: (err) => {
-        toast.error(err.message || "Drop not found or expired.");
-      },
-    });
-  };
+  const [receivedText] = useState<string | null>(initialContent);
 
   const copyToClipboard = (text: string, label: string = "Text") => {
     navigator.clipboard.writeText(text);
@@ -49,31 +34,20 @@ export function QuickDropViewClient({ url }: { url: string }) {
       {!receivedText ? (
         <div className="animate-in fade-in duration-300">
           <div className="flex flex-col items-center justify-center min-h-[40vh] border border-border bg-card p-12 text-center rounded-none shadow-sm mt-10">
-            <div className="bg-muted p-4 rounded-none mb-6">
-              <Icons.lock
-                weight="fill"
-                size={32}
-                className="text-muted-foreground"
-              />
+            <div className="bg-destructive/10 p-4 rounded-none mb-6">
+              <Icons.warning size={32} className="text-destructive" />
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-3">
-              Locked Drop
+              Drop Not Found
             </h2>
             <p className="text-muted-foreground mb-8 max-w-md">
-              This drop may be set to burn after reading. Click below to unlock
-              and permanently consume the contents.
+              {initialError || "This drop may have expired, been burned, or the URL is incorrect."}
             </p>
             <Button
-              onClick={handleFetch}
-              disabled={fetchMutation.isPending}
-              className="font-bold h-12 px-8 shadow-none transition-colors rounded-none text-black bg-[#ff9b66] hover:bg-[#ff8544] border-none"
+              onClick={() => router.push("/quickdrop")}
+              className="font-bold h-10 px-6 rounded-none bg-primary text-primary-foreground"
             >
-              {fetchMutation.isPending ? (
-                <Icons.loader2 className="animate-spin mr-2" />
-              ) : (
-                <Icons.key weight="bold" size={18} className="mr-2" />
-              )}
-              Unlock Drop
+              Create New Drop
             </Button>
           </div>
         </div>
@@ -129,17 +103,21 @@ export function QuickDropViewClient({ url }: { url: string }) {
             </div>
             {/* Functional QR Representation */}
             <div className="flex flex-col items-center mt-4">
-              <div className="w-24 h-24 bg-white p-2 flex flex-wrap gap-[1px] border border-border pointer-events-none rounded-none">
-                {qrBlocks.map((block) => (
-                  <div
-                    key={block.id}
-                    className="w-[10px] h-[10px]"
-                    style={{
-                      backgroundColor:
-                        block.isDark ? "#000" : "transparent",
-                    }}
-                  />
-                ))}
+              <div className="bg-white p-3 border border-border rounded-none shadow-sm dark:bg-white">
+                <QRCodeSVG
+                  value={getShareUrl()}
+                  size={120}
+                  level="H"
+                  includeMargin={false}
+                  imageSettings={{
+                    src: "/favicon.ico",
+                    x: undefined,
+                    y: undefined,
+                    height: 24,
+                    width: 24,
+                    excavate: true,
+                  }}
+                />
               </div>
             </div>
           </div>
