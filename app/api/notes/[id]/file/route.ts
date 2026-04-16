@@ -46,12 +46,9 @@ export async function GET(
     const tR2 = performance.now();
     console.log(`[GET /api/notes/${id}/file] ⏱ R2 download + decrypt: ${(tR2 - tDb).toFixed(1)}ms (${(decryptedBuffer.length / 1024 / 1024).toFixed(2)}MB)`);
 
-    // Decrypt the content type
-    const contentType = note.contentType
-      ? decryptString(note.contentType, session.user.id)
-      : "application/octet-stream";
+    const contentType = note.contentType ?? "application/octet-stream";
 
-    const title = decryptString(note.title, session.user.id);
+    const title = note.title;
     const sanitizedTitle = title.replace(/[^a-zA-Z0-9._-]/g, "_");
 
     console.log(`[GET /api/notes/${id}/file] ⏱ Total: ${(performance.now() - t0).toFixed(1)}ms`);
