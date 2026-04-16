@@ -70,24 +70,29 @@ export async function getUserNotes(
       prisma.note.count({ where }),
     ]);
 
-    let decryptedNotes = notes.map((note) => ({
-      id: note.id,
-      title: decryptString(note.title, userId),
-      // For file-based notes, content is just a placeholder — actual file is in R2
-      content: note.fileKey ? "" : decryptString(note.content, userId),
-      type: note.type as NoteType,
-      category: note.category?.name || null,
-      contentType: note.contentType
-        ? decryptString(note.contentType, userId)
-        : null,
-      fileKey: note.fileKey,
-      fileSize: note.fileSize,
-      createdAt: note.createdAt,
-      updatedAt: note.updatedAt,
-      useCount: note.useCount,
-      isProtected: note.isProtected,
-      tags: note.tags.map((t) => t.tag),
-    }));
+    let decryptedNotes = await Promise.all(
+      notes.map(async (note) => {
+        const content = note.content
+          ? await decryptString(note.content, userId)
+          : null;
+
+        return {
+          id: note.id,
+          title: note.title,
+          content: content as string,
+          type: note.type as NoteType,
+          category: note.category?.name || null,
+          contentType: note.contentType,
+          fileKey: note.fileKey,
+          fileSize: note.fileSize,
+          createdAt: note.createdAt,
+          updatedAt: note.updatedAt,
+          useCount: note.useCount,
+          isProtected: note.isProtected,
+          tags: note.tags.map((t) => t.tag),
+        };
+      })
+    );
 
     // Search is applied post-decryption since content is encrypted
     let filteredTotal = total;
@@ -152,10 +157,8 @@ export async function createNote(
   },
 ) {
   try {
-    const encryptedTitle = encryptString(data.title, userId);
-    const encryptedContentType = data.contentType
-      ? encryptString(data.contentType, userId)
-      : null;
+    const title = data.title;
+    const contentType = data.contentType || null;
 
     let encryptedContent: string;
     let fileKey: string | null = null;
@@ -184,7 +187,7 @@ export async function createNote(
 
     return await prisma.note.create({
       data: {
-        title: encryptedTitle,
+        title: title,
         content: encryptedContent,
         type: (data.type || "TEXT") as PrismaNoteCategory,
         category: data.category
@@ -203,7 +206,7 @@ export async function createNote(
             },
           }
           : undefined,
-        contentType: encryptedContentType,
+        contentType: contentType,
         fileKey,
         fileSize,
         user: { connect: { id: userId } },

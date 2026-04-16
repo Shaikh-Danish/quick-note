@@ -31,16 +31,16 @@ export async function GET(
     const userId = note.user.id; // Owner's ID for decryption
 
     // 1. Initial System Decryption
-    let title = decryptString(note.title, userId);
+    let title = await decryptString(note.title, userId);
     let contentType = note.contentType
-      ? decryptString(note.contentType, userId)
+      ? await decryptString(note.contentType, userId)
       : "application/octet-stream";
 
     // 2. Secondary Password Decryption (if applicable)
     if (note.isProtected && accessKey) {
       try {
-        title = decryptWithPassword(title, accessKey);
-        contentType = note.contentType ? decryptWithPassword(contentType, accessKey) : contentType;
+        title = title;
+        contentType = note.contentType ?? "application/octet-stream";
       } catch (_err) {
         // If title/contentType weren't password-encrypted (some old notes), keep original
       }
@@ -59,11 +59,11 @@ export async function GET(
         },
       });
     } else {
-      let content = decryptString(note.content, userId);
+      let content = await decryptString(note.content, userId);
       
       if (note.isProtected && accessKey) {
         try {
-          content = decryptWithPassword(content, accessKey);
+          content = content
         } catch (_err) {
             return NextResponse.json({ error: "Access key mismatch for protected document" }, { status: 403 });
         }

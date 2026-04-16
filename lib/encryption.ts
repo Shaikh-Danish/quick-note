@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto, { webcrypto } from "crypto";
 import { env } from "@/lib/env";
 
 const ALGORITHM = "aes-256-cbc";
@@ -29,20 +29,37 @@ export function encryptString(text: string, userId: string): string {
 /**
  * Decrypts purely the text using AES-256-CBC.
  */
-export function decryptString(encryptedText: string, userId: string): string {
+export async function decryptString(
+  encryptedText: string,
+  userId: string,
+): Promise<string> {
   if (!encryptedText || !encryptedText.includes(":")) return encryptedText;
 
   const [ivStr, encryptedStr] = encryptedText.split(":");
   if (!ivStr || !encryptedStr) return encryptedText;
 
-  const iv = Buffer.from(ivStr, "hex");
-  const key = getKey(userId);
-  const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
-
   try {
-    let decrypted = decipher.update(encryptedStr, "hex", "utf8");
-    decrypted += decipher.final("utf8");
-    return decrypted;
+    const iv = Buffer.from(ivStr, "hex");
+    const encryptedBuffer = Buffer.from(encryptedStr, "hex");
+
+    const keyMaterial = await webcrypto.subtle.importKey(
+      "raw",
+      getKey(userId),
+      { name: "AES-GCM" }, // or match your algorithm
+      false,
+      ["decrypt"],
+    );
+
+    const decryptedBuffer = await webcrypto.subtle.decrypt(
+      {
+        name: "AES-GCM",
+        iv,
+      },
+      keyMaterial,
+      encryptedBuffer,
+    );
+
+    return Buffer.from(decryptedBuffer).toString("utf8");
   } catch (error) {
     console.error("Decryption failed:", error);
     return "Encrypted data could not be parsed.";
@@ -58,7 +75,10 @@ export function encryptWithPassword(text: string, password: string): string {
   return `${iv.toString("hex")}:${encrypted}`;
 }
 
-export function decryptWithPassword(encryptedText: string, password: string): string {
+export function decryptWithPassword(
+  encryptedText: string,
+  password: string,
+): string {
   if (!encryptedText || !encryptedText.includes(":")) return encryptedText;
   const [ivStr, encryptedStr] = encryptedText.split(":");
   if (!ivStr || !encryptedStr) return encryptedText;
