@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import {
@@ -12,7 +12,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+
 import { authClient } from "@/features/auth/client";
+import { cn } from "@/lib/utils";
 
 interface DashboardHeaderProps {
   user: {
@@ -43,32 +45,38 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
 
   const NavLinks = ({ className = "" }: { className?: string }) => (
     <>
-      <Button
-        variant="ghost"
-        onClick={() => router.push("/")}
-        className={`relative h-full flex items-center text-sm font-medium transition-colors ${pathname === "/" || pathname === "/dashboard"
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground"
-          } ${className}`}
+      <Link
+        href="/"
+        prefetch={true}
+        className={cn(
+          "relative h-full flex items-center px-4 md:px-3 text-sm font-medium transition-colors",
+          pathname === "/" || pathname === "/dashboard"
+            ? "text-foreground"
+            : "text-muted-foreground hover:text-foreground",
+          className,
+        )}
       >
         Notes
         {(pathname === "/" || pathname === "/dashboard") && (
           <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground rounded-t-full hidden md:block" />
         )}
-      </Button>
-      <Button
-        variant="ghost"
-        onClick={() => router.push("/quickdrop")}
-        className={`relative h-full flex items-center text-sm font-medium transition-colors ${pathname?.startsWith("/quickdrop")
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground"
-          } ${className}`}
+      </Link>
+      <Link
+        href="/quickdrop"
+        prefetch={true}
+        className={cn(
+          "relative h-full flex items-center px-4 md:px-3 text-sm font-medium transition-colors",
+          pathname?.startsWith("/quickdrop")
+            ? "text-foreground"
+            : "text-muted-foreground hover:text-foreground",
+          className,
+        )}
       >
         QuickDrop
         {pathname?.startsWith("/quickdrop") && (
           <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground rounded-t-full hidden md:block" />
         )}
-      </Button>
+      </Link>
     </>
   );
 

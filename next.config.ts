@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   experimental: {
     proxyClientMaxBodySize: '50mb',
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
+    },
   },
 };
 

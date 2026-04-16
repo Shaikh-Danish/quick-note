@@ -1,8 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { toast } from "@/components/ui/toast";
@@ -16,7 +17,6 @@ export function QuickDropViewClient({
   initialContent: string | null;
   initialError: string | null;
 }) {
-  const router = useRouter();
   const [receivedText] = useState<string | null>(initialContent);
 
   const copyToClipboard = (text: string, label: string = "Text") => {
@@ -41,14 +41,14 @@ export function QuickDropViewClient({
               Drop Not Found
             </h2>
             <p className="text-muted-foreground mb-8 max-w-md">
-              {initialError || "This drop may have expired, been burned, or the URL is incorrect."}
+              {initialError ||
+                "This drop may have expired, been burned, or the URL is incorrect."}
             </p>
-            <Button
-              onClick={() => router.push("/quickdrop")}
-              className="font-bold h-10 px-6 rounded-none bg-primary text-primary-foreground"
-            >
-              Create New Drop
-            </Button>
+            <Link href="/quickdrop" prefetch={true}>
+              <Button className="font-bold h-10 px-6 rounded-none bg-primary text-primary-foreground">
+                Create New Drop
+              </Button>
+            </Link>
           </div>
         </div>
       ) : (
@@ -61,7 +61,8 @@ export function QuickDropViewClient({
                 onClick={() => copyToClipboard(receivedText, "Text")}
                 className="gap-2 h-10 px-4 font-medium rounded-none"
               >
-                <Icons.copy size={16} /> <span className="xs:inline md:inline">Copy Text</span>
+                <Icons.copy size={16} />{" "}
+                <span className="xs:inline md:inline">Copy Text</span>
                 <Icons.caretDown
                   size={14}
                   className="ml-1 text-muted-foreground"
@@ -71,17 +72,21 @@ export function QuickDropViewClient({
                 variant="ghost"
                 className="text-muted-foreground hover:text-foreground gap-2 font-medium rounded-none px-2 sm:px-4"
               >
-                <Icons.warning size={16} /> <span className="hidden xs:inline">Report Drop</span>
+                <Icons.warning size={16} />{" "}
+                <span className="hidden xs:inline">Report Drop</span>
               </Button>
             </div>
 
-            <Button
-              onClick={() => router.push("/quickdrop")}
-              className="font-bold h-10 px-5 shadow-none w-full sm:w-auto rounded-none text-black bg-[#ff9b66] hover:bg-[#ff8544] border-none"
+            <Link
+              href="/quickdrop"
+              prefetch={true}
+              className="w-full sm:w-auto"
             >
-              <Icons.plus weight="bold" size={16} className="mr-2" /> Create New
-              Drop
-            </Button>
+              <Button className="font-bold h-10 px-5 shadow-none w-full sm:w-auto rounded-none text-black bg-[#ff9b66] hover:bg-[#ff8544] border-none">
+                <Icons.plus weight="bold" size={16} className="mr-2" /> Create
+                New Drop
+              </Button>
+            </Link>
           </div>
 
           {/* Text Area (Read Only) */}
@@ -97,7 +102,10 @@ export function QuickDropViewClient({
                 onClick={() => copyToClipboard(getShareUrl(), "URL")}
                 className="flex items-center gap-2 bg-transparent border border-border text-muted-foreground hover:text-foreground px-4 py-2.5 text-[12px] sm:text-sm font-medium rounded-none transition-colors w-full sm:w-auto overflow-hidden"
               >
-                <Icons.link size={16} className="text-muted-foreground shrink-0" />
+                <Icons.link
+                  size={16}
+                  className="text-muted-foreground shrink-0"
+                />
                 <span className="truncate">{getShareUrl()}</span>
               </button>
             </div>
