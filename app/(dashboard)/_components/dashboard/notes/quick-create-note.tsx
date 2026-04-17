@@ -147,35 +147,41 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
           </DialogHeader>
 
           <div className="px-6 space-y-5">
-            {/* Type selector - Industrial Grid */}
-            <div className="grid grid-cols-3 xs:grid-cols-5 border border-border/40 p-1 bg-muted/20">
+            {/* Type selector - Premium Tabs */}
+            <div className="grid grid-cols-5 w-full border border-border/40 bg-muted/5 shadow-sm">
               {NOTE_TYPES.map((type) => {
                 const IconComponent = Icons[TYPE_ICONS[type]];
                 const isActive = internalType === type;
                 return (
-                  <Button
+                  <button
                     key={type}
                     type="button"
-                    variant={isActive ? "default" : "ghost"}
                     onClick={(e) => {
                       e.preventDefault();
                       setInternalType(type);
                     }}
                     className={cn(
-                      "flex flex-col items-center justify-center h-auto py-3 gap-2 transition-all duration-150 border-none rounded-none",
+                      "flex flex-col xl:flex-row items-center justify-center py-2 xl:h-10 gap-1.5 xl:gap-2 transition-all duration-200 outline-none border-r border-border/40 last:border-r-0 relative group",
                       isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground/40 hover:text-foreground hover:bg-muted/40",
+                        ? "bg-primary text-primary-foreground shadow-[inset_0_3px_0_0_rgba(255,255,255,0.2)]"
+                        : "hover:bg-muted/20 text-muted-foreground/60 hover:text-foreground",
                     )}
                   >
                     <IconComponent
-                      size={16}
+                      size={15}
                       weight={isActive ? "fill" : "bold"}
+                      className={cn(
+                        "shrink-0 transition-transform duration-200",
+                        isActive ? "scale-110" : "group-hover:scale-110"
+                      )}
                     />
-                    <span className="text-[8px] font-black uppercase tracking-[0.15em]">
+                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest truncate px-1 mt-0.5">
                       {TYPE_LABELS[type]}
                     </span>
-                  </Button>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-background/20" />
+                    )}
+                  </button>
                 );
               })}
             </div>
