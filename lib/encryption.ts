@@ -1,4 +1,6 @@
-import crypto, { webcrypto } from "crypto";
+import "server-only";
+
+import crypto from "crypto";
 import { env } from "@/lib/env";
 
 const ALGORITHM = "aes-256-cbc";
@@ -40,26 +42,13 @@ export async function decryptString(
 
   try {
     const iv = Buffer.from(ivStr, "hex");
-    const encryptedBuffer = Buffer.from(encryptedStr, "hex");
+    const key = getKey(userId);
+    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
 
-    const keyMaterial = await webcrypto.subtle.importKey(
-      "raw",
-      getKey(userId),
-      { name: "AES-GCM" }, // or match your algorithm
-      false,
-      ["decrypt"],
-    );
+    let decrypted = decipher.update(encryptedStr, "hex", "utf8");
+    decrypted += decipher.final("utf8");
 
-    const decryptedBuffer = await webcrypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv,
-      },
-      keyMaterial,
-      encryptedBuffer,
-    );
-
-    return Buffer.from(decryptedBuffer).toString("utf8");
+    return decrypted;
   } catch (error) {
     console.error("Decryption failed:", error);
     return "Encrypted data could not be parsed.";
