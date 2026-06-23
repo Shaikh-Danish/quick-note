@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-export const NOTE_TYPES = ["TEXT", "URL", "IMAGE", "DOCUMENT", "MARKDOWN"] as const;
+export const NOTE_TYPES = [
+  "TEXT",
+  "URL",
+  "IMAGE",
+  "DOCUMENT",
+  "MARKDOWN",
+] as const;
 export type NoteType = (typeof NOTE_TYPES)[number];
 
 /** Maps each type to its default MIME/content type */
@@ -49,7 +55,7 @@ export type NoteSchema = z.infer<typeof noteSchema>;
 
 /** Query params for listing notes */
 export const notesQuerySchema = z.object({
-  sort: z.enum(["latest", "most_used"]).default("latest"),
+  sort: z.enum(["latest", "most_used"]).default("most_used"),
   type: noteTypeSchema.optional(),
   category: z.string().optional(),
   search: z.string().optional(),

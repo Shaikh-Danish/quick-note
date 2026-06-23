@@ -19,7 +19,7 @@ type NotesFilterAction =
   | { type: "SET_PAGE"; page: number };
 
 const initialState: NotesFilterState = {
-  sortBy: "latest",
+  sortBy: "most_used",
   type: undefined,
   category: undefined,
   search: "",

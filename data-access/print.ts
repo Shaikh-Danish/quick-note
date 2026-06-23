@@ -5,9 +5,9 @@ import { prisma } from "@/lib/prisma";
  * Returns the unique token UUID.
  */
 export async function createPrintToken(
-  noteId: string, 
-  userId: string, 
-  accessKey?: string
+  noteId: string,
+  userId: string,
+  accessKey?: string,
 ): Promise<string> {
   // Verify ownership before generating token
   const note = await prisma.note.findUnique({
@@ -50,8 +50,8 @@ export async function getValidPrintToken(token: string) {
     include: {
       note: {
         include: {
-          user: true
-        }
+          user: true,
+        },
       },
     },
   });
@@ -76,15 +76,17 @@ export async function getValidPrintToken(token: string) {
       include: {
         note: {
           include: {
-            user: true
-          }
+            user: true,
+          },
         },
       },
     });
     return updatedRecord;
   } else {
     // Already accessed - check if the 2-min window has passed
-    const sessionExpiry = new Date(record.firstAccessedAt.getTime() + 2 * 60 * 1000);
+    const sessionExpiry = new Date(
+      record.firstAccessedAt.getTime() + 2 * 60 * 1000,
+    );
     if (now > sessionExpiry) {
       await prisma.securePrintToken.update({
         where: { id: record.id },

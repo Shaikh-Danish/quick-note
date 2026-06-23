@@ -2,7 +2,10 @@
 
 import { decryptWithPassword } from "@/lib/encryption";
 
-export async function unlockNoteContent(encryptedContent: string, password: string) {
+export async function unlockNoteContent(
+  encryptedContent: string,
+  password: string,
+) {
   try {
     const decrypted = decryptWithPassword(encryptedContent, password);
     return { success: true, content: decrypted };

@@ -183,7 +183,8 @@
     @apply bg-background text-foreground;
   }
 
-  button, a {
+  button,
+  a {
     @apply cursor-pointer transition-all duration-200 ease-in-out;
   }
 

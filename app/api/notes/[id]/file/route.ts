@@ -28,7 +28,12 @@ export async function GET(
 
     const note = await prisma.note.findUnique({
       where: { id, userId: session.user.id },
-      select: { fileKey: true, contentType: true, title: true, isProtected: true },
+      select: {
+        fileKey: true,
+        contentType: true,
+        title: true,
+        isProtected: true,
+      },
     });
 
     if (!note) {
@@ -36,22 +41,32 @@ export async function GET(
     }
 
     if (!note.fileKey) {
-      return NextResponse.json({ error: "Not a file-based note" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Not a file-based note" },
+        { status: 400 },
+      );
     }
 
     const tDb = performance.now();
 
     // Download and decrypt from R2
-    const decryptedBuffer = await downloadFileFromR2(note.fileKey, session.user.id);
+    const decryptedBuffer = await downloadFileFromR2(
+      note.fileKey,
+      session.user.id,
+    );
     const tR2 = performance.now();
-    console.log(`[GET /api/notes/${id}/file] ⏱ R2 download + decrypt: ${(tR2 - tDb).toFixed(1)}ms (${(decryptedBuffer.length / 1024 / 1024).toFixed(2)}MB)`);
+    console.log(
+      `[GET /api/notes/${id}/file] ⏱ R2 download + decrypt: ${(tR2 - tDb).toFixed(1)}ms (${(decryptedBuffer.length / 1024 / 1024).toFixed(2)}MB)`,
+    );
 
     const contentType = note.contentType ?? "application/octet-stream";
 
     const title = note.title;
     const sanitizedTitle = title.replace(/[^a-zA-Z0-9._-]/g, "_");
 
-    console.log(`[GET /api/notes/${id}/file] ⏱ Total: ${(performance.now() - t0).toFixed(1)}ms`);
+    console.log(
+      `[GET /api/notes/${id}/file] ⏱ Total: ${(performance.now() - t0).toFixed(1)}ms`,
+    );
 
     return new NextResponse(new Uint8Array(decryptedBuffer), {
       headers: {

@@ -36,7 +36,9 @@ export async function GET(req: NextRequest) {
       );
     }
     const tParse = performance.now();
-    console.log(`[GET /api/notes] ⏱ Query parse: ${(tParse - tAuth).toFixed(1)}ms`);
+    console.log(
+      `[GET /api/notes] ⏱ Query parse: ${(tParse - tAuth).toFixed(1)}ms`,
+    );
 
     const result = await getUserNotes(session.user.id, parsed.data);
     const tDb = performance.now();
@@ -72,7 +74,9 @@ export async function POST(req: NextRequest) {
       // --- File upload path (IMAGE / DOCUMENT) ---
       const formData = await req.formData();
       const tFormParse = performance.now();
-      console.log(`[POST /api/notes] ⏱ FormData parse: ${(tFormParse - tAuth).toFixed(1)}ms`);
+      console.log(
+        `[POST /api/notes] ⏱ FormData parse: ${(tFormParse - tAuth).toFixed(1)}ms`,
+      );
 
       const file = formData.get("file") as File | null;
       if (!file) {
@@ -90,16 +94,22 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      console.log(`[POST /api/notes] 📄 File: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB, ${file.type})`);
+      console.log(
+        `[POST /api/notes] 📄 File: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB, ${file.type})`,
+      );
 
       const fileBuffer = Buffer.from(await file.arrayBuffer());
       const tBuffer = performance.now();
-      console.log(`[POST /api/notes] ⏱ File → Buffer: ${(tBuffer - tFormParse).toFixed(1)}ms`);
+      console.log(
+        `[POST /api/notes] ⏱ File → Buffer: ${(tBuffer - tFormParse).toFixed(1)}ms`,
+      );
 
       const type = (formData.get("type") as string) || "IMAGE";
       const category = (formData.get("category") as string) || undefined;
       const contentType = (formData.get("contentType") as string) || file.type;
-      const tags = formData.get("tags") ? JSON.parse(formData.get("tags") as string) : [];
+      const tags = formData.get("tags")
+        ? JSON.parse(formData.get("tags") as string)
+        : [];
       const isProtected = formData.get("isProtected") === "true";
       const password = (formData.get("password") as string) || undefined;
 
@@ -117,7 +127,9 @@ export async function POST(req: NextRequest) {
         fileName: file.name,
       });
       const tDb = performance.now();
-      console.log(`[POST /api/notes] ⏱ R2 upload + DB create: ${(tDb - tPreDb).toFixed(1)}ms`);
+      console.log(
+        `[POST /api/notes] ⏱ R2 upload + DB create: ${(tDb - tPreDb).toFixed(1)}ms`,
+      );
       console.log(`[POST /api/notes] ⏱ Total: ${(tDb - t0).toFixed(1)}ms`);
 
       return NextResponse.json({ success: true, note });
@@ -126,11 +138,15 @@ export async function POST(req: NextRequest) {
     // --- JSON path (TEXT / URL / MARKDOWN) ---
     const body = await req.json();
     const tJsonParse = performance.now();
-    console.log(`[POST /api/notes] ⏱ JSON parse: ${(tJsonParse - tAuth).toFixed(1)}ms`);
+    console.log(
+      `[POST /api/notes] ⏱ JSON parse: ${(tJsonParse - tAuth).toFixed(1)}ms`,
+    );
 
     const result = noteSchema.safeParse(body);
     const tValidate = performance.now();
-    console.log(`[POST /api/notes] ⏱ Schema validate: ${(tValidate - tJsonParse).toFixed(1)}ms`);
+    console.log(
+      `[POST /api/notes] ⏱ Schema validate: ${(tValidate - tJsonParse).toFixed(1)}ms`,
+    );
 
     if (!result.success) {
       return NextResponse.json(
@@ -142,13 +158,18 @@ export async function POST(req: NextRequest) {
     const tPreDb = performance.now();
     const note = await createNote(session.user.id, result.data);
     const tDb = performance.now();
-    console.log(`[POST /api/notes] ⏱ DB create: ${(tDb - tPreDb).toFixed(1)}ms`);
+    console.log(
+      `[POST /api/notes] ⏱ DB create: ${(tDb - tPreDb).toFixed(1)}ms`,
+    );
     console.log(`[POST /api/notes] ⏱ Total: ${(tDb - t0).toFixed(1)}ms`);
 
     return NextResponse.json({ success: true, note });
   } catch (error) {
     const tErr = performance.now();
-    console.error(`[POST /api/notes] ❌ Error after ${(tErr - t0).toFixed(1)}ms:`, error);
+    console.error(
+      `[POST /api/notes] ❌ Error after ${(tErr - t0).toFixed(1)}ms:`,
+      error,
+    );
     return NextResponse.json(
       { error: "Failed to create note" },
       { status: 500 },

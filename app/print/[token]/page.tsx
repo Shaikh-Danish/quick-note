@@ -116,10 +116,13 @@ export default function PrintPage() {
 
       {/* Document Sheet */}
       <main className="max-w-4xl mx-auto bg-white shadow-xl border border-zinc-200 p-12 relative print:shadow-none print:border-none print:p-0">
-        <div className={cn(
-          "mb-8 border-b border-zinc-100 pb-6",
-          (docData.type === "IMAGE" || docData.type === "DOCUMENT") && "print:hidden"
-        )}>
+        <div
+          className={cn(
+            "mb-8 border-b border-zinc-100 pb-6",
+            (docData.type === "IMAGE" || docData.type === "DOCUMENT") &&
+              "print:hidden",
+          )}
+        >
           <h2 className="text-2xl font-black text-zinc-900 tracking-tight leading-none">
             {docData.title}
           </h2>
@@ -150,8 +153,13 @@ export default function PrintPage() {
           {docData.type === "DOCUMENT" && docData.binaryUrl && (
             <div className="text-center py-12 border-2 border-dashed border-zinc-100 bg-zinc-50/50 print:p-0 print:border-none print:bg-transparent">
               <div className="print:hidden">
-                <Icons.filePdf size={48} className="mx-auto mb-4 text-zinc-400" />
-                <p className="text-sm font-bold text-zinc-900 tracking-tight">Digital Stream Decrypted</p>
+                <Icons.filePdf
+                  size={48}
+                  className="mx-auto mb-4 text-zinc-400"
+                />
+                <p className="text-sm font-bold text-zinc-900 tracking-tight">
+                  Digital Stream Decrypted
+                </p>
                 <p className="text-[10px] text-zinc-400 mt-1.5 max-w-[240px] mx-auto leading-relaxed">
                   If the print dialog didn't appear, use the button above.
                 </p>

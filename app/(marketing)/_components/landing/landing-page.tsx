@@ -134,14 +134,29 @@ export default function LandingPage() {
 
             {/* MOCK DASHBOARD INSERTED HERE */}
             <motion.div
-              initial={{ opacity: 0, y: 80, scale: 0.95, rotateX: 10, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0, filter: "blur(0px)" }}
-              transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              initial={{
+                opacity: 0,
+                y: 80,
+                scale: 0.95,
+                rotateX: 10,
+                filter: "blur(10px)",
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                rotateX: 0,
+                filter: "blur(0px)",
+              }}
+              transition={{
+                duration: 1.5,
+                delay: 0.2,
+                ease: [0.16, 1, 0.3, 1],
+              }}
               className="mt-20 mx-auto max-w-5xl relative z-20 group"
               style={{ perspective: "2000px" }}
             >
               <div className="relative rounded-xl border border-border/50 bg-background/30 backdrop-blur-3xl shadow-[0_0_80px_rgba(0,0,0,0.1)] dark:shadow-[0_0_80px_rgba(0,0,0,0.5)] overflow-hidden ring-1 ring-white/10 transition-transform duration-700 ease-out hover:rotate-x-2 hover:scale-[1.01] text-zinc-900 dark:text-zinc-100">
-
                 {/* Mock Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-border/30 bg-background/50 backdrop-blur-md">
                   <div className="flex items-center gap-2">
@@ -206,10 +221,14 @@ export default function LandingPage() {
 
                     <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
                       <div className="flex items-center gap-2 px-3 py-2.5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-border/50 text-[10px] sm:text-xs font-bold text-muted-foreground uppercase cursor-pointer shrink-0 rounded-none transform transition hover:bg-muted/50">
-                        <Tag size={12} className="sm:size-14" /> <span className="hidden xs:inline">All Categories</span> <CaretDown size={14} />
+                        <Tag size={12} className="sm:size-14" />{" "}
+                        <span className="hidden xs:inline">All Categories</span>{" "}
+                        <CaretDown size={14} />
                       </div>
                       <div className="flex items-center gap-2 px-3 py-2.5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-border/50 text-[10px] sm:text-xs font-bold text-muted-foreground uppercase cursor-pointer shrink-0 rounded-none transform transition hover:bg-muted/50">
-                        <Folders size={12} className="sm:size-14" /> <span className="hidden xs:inline">All Types</span> <CaretDown size={14} />
+                        <Folders size={12} className="sm:size-14" />{" "}
+                        <span className="hidden xs:inline">All Types</span>{" "}
+                        <CaretDown size={14} />
                       </div>
                       <div className="flex items-center gap-2 px-4 py-2.5 bg-[#3c3855] dark:bg-[#5b5480] backdrop-blur-md text-white text-xs sm:text-sm font-bold uppercase cursor-pointer hover:bg-[#2a273c] transition-colors shrink-0 rounded-none">
                         <Plus size={14} weight="bold" /> Add Note
@@ -374,7 +393,11 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
                 whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.1,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
                 className="md:col-span-2 p-6 bg-muted/30 backdrop-blur-md border border-border/50  group hover:border-foreground transition-all flex items-end"
               >
                 <div className="flex-1">
@@ -405,7 +428,11 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
                 whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.2,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
                 className="p-6 bg-card/30 backdrop-blur-md border border-border/50  group hover:bg-accent transition-all flex flex-col justify-between shadow-sm hover:shadow-md"
               >
                 <Folders
@@ -431,7 +458,11 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
                 whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.3,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
                 className="p-8 bg-card/30 backdrop-blur-md border border-border/50  group hover:bg-accent transition-all flex flex-col justify-between shadow-sm hover:shadow-md"
               >
                 <Layout size={40} className="text-muted-foreground" />
