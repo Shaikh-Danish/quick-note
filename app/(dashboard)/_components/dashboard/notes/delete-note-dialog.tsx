@@ -44,7 +44,8 @@ export function DeleteNoteDialog({ note, onDelete }: DeleteNoteDialogProps) {
 
           <div className="px-6 pb-3">
             <AlertDialogDescription className="text-sm text-muted-foreground leading-relaxed text-left">
-              This action cannot be undone. This will permanently delete the note{" "}
+              This action cannot be undone. This will permanently delete the
+              note{" "}
               <span className="font-bold text-foreground">"{note.title}"</span>.
             </AlertDialogDescription>
           </div>

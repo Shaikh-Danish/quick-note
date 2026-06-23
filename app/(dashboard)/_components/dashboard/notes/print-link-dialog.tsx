@@ -15,7 +15,11 @@ interface PrintLinkDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function PrintLinkDialog({ url, open, onOpenChange }: PrintLinkDialogProps) {
+export function PrintLinkDialog({
+  url,
+  open,
+  onOpenChange,
+}: PrintLinkDialogProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -41,8 +45,12 @@ export function PrintLinkDialog({ url, open, onOpenChange }: PrintLinkDialogProp
         <div className="p-6 pt-2 space-y-6">
           <div className="space-y-4">
             <p className="text-xs text-muted-foreground/70 leading-relaxed font-medium">
-              Share this secure, one-time link with your print station.
-              It will expire automatically after <span className="text-foreground font-bold underline decoration-primary/30">5 minutes</span> or after the session window closes.
+              Share this secure, one-time link with your print station. It will
+              expire automatically after{" "}
+              <span className="text-foreground font-bold underline decoration-primary/30">
+                5 minutes
+              </span>{" "}
+              or after the session window closes.
             </p>
 
             <div className="flex items-center gap-2">
@@ -78,10 +86,13 @@ export function PrintLinkDialog({ url, open, onOpenChange }: PrintLinkDialogProp
               </div>
             </div>
             <div className="space-y-1">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-primary/80">Security Notice</h4>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-primary/80">
+                Security Notice
+              </h4>
               <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
-                The document is decrypted on-demand and is never stored in its raw format on the link server.
-                Manual invalidation is triggered the moment the print dialog is closed.
+                The document is decrypted on-demand and is never stored in its
+                raw format on the link server. Manual invalidation is triggered
+                the moment the print dialog is closed.
               </p>
             </div>
           </div>

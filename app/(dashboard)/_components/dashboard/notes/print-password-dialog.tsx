@@ -51,7 +51,8 @@ export function PrintPasswordDialog({
         <form onSubmit={handleSubmit} className="p-6 pt-2 space-y-4">
           <div className="space-y-4">
             <p className="text-[10px] text-muted-foreground/70 leading-relaxed font-medium text-center">
-              Please enter the password for this note. This key will be securely attached to your temporary print link.
+              Please enter the password for this note. This key will be securely
+              attached to your temporary print link.
             </p>
 
             <Input

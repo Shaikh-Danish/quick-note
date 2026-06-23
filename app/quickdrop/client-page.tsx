@@ -113,7 +113,8 @@ export function QuickDropClient() {
                 variant="ghost"
                 className="text-muted-foreground hover:text-foreground gap-2 font-medium rounded-none h-10 px-2 sm:px-4"
               >
-                <Icons.warning size={16} /> <span className="hidden xs:inline">Report Drop</span>
+                <Icons.warning size={16} />{" "}
+                <span className="hidden xs:inline">Report Drop</span>
               </Button>
             </div>
 
@@ -139,7 +140,10 @@ export function QuickDropClient() {
                 onClick={() => copyToClipboard(getShareUrl(), "URL")}
                 className="flex items-center gap-2 bg-transparent border border-border text-muted-foreground hover:text-foreground px-4 py-2.5 text-[12px] sm:text-sm font-medium rounded-none transition-colors w-full sm:w-auto overflow-hidden"
               >
-                <Icons.link size={16} className="text-muted-foreground shrink-0" />
+                <Icons.link
+                  size={16}
+                  className="text-muted-foreground shrink-0"
+                />
                 <span className="truncate">{getShareUrl()}</span>
               </button>
             </div>

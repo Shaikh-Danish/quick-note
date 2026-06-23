@@ -111,26 +111,34 @@ export function NoteCard({
     if (note.isProtected) {
       setIsPrintPasswordOpen(true);
     } else {
-      generatePrintMutation.mutate({ noteId: note.id }, {
-        onSuccess: () => {
-          setIsPrintDialogOpen(true);
+      generatePrintMutation.mutate(
+        { noteId: note.id },
+        {
+          onSuccess: () => {
+            setIsPrintDialogOpen(true);
+          },
         },
-      });
+      );
     }
   };
 
   const handleConfirmPrintPassword = (password: string) => {
-    generatePrintMutation.mutate({ noteId: note.id, password }, {
-      onSuccess: () => {
-        setIsPrintPasswordOpen(false);
-        setIsPrintDialogOpen(true);
+    generatePrintMutation.mutate(
+      { noteId: note.id, password },
+      {
+        onSuccess: () => {
+          setIsPrintPasswordOpen(false);
+          setIsPrintDialogOpen(true);
+        },
+        onError: (err) => {
+          // If password is wrong or other error
+          setIsPrintPasswordOpen(false);
+          toast.error(
+            err.message || "Invalid password or authorized action failed",
+          );
+        },
       },
-      onError: (err) => {
-        // If password is wrong or other error
-        setIsPrintPasswordOpen(false);
-        toast.error(err.message || "Invalid password or authorized action failed");
-      }
-    });
+    );
   };
 
   const TypeIcon = Icons[TYPE_ICONS[note.type]];
@@ -164,7 +172,9 @@ export function NoteCard({
                 className="rounded-none px-1.5 py-0.5 text-[8px] uppercase tracking-widest font-black border-primary/20 bg-primary/5 text-primary/60 gap-1"
               >
                 <Icons.tag size={10} weight="bold" />
-                <span className="truncate max-w-[60px] xs:max-w-none">{note.category}</span>
+                <span className="truncate max-w-[60px] xs:max-w-none">
+                  {note.category}
+                </span>
               </Badge>
             )}
             {/* Tags */}

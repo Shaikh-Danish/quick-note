@@ -60,7 +60,10 @@ function decryptFileBuffer(encryptedBuffer: Buffer, userId: string): Buffer {
   const key = getFileKey(userId);
 
   const iv = encryptedBuffer.subarray(0, IV_LENGTH);
-  const authTag = encryptedBuffer.subarray(IV_LENGTH, IV_LENGTH + AUTH_TAG_LENGTH);
+  const authTag = encryptedBuffer.subarray(
+    IV_LENGTH,
+    IV_LENGTH + AUTH_TAG_LENGTH,
+  );
   const ciphertext = encryptedBuffer.subarray(IV_LENGTH + AUTH_TAG_LENGTH);
 
   const decipher = crypto.createDecipheriv(FILE_ALGORITHM, key, iv);
@@ -131,7 +134,9 @@ export async function downloadFileFromR2(
     throw new Error("Empty response from R2");
   }
 
-  const encryptedBuffer = Buffer.from(await response.Body.transformToByteArray());
+  const encryptedBuffer = Buffer.from(
+    await response.Body.transformToByteArray(),
+  );
   return decryptFileBuffer(encryptedBuffer, userId);
 }
 

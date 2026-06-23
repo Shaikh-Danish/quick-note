@@ -27,7 +27,9 @@ export function CategoryFilter({ value, onChange }: CategoryFilterProps) {
       <DropdownMenuTrigger
         className={cn(
           "flex items-center gap-2 px-3 h-8 border border-border/40 text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer hover:border-border focus:outline-none focus:ring-1 focus:ring-ring",
-          value ? "text-foreground border-primary/40 bg-primary/5" : "text-muted-foreground/60",
+          value
+            ? "text-foreground border-primary/40 bg-primary/5"
+            : "text-muted-foreground/60",
         )}
       >
         <Icons.tag size={12} weight="bold" />
@@ -51,9 +53,7 @@ export function CategoryFilter({ value, onChange }: CategoryFilterProps) {
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup
           value={value ?? "ALL"}
-          onValueChange={(v) =>
-            onChange(v === "ALL" ? undefined : v)
-          }
+          onValueChange={(v) => onChange(v === "ALL" ? undefined : v)}
         >
           <DropdownMenuRadioItem
             value="ALL"

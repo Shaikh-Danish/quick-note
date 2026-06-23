@@ -43,7 +43,14 @@ export interface NotesFilter {
 }
 
 export function useNotes(filter: NotesFilter = {}) {
-  const { sort = "latest", type, category, search, page = 1, limit = 12 } = filter;
+  const {
+    sort = "most_used",
+    type,
+    category,
+    search,
+    page = 1,
+    limit = 12,
+  } = filter;
 
   return useQuery({
     queryKey: ["notes", sort, type, category, search, page, limit],
@@ -102,7 +109,9 @@ export function useCreateNote() {
       const isFormData = payload instanceof FormData;
       const response = await fetch("/api/notes", {
         method: "POST",
-        headers: isFormData ? undefined : { "Content-Type": "application/json" },
+        headers: isFormData
+          ? undefined
+          : { "Content-Type": "application/json" },
         body: isFormData ? payload : JSON.stringify(payload),
       });
 

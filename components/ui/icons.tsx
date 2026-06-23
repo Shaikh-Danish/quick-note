@@ -91,5 +91,5 @@ export const Icons = {
   lock: LockIcon,
   info: InfoIcon,
   lockOpen: LockOpenIcon,
-  key: KeyIcon
+  key: KeyIcon,
 };

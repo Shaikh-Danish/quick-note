@@ -91,7 +91,7 @@ export async function getUserNotes(
           isProtected: note.isProtected,
           tags: note.tags.map((t) => t.tag),
         };
-      })
+      }),
     );
 
     // Search is applied post-decryption since content is encrypted
@@ -192,19 +192,19 @@ export async function createNote(
         type: (data.type || "TEXT") as PrismaNoteCategory,
         category: data.category
           ? {
-            connectOrCreate: {
-              where: {
-                userId_name: {
-                  userId: userId,
+              connectOrCreate: {
+                where: {
+                  userId_name: {
+                    userId: userId,
+                    name: data.category,
+                  },
+                },
+                create: {
                   name: data.category,
+                  userId: userId,
                 },
               },
-              create: {
-                name: data.category,
-                userId: userId,
-              },
-            },
-          }
+            }
           : undefined,
         contentType: contentType,
         fileKey,

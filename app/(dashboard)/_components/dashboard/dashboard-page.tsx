@@ -1,10 +1,19 @@
 "use client";
 
 import { Icons } from "@/components/ui/icons";
-import { useDeleteNote, useIncrementUseCount, useNotes } from "@/features/notes/client";
+import {
+  useDeleteNote,
+  useIncrementUseCount,
+  useNotes,
+} from "@/features/notes/client";
 import { useNotesFilter } from "@/hooks/use-notes-filter";
 import { DashboardHeader } from "./layout";
-import { NoteCard, NotesPagination, NotesToolbar, QuickCreateNote } from "./notes";
+import {
+  NoteCard,
+  NotesPagination,
+  NotesToolbar,
+  QuickCreateNote,
+} from "./notes";
 
 interface User {
   name?: string | null;
@@ -31,7 +40,8 @@ export default function DashboardPage({ user }: { user: User | null }) {
   const incrementUse = useIncrementUseCount();
   const deleteNote = useDeleteNote();
 
-  const hasActiveFilters = !!filter.debouncedSearch || !!filter.type || !!filter.category;
+  const hasActiveFilters =
+    !!filter.debouncedSearch || !!filter.type || !!filter.category;
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
@@ -55,7 +65,10 @@ export default function DashboardPage({ user }: { user: User | null }) {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed border-border/40">
               <div className="flex items-center gap-3">
-                <Icons.loader2 size={16} className="animate-spin text-muted-foreground/40" />
+                <Icons.loader2
+                  size={16}
+                  className="animate-spin text-muted-foreground/40"
+                />
                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/40">
                   Loading
                 </p>
@@ -64,7 +77,10 @@ export default function DashboardPage({ user }: { user: User | null }) {
           ) : notes.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed border-border/40">
               <div className="w-14 h-14 bg-muted/40 flex items-center justify-center mb-5">
-                <Icons.notebook size={28} className="text-muted-foreground/30" />
+                <Icons.notebook
+                  size={28}
+                  className="text-muted-foreground/30"
+                />
               </div>
               <h3 className="text-sm font-black uppercase tracking-widest text-foreground/70 mb-2">
                 {hasActiveFilters ? "No matches" : "No notes yet"}

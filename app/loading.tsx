@@ -9,42 +9,39 @@ export default function Loading() {
       <div className="relative flex flex-col items-center">
         {/* Animated Brand Icon */}
         <motion.div
-           initial={{ opacity: 0, scale: 0.8 }}
-           animate={{ 
-             opacity: [0.4, 1, 0.4],
-             scale: [0.95, 1, 0.95],
-           }}
-           transition={{
-             duration: 2,
-             repeat: Infinity,
-             ease: "easeInOut"
-           }}
-           className="relative mb-6"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{
+            opacity: [0.4, 1, 0.4],
+            scale: [0.95, 1, 0.95],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="relative mb-6"
         >
           <div className="w-16 h-16 bg-primary/10 flex items-center justify-center rounded-2xl border border-primary/20">
-            <Icons.notebook
-              weight="fill"
-              className="text-primary w-8 h-8"
-            />
+            <Icons.notebook weight="fill" className="text-primary w-8 h-8" />
           </div>
-          
+
           {/* Scanning line effect */}
-          <motion.div 
+          <motion.div
             className="absolute top-0 left-0 right-0 h-0.5 bg-primary/40 shadow-[0_0_8px_rgba(255,155,102,0.5)]"
             animate={{
-              top: ["0%", "100%", "0%"]
+              top: ["0%", "100%", "0%"],
             }}
             transition={{
               duration: 3,
               repeat: Infinity,
-              ease: "linear"
+              ease: "linear",
             }}
           />
         </motion.div>
 
         {/* Loading Text with character animation */}
         <div className="flex flex-col items-center space-y-3">
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -52,7 +49,7 @@ export default function Loading() {
           >
             Loading Drop
           </motion.span>
-          
+
           <div className="flex gap-1">
             {[0, 1, 2].map((i) => (
               <motion.div

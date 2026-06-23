@@ -10,7 +10,11 @@ interface NotesPaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export function NotesPagination({ page, totalPages, onPageChange }: NotesPaginationProps) {
+export function NotesPagination({
+  page,
+  totalPages,
+  onPageChange,
+}: NotesPaginationProps) {
   if (totalPages <= 1) return null;
 
   return (
@@ -36,36 +40,45 @@ export function NotesPagination({ page, totalPages, onPageChange }: NotesPaginat
           <Icons.arrowLeft size={12} weight="bold" />
         </Button>
 
-        {Array.from({ length: Math.min(totalPages, typeof window !== 'undefined' && window.innerWidth < 640 ? 3 : 5) }, (_, i) => {
-          let visiblePages = typeof window !== 'undefined' && window.innerWidth < 640 ? 3 : 5;
-          let pageNum: number;
-          if (totalPages <= visiblePages) {
-            pageNum = i + 1;
-          } else if (page <= Math.ceil(visiblePages / 2)) {
-            pageNum = i + 1;
-          } else if (page >= totalPages - Math.floor(visiblePages / 2)) {
-            pageNum = totalPages - visiblePages + 1 + i;
-          } else {
-            pageNum = page - Math.floor(visiblePages / 2) + i;
-          }
-          return (
-            <Button
-              key={pageNum}
-              type="button"
-              variant={pageNum === page ? "default" : "outline"}
-              size="sm"
-              onClick={() => onPageChange(pageNum)}
-              className={cn(
-                "min-w-[28px] h-7 px-2 text-[10px] font-bold border border-border/40 transition-all cursor-pointer rounded-none",
-                pageNum === page
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "text-muted-foreground/50 hover:bg-muted/40 hover:border-border",
-              )}
-            >
-              {pageNum}
-            </Button>
-          );
-        })}
+        {Array.from(
+          {
+            length: Math.min(
+              totalPages,
+              typeof window !== "undefined" && window.innerWidth < 640 ? 3 : 5,
+            ),
+          },
+          (_, i) => {
+            let visiblePages =
+              typeof window !== "undefined" && window.innerWidth < 640 ? 3 : 5;
+            let pageNum: number;
+            if (totalPages <= visiblePages) {
+              pageNum = i + 1;
+            } else if (page <= Math.ceil(visiblePages / 2)) {
+              pageNum = i + 1;
+            } else if (page >= totalPages - Math.floor(visiblePages / 2)) {
+              pageNum = totalPages - visiblePages + 1 + i;
+            } else {
+              pageNum = page - Math.floor(visiblePages / 2) + i;
+            }
+            return (
+              <Button
+                key={pageNum}
+                type="button"
+                variant={pageNum === page ? "default" : "outline"}
+                size="sm"
+                onClick={() => onPageChange(pageNum)}
+                className={cn(
+                  "min-w-[28px] h-7 px-2 text-[10px] font-bold border border-border/40 transition-all cursor-pointer rounded-none",
+                  pageNum === page
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "text-muted-foreground/50 hover:bg-muted/40 hover:border-border",
+                )}
+              >
+                {pageNum}
+              </Button>
+            );
+          },
+        )}
 
         <Button
           type="button"

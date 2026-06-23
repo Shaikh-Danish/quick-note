@@ -172,7 +172,7 @@ export function QuickCreateNote({ onSuccess }: QuickCreateNoteProps) {
                       weight={isActive ? "fill" : "bold"}
                       className={cn(
                         "shrink-0 transition-transform duration-200",
-                        isActive ? "scale-110" : "group-hover:scale-110"
+                        isActive ? "scale-110" : "group-hover:scale-110",
                       )}
                     />
                     <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest truncate px-1 mt-0.5">

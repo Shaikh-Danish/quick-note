@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { betterAuth, APIError } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { username } from "better-auth/plugins";
 import { prisma } from "@/lib/prisma";
@@ -53,9 +53,11 @@ export const auth = betterAuth({
                   data: { token: newToken },
                 });
 
-                console.log(`[AUTH] Invite rotated. New token ready in DB: ${newToken}`);
+                console.log(
+                  `[AUTH] Invite rotated. New token ready in DB: ${newToken}`,
+                );
               }
-              
+
               return { response: (ctx as any).response };
             },
           },

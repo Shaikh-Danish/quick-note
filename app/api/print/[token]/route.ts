@@ -60,12 +60,15 @@ export async function GET(
       });
     } else {
       let content = await decryptString(note.content, userId);
-      
+
       if (note.isProtected && accessKey) {
         try {
-          content = content
+          content = content;
         } catch (_err) {
-            return NextResponse.json({ error: "Access key mismatch for protected document" }, { status: 403 });
+          return NextResponse.json(
+            { error: "Access key mismatch for protected document" },
+            { status: 403 },
+          );
         }
       }
 
