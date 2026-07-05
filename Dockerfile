@@ -13,6 +13,9 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
+ENV SKIP_ENV_VALIDATION=1
+ENV BETTER_AUTH_SECRET=build_time_dummy_secret
+
 RUN pnpm build
 
 # ------------------------
