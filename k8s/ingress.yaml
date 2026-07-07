@@ -17,7 +17,7 @@ spec:
   ingressClassName: nginx
   tls: 
     - hosts:
-      - quicknote.autowhat.app
+        - quicknote.autowhat.app
       secretName: quick-note-tls
   
   rules:

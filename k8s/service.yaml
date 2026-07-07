@@ -10,8 +10,9 @@ spec:
     app: quick-note
 
   ports:
-    - protocol: TCP
-    - port: 80
-    - targetPort: 3000
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 3000
 
   type: ClusterIP
