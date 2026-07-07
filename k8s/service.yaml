@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+
+metadata: 
+  name: quick-note-service
+  namespace: quick-note
+
+spec:
+  selector:
+    app: quick-note
+    type: ClusterIP
+    ports:
+      - protocol: TCP
+      - port: 80
+      - targetPort: 3000
