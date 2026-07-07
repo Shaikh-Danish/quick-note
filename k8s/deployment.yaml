@@ -16,49 +16,47 @@ spec:
       labels:
         app: quick-note
   
-  spec:
-    containers:
-      -name: quick-note
+    spec:
+      containers:
+        -name: quick-note
 
-      image: gcr.io/quck-note/quick-note:latest
-      imagePullPolicy: always
+        image: gcr.io/quck-note/quick-note:latest
+        imagePullPolicy: always
 
-      ports: 
-        -containerPort: 3000
+        ports: 
+          -containerPort: 3000
 
-      envFrom:
-        -secretRef:
-          name: quick-note-secret
-      
-      resources:
-        requests:
-          memory: "64Mi"
-          cpu: "25m"
+        envFrom:
+          -secretRef:
+            name: quick-note-secret
         
-        limits:
-          memory: "256Mi"
-          cpu: "100m"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "25m"
+          
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
 
-      livenessProbe:
-        httpGet:
-          path: /api/health
-          port: 4212
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 4212
 
-        initialDelaySeconds: 60
+          initialDelaySeconds: 60
 
-        periodSeconds: 30
-        timeoutSeconds: 10
-        failureThreshold: 5
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 5
 
-      readinessProbe:
-        httpGet:
-          path: /api/health
-          port: 4212
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 4212
 
-        initialDelaySeconds: 30
+          initialDelaySeconds: 30
 
-        periodSeconds: 15
-        timeoutSeconds: 10
-        failureThreshold: 3
-
-      
+          periodSeconds: 15
+          timeoutSeconds: 10
+          failureThreshold: 3
