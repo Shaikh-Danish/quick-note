@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: quick-note
-          image: gcr.io/quck-note/quick-note:latest
+          image: asia-south1-docker.pkg.dev/quck-note/quick-note/quick-note:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -39,7 +39,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /api/health
-              port: 4212
+              port: 3000
 
             initialDelaySeconds: 60
 
@@ -50,7 +50,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /api/health
-              port: 4212
+              port: 3000
 
             initialDelaySeconds: 30
 
