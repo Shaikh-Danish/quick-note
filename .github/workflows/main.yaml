@@ -7,6 +7,9 @@ permissions:
   contents: read
   id-token: write
 
+env:
+  IMAGE_URL: asia-south1-docker.pkg.dev/quck-note/quick-note/quick-note
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -35,16 +38,17 @@ jobs:
         run: |
           echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $GITHUB_ENV
 
-      - name: Build Docker Image
+      - name: Build and Push Docker Image
         run: |
-          docker build \
-            -t asia-south1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/quick-note/quick-note:${{ github.sha }} \
-            .
+          COMMIT_SHA=$(git rev-parse HEAD)
+          echo $COMMIT_SHA > COMMIT_SHA.txt
 
-      - name: Push Docker Image
-        run: |
-          docker push \
-            asia-south1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/quick-note/quick-note:${{ github.sha }}
+          docker build \
+            -t $IMAGE_URL:$COMMIT_SHA \
+            -t $IMAGE_URL:latest .
+
+          docker push $IMAGE_URL:$COMMIT_SHA
+          docker push $IMAGE_URL:latest
 
       - name: Get GKE Credentials
         run: |
@@ -54,6 +58,17 @@ jobs:
 
       - name: Deploy to GKE
         run: |
+          COMMIT_SHA=$(cat COMMIT_SHA.txt)
+
           kubectl apply -f k8s/namespace.yaml
           kubectl apply -f k8s/
+
+          # Update image to the exact commit SHA
+          kubectl set image deployment/quick-note \
+            quick-note=$IMAGE_URL:$COMMIT_SHA \
+            -n $quick-note
+
+          # Wait for rollout to complete
+          kubectl rollout status deployment/quick-note \
+            -n $quick-note --timeout=5m
           
