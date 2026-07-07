@@ -37,3 +37,15 @@ jobs:
         run: |
           docker push \
             asia-south1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/quick-note/quick-note:${{ github.sha }}
+
+      - name: Get GKE Credentials
+        run: |
+          gcloud container clusters get-credentials quick-note \
+            --zone asia-south1 \
+            --project quck-note
+
+      - name: Deploy to GKE
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/
+          

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: deployment
+
+metadata:
+  name: quick-note
+
+spec: 
+  replicas: 1
+
+  selector:
+    matcheLabels:
+      app: quick-note
+  
+  template:
+    metadata:
+      labels:
+        app: quick-note
+  
+  spec:
+    containers:
+      -name: quick-note
+
+      image: gcr.io/quck-note/quick-note:latest
+      imagePullPolicy: always
+
+      ports: 
+        -containerPort: 3000
+
+      envFrom:
+        -secretRef:
+          name: quick-note-secret
+      
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "25m"
+        
+        limits:
+          memory: "256Mi"
+          cpu: "100m"
+
+      livenessProbe:
+        httpGet:
+          path: /api/health
+          port: 4212
+
+        initialDelaySeconds: 60
+
+        periodSeconds: 30
+        timeoutSeconds: 10
+        failureThreshold: 5
+
+      readinessProbe:
+        httpGet:
+          path: /api/health
+          port: 4212
+
+        initialDelaySeconds: 30
+
+        periodSeconds: 15
+        timeoutSeconds: 10
+        failureThreshold: 3
+
+      
