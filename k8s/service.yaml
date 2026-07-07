@@ -8,8 +8,10 @@ metadata:
 spec:
   selector:
     app: quick-note
-    type: ClusterIP
-    ports:
-      - protocol: TCP
-      - port: 80
-      - targetPort: 3000
+
+  ports:
+    - protocol: TCP
+    - port: 80
+    - targetPort: 3000
+
+  type: ClusterIP
