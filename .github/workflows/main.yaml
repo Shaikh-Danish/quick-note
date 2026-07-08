@@ -68,9 +68,9 @@ jobs:
           # Update image to the exact commit SHA
           kubectl set image deployment/quick-note \
             quick-note=$IMAGE_URL:$COMMIT_SHA \
-            -n $quick-note
+            -n quick-note
 
           # Wait for rollout to complete
           kubectl rollout status deployment/quick-note \
-            -n $quick-note --timeout=5m
+            -n quick-note --timeout=5m
           
