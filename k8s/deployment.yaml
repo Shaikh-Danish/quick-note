@@ -3,6 +3,7 @@ kind: Deployment
 
 metadata:
   name: quick-note
+  namespace: quick-note
 
 spec: 
   replicas: 1
