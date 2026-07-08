@@ -60,7 +60,9 @@ jobs:
         run: |
           COMMIT_SHA=$(cat COMMIT_SHA.txt)
 
-          kubectl apply -f k8s/namespace.yaml
+          kubectl create namespace quick-note \
+            --dry-run=client -o yaml | kubectl apply -f -
+
           kubectl apply -f k8s/
 
           # Update image to the exact commit SHA
