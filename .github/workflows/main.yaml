@@ -11,6 +11,7 @@ env:
   IMAGE_URL: asia-south1-docker.pkg.dev/quck-note/quick-note/quick-note
   NAMESPACE: quick-note
   CLUSTER_NAME: quick-note
+  ZONE: asia-south1
 
 jobs:
   deploy:
@@ -55,7 +56,7 @@ jobs:
       - name: Get GKE Credentials
         run: |
           gcloud container clusters get-credentials $CLUSTER_NAME \
-            --zone us-central1 \
+            --zone $ZONE \
             --project quck-note
 
       - name: Deploy to GKE
