@@ -10,7 +10,7 @@ permissions:
 env:
   IMAGE_URL: asia-south1-docker.pkg.dev/quck-note/quick-note/quick-note
   NAMESPACE: quick-note
-  CLUSTER_NAME: autopilot-cluster-1
+  CLUSTER_NAME: quick-note
 
 jobs:
   deploy:
