@@ -29,11 +29,14 @@ spec:
           envFrom:
             - secretRef:
                 name: quick-note-secret
+
+            - secretRef:
+                name: quick-note-gcp-secret
         
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "25m"
+              memory: "128Mi"
+              cpu: "75m"
             
             limits:
               memory: "256Mi"
