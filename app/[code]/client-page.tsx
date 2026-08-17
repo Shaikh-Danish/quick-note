@@ -2,22 +2,16 @@
 
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
-import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { toast } from "@/components/ui/toast";
+import { useFetchQuickDrop } from "@/features/quick-drop/client";
 
-export function QuickDropViewClient({
-  url,
-  initialContent,
-  initialError,
-}: {
-  url: string;
-  initialContent: string | null;
-  initialError: string | null;
-}) {
-  const [receivedText] = useState<string | null>(initialContent);
+export function QuickDropViewClient({ url }: { url: string }) {
+  const fetchDrop = useFetchQuickDrop();
+  const receivedText = fetchDrop.data?.content ?? null;
+  const error = fetchDrop.error?.message ?? null;
 
   const copyToClipboard = (text: string, label: string = "Text") => {
     navigator.clipboard.writeText(text);
@@ -28,6 +22,39 @@ export function QuickDropViewClient({
     if (typeof window === "undefined") return "";
     return `${window.location.origin}/${url}`;
   };
+
+  if (!receivedText && !error) {
+    return (
+      <div className="w-full max-w-[1000px] mx-auto px-4 md:px-8 mb-16 font-sans">
+        <div className="animate-in fade-in duration-300">
+          <div className="flex flex-col items-center justify-center min-h-[40vh] border border-border bg-card p-12 text-center rounded-none shadow-sm mt-10">
+            <div className="bg-primary/10 p-4 rounded-none mb-6">
+              <Icons.lock size={32} className="text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold text-foreground mb-3">
+              Encrypted Drop
+            </h2>
+            <p className="text-muted-foreground mb-8 max-w-md">
+              This drop is burned after viewing. Open it only when you are
+              ready — previews and reloads will not be able to open it again.
+            </p>
+            <Button
+              onClick={() => fetchDrop.mutate(url)}
+              disabled={fetchDrop.isPending || fetchDrop.isSuccess}
+              className="font-bold h-10 px-6 rounded-none bg-primary text-primary-foreground"
+            >
+              {fetchDrop.isPending ? (
+                <Icons.loader2 className="animate-spin mr-2" />
+              ) : (
+                <Icons.lockOpen size={16} className="mr-2" />
+              )}
+              View Drop
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-[1000px] mx-auto px-4 md:px-8 mb-16 font-sans">
@@ -41,7 +68,7 @@ export function QuickDropViewClient({
               Drop Not Found
             </h2>
             <p className="text-muted-foreground mb-8 max-w-md">
-              {initialError ||
+              {error ||
                 "This drop may have expired, been burned, or the URL is incorrect."}
             </p>
             <Link href="/quickdrop" prefetch={true}>

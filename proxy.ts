@@ -17,21 +17,25 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const publicPaths = ["/landing", "/sign-in", "/sign-up", "/api/auth"];
+  const publicPaths = ["/sign-in", "/sign-up", "/api/auth"];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
+  const isQuickDropView =
+    /^\/[A-Za-z0-9]{6}$/.test(pathname) ||
+    (request.method === "GET" &&
+      /^\/api\/quickdrop\/[A-Za-z0-9]{6}$/.test(pathname));
 
-  // If not logged in and trying to access protected routes
-  if (!sessionToken && !isPublicPath && pathname !== "/") {
-    return NextResponse.redirect(new URL("/landing", request.url));
+  // /landing is not a real page — it was matching the drop [code] route
+  if (pathname === "/landing") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // If logged in and trying to access auth pages or landing
-  if (
-    sessionToken &&
-    (pathname === "/landing" ||
-      pathname === "/sign-in" ||
-      pathname === "/sign-up")
-  ) {
+  // If not logged in and trying to access protected routes
+  if (!sessionToken && !isPublicPath && pathname !== "/" && !isQuickDropView) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // If logged in and trying to access auth pages
+  if (sessionToken && (pathname === "/sign-in" || pathname === "/sign-up")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

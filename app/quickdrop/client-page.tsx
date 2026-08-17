@@ -78,6 +78,9 @@ export function QuickDropClient() {
                 <div className="text-muted-foreground font-sans text-xs mt-0.5 break-all line-clamp-1">
                   {getShareUrl()}
                 </div>
+                <p className="text-muted-foreground/80 font-sans text-[11px] mt-1">
+                  One-time link — viewing it burns the drop.
+                </p>
               </div>
             </div>
             <Button
@@ -134,7 +137,7 @@ export function QuickDropClient() {
 
           {/* Bottom Bar: Access URL */}
           <div className="flex flex-col items-center gap-8">
-            <div className="flex items-center self-start">
+            <div className="flex flex-col items-start gap-2">
               <button
                 type="button"
                 onClick={() => copyToClipboard(getShareUrl(), "URL")}
@@ -146,6 +149,9 @@ export function QuickDropClient() {
                 />
                 <span className="truncate">{getShareUrl()}</span>
               </button>
+              <p className="text-muted-foreground text-xs">
+                One-time link — viewing it burns the drop.
+              </p>
             </div>
 
             {/* Functional QR Representation */}

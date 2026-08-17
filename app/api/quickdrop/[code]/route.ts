@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const resolvedParams = await Promise.resolve(params);
-    const url = resolvedParams.code;
+    const url = resolvedParams.code?.trim();
 
     if (!url) {
       return NextResponse.json(

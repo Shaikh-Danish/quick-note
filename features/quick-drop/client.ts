@@ -22,7 +22,7 @@ export function useFetchQuickDrop() {
   // We use mutation here instead of query because fetching a url might burn it.
   return useMutation({
     mutationFn: async (url: string) => {
-      const response = await fetch(`/api/quickdrop/${url}`);
+      const response = await fetch(`/api/quickdrop/${encodeURIComponent(url)}`);
       const result = await response.json();
       if (!response.ok)
         throw new Error(result.error || "Failed to fetch quick drop");

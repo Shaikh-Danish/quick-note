@@ -7,6 +7,10 @@ import {
 import { decryptWithPassword, encryptWithPassword } from "@/lib/encryption";
 import type { createQuickDropSchema } from "@/lib/schemas/quick-drop";
 
+export function normalizeDropCode(code: string) {
+  return code.trim().toUpperCase();
+}
+
 function generateUrlStr(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // avoiding ambiguous characters like O, 0, 1, I
   let result = "";
@@ -40,20 +44,20 @@ export async function createQuickDropFeature(
 }
 
 export async function fetchQuickDropFeature(url: string) {
-  const drop = await getQuickDropByUrlDal(url);
+  const code = normalizeDropCode(url);
+  const drop = await getQuickDropByUrlDal(code);
 
   if (!drop) {
     throw new Error("Drop not found or has expired.");
   }
 
-  // Check Expiry
   if (drop.expiresAt < new Date()) {
     await deleteQuickDropDal(drop.id);
     throw new Error("Drop not found or has expired.");
   }
 
-  // Decrypt using the url string the user provided
-  const decryptedContent = decryptWithPassword(drop.content, url);
+  // Decrypt with the stored code so lookup casing cannot break decryption
+  const decryptedContent = decryptWithPassword(drop.content, drop.url);
 
   if (drop.isBurnAfterRead) {
     await deleteQuickDropDal(drop.id);
