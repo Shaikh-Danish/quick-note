@@ -16,11 +16,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    let userId: string | undefined;
+    try {
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
+      userId = session?.user?.id;
+    } catch {
+      userId = undefined;
+    }
 
-    const result = await createQuickDropFeature(parsed.data, session?.user?.id);
+    const result = await createQuickDropFeature(parsed.data, userId);
 
     return NextResponse.json({ success: true, data: result }, { status: 201 });
   } catch (error: any) {

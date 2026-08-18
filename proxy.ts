@@ -1,14 +1,46 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+function hasSessionCookie(request: NextRequest) {
+  return request.cookies.getAll().some((cookie) => {
+    const name = cookie.name;
+    return (
+      name === "better-auth.session_token" ||
+      name === "__Secure-better-auth.session_token" ||
+      name === "__Host-better-auth.session_token" ||
+      name.startsWith("better-auth.session_token.") ||
+      name.startsWith("__Secure-better-auth.session_token.") ||
+      name.startsWith("__Host-better-auth.session_token.")
+    );
+  });
+}
+
+function isQuickDropPublic(pathname: string) {
+  const path =
+    pathname.length > 1 && pathname.endsWith("/")
+      ? pathname.slice(0, -1)
+      : pathname;
+
+  if (path === "/quickdrop" || path.startsWith("/api/quickdrop")) {
+    return true;
+  }
+
+  const reserved = new Set([
+    "quickdrop",
+    "print",
+    "sign-in",
+    "sign-up",
+    "landing",
+    "api",
+    "_next",
+    "static",
+  ]);
+  const segments = path.split("/").filter(Boolean);
+  return segments.length === 1 && !reserved.has(segments[0].toLowerCase());
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check for session cookie
-  const sessionToken =
-    request.cookies.get("better-auth.session_token") ||
-    request.cookies.get("__Secure-better-auth.session_token");
-
-  // Static files and internal requests
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/static") ||
@@ -17,20 +49,24 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const publicPaths = ["/landing", "/sign-in", "/sign-up", "/api/auth"];
-  const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
-
-  // If not logged in and trying to access protected routes
-  if (!sessionToken && !isPublicPath && pathname !== "/") {
-    return NextResponse.redirect(new URL("/landing", request.url));
+  if (pathname === "/landing") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // If logged in and trying to access auth pages or landing
+  if (isQuickDropPublic(pathname)) {
+    return NextResponse.next();
+  }
+
+  const publicPaths = ["/sign-in", "/sign-up", "/api/auth"];
+  const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
+
+  if (!hasSessionCookie(request) && !isPublicPath && pathname !== "/") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   if (
-    sessionToken &&
-    (pathname === "/landing" ||
-      pathname === "/sign-in" ||
-      pathname === "/sign-up")
+    hasSessionCookie(request) &&
+    (pathname === "/sign-in" || pathname === "/sign-up")
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -39,5 +75,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!api/auth|api/quickdrop|_next/static|_next/image|favicon.ico).*)",
+  ],
 };

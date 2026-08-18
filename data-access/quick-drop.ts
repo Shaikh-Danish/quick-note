@@ -19,7 +19,7 @@ export async function getQuickDropByUrlDal(url: string) {
 }
 
 export async function deleteQuickDropDal(id: string) {
-  return prisma.quickDrop.delete({
+  return prisma.quickDrop.deleteMany({
     where: { id },
   });
 }
