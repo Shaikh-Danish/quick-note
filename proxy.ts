@@ -14,12 +14,13 @@ function hasSessionCookie(request: NextRequest) {
   });
 }
 
-function isDropShareRequest(pathname: string) {
-  const path = pathname.length > 1 && pathname.endsWith("/")
-    ? pathname.slice(0, -1)
-    : pathname;
+function isQuickDropPublic(pathname: string) {
+  const path =
+    pathname.length > 1 && pathname.endsWith("/")
+      ? pathname.slice(0, -1)
+      : pathname;
 
-  if (path.startsWith("/api/quickdrop/")) {
+  if (path === "/quickdrop" || path.startsWith("/api/quickdrop")) {
     return true;
   }
 
@@ -52,8 +53,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Share links must work without an account
-  if (isDropShareRequest(pathname)) {
+  if (isQuickDropPublic(pathname)) {
     return NextResponse.next();
   }
 
@@ -76,8 +76,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Keep drop share URLs and /api/quickdrop/:code out of this list so
-    // unauthenticated recipients are never redirected to login.
-    "/((?!api/auth|api/quickdrop/|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api/auth|api/quickdrop|_next/static|_next/image|favicon.ico).*)",
   ],
 };

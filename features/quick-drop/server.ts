@@ -4,7 +4,6 @@ import {
   deleteQuickDropDal,
   getQuickDropByUrlDal,
 } from "@/data-access/quick-drop";
-import { decryptWithPassword, encryptWithPassword } from "@/lib/encryption";
 import type { createQuickDropSchema } from "@/lib/schemas/quick-drop";
 
 export function normalizeDropCode(code: string) {
@@ -12,7 +11,7 @@ export function normalizeDropCode(code: string) {
 }
 
 function generateUrlStr(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // avoiding ambiguous characters like O, 0, 1, I
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let result = "";
   for (let i = 0; i < 6; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -25,15 +24,12 @@ export async function createQuickDropFeature(
   userId?: string,
 ) {
   const urlStr = generateUrlStr();
-  // Encrypt the content using the generated url string as the password
-  // This guarantees that the server only stores ciphertext unreadable without the url string
-  const encryptedContent = encryptWithPassword(payload.content, urlStr);
   const expiresAt = new Date(
     Date.now() + payload.expiresInHours * 60 * 60 * 1000,
   );
 
   const drop = await createQuickDropDal({
-    content: encryptedContent,
+    content: payload.content,
     url: urlStr,
     expiresAt,
     isBurnAfterRead: payload.isBurnAfterRead ?? true,
@@ -56,12 +52,15 @@ export async function fetchQuickDropFeature(url: string) {
     throw new Error("Drop not found or has expired.");
   }
 
-  // Decrypt with the stored code so lookup casing cannot break decryption
-  const decryptedContent = decryptWithPassword(drop.content, drop.url);
+  return {
+    content: drop.content,
+    isBurnAfterRead: drop.isBurnAfterRead,
+  };
+}
 
-  if (drop.isBurnAfterRead) {
-    await deleteQuickDropDal(drop.id);
-  }
-
-  return { content: decryptedContent };
+export async function burnQuickDropFeature(url: string) {
+  const code = normalizeDropCode(url);
+  const drop = await getQuickDropByUrlDal(code);
+  if (!drop) return;
+  await deleteQuickDropDal(drop.id);
 }

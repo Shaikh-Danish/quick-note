@@ -13,15 +13,17 @@ import { toast } from "@/components/ui/toast";
 
 import { useCreateQuickDrop } from "@/features/quick-drop/client";
 import { useZodForm } from "@/hooks/use-zod-form";
-import { createQuickDropSchema } from "@/lib/schemas/quick-drop";
+import { createQuickDropFormSchema } from "@/lib/schemas/quick-drop";
 
 export function QuickDropClient() {
   const [createdCode, setCreatedCode] = useState<string | null>(null);
+  const [createdKey, setCreatedKey] = useState<string | null>(null);
+  const [createdPlaintext, setCreatedPlaintext] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const createMutation = useCreateQuickDrop();
 
-  const createForm = useZodForm<z.infer<typeof createQuickDropSchema>>(
-    createQuickDropSchema,
+  const createForm = useZodForm<z.infer<typeof createQuickDropFormSchema>>(
+    createQuickDropFormSchema,
     {
       defaultValues: {
         content: "",
@@ -31,10 +33,12 @@ export function QuickDropClient() {
     },
   );
 
-  const handleCreate = (data: z.infer<typeof createQuickDropSchema>) => {
+  const handleCreate = (data: z.infer<typeof createQuickDropFormSchema>) => {
     createMutation.mutate(data, {
       onSuccess: (res) => {
         setCreatedCode(res.url);
+        setCreatedKey(res.key);
+        setCreatedPlaintext(res.plaintext);
         setIsDialogOpen(true);
       },
       onError: (err) => {
@@ -50,6 +54,8 @@ export function QuickDropClient() {
 
   const resetAll = () => {
     setCreatedCode(null);
+    setCreatedKey(null);
+    setCreatedPlaintext("");
     setIsDialogOpen(false);
     createForm.reset();
   };
@@ -66,27 +72,35 @@ export function QuickDropClient() {
           className="max-w-md bg-background border-border text-foreground rounded-none p-6 shadow-2xl"
           showCloseButton={false}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center gap-4">
               <div className="w-6 h-6 bg-white text-black flex items-center justify-center shrink-0 rounded-full">
                 <Icons.check weight="bold" size={14} />
               </div>
-              <div className="min-w-0">
-                <DialogTitle className="text-foreground text-sm font-semibold font-sans">
-                  Drop created!
-                </DialogTitle>
-                <div className="text-muted-foreground font-sans text-xs mt-0.5 break-all line-clamp-1">
-                  {getShareUrl()}
-                </div>
-                <p className="text-muted-foreground/80 font-sans text-[11px] mt-1">
-                  One-time link — viewing it burns the drop.
-                </p>
-              </div>
+              <DialogTitle className="text-foreground text-sm font-semibold font-sans">
+                Drop created!
+              </DialogTitle>
+            </div>
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              Share the URL and this 6-character key. The key never leaves your
+              browser and is required to decrypt the drop.
+            </p>
+            <div className="flex items-center justify-between gap-3 border border-border px-3 py-2">
+              <span className="font-mono text-lg tracking-[0.35em] font-bold">
+                {createdKey}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => copyToClipboard(createdKey || "", "key")}
+                className="font-bold h-9 px-3 shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 border-none rounded-none text-sm"
+              >
+                Copy key
+              </Button>
             </div>
             <Button
               variant="outline"
               onClick={() => copyToClipboard(getShareUrl(), "URL")}
-              className="font-bold h-10 px-4 shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 border-none rounded-none text-sm transition-colors"
+              className="font-medium h-9 rounded-none text-sm"
             >
               Copy URL
             </Button>
@@ -96,14 +110,11 @@ export function QuickDropClient() {
 
       {createdCode ? (
         <div className="animate-in fade-in duration-300">
-          {/* Top Toolbar */}
           <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
             <div className="flex items-center gap-4">
               <Button
                 variant="outline"
-                onClick={() =>
-                  copyToClipboard(createForm.getValues("content"), "Text")
-                }
+                onClick={() => copyToClipboard(createdPlaintext, "Text")}
                 className="gap-2 h-10 px-4 font-medium rounded-none"
               >
                 <Icons.copy size={16} /> Copy Text{" "}
@@ -111,13 +122,6 @@ export function QuickDropClient() {
                   size={14}
                   className="ml-1 text-muted-foreground"
                 />
-              </Button>
-              <Button
-                variant="ghost"
-                className="text-muted-foreground hover:text-foreground gap-2 font-medium rounded-none h-10 px-2 sm:px-4"
-              >
-                <Icons.warning size={16} />{" "}
-                <span className="hidden xs:inline">Report Drop</span>
               </Button>
             </div>
 
@@ -130,14 +134,12 @@ export function QuickDropClient() {
             </Button>
           </div>
 
-          {/* Text Area (Read Only) */}
           <div className="bg-transparent border border-[#ff9b66]/60 p-4 sm:p-5 min-h-[200px] sm:min-h-[300px] text-foreground font-mono text-[13px] sm:text-sm leading-relaxed overflow-y-auto mb-6 shadow-inner rounded-none">
-            {createForm.getValues("content")}
+            {createdPlaintext}
           </div>
 
-          {/* Bottom Bar: Access URL */}
           <div className="flex flex-col items-center gap-8">
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex flex-col items-start gap-3 w-full">
               <button
                 type="button"
                 onClick={() => copyToClipboard(getShareUrl(), "URL")}
@@ -149,12 +151,30 @@ export function QuickDropClient() {
                 />
                 <span className="truncate">{getShareUrl()}</span>
               </button>
-              <p className="text-muted-foreground text-xs">
-                One-time link — viewing it burns the drop.
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="border border-border px-4 py-2.5">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
+                    Decrypt key
+                  </p>
+                  <p className="font-mono text-base tracking-[0.35em] font-bold">
+                    {createdKey}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => copyToClipboard(createdKey || "", "key")}
+                  className="h-10 px-4 rounded-none"
+                >
+                  <Icons.copy size={16} className="mr-2" /> Copy key
+                </Button>
+              </div>
+              <p className="text-muted-foreground text-xs max-w-lg">
+                The key is not stored on the server. Anyone with the URL must
+                enter it to decrypt. This drop is burned after a successful
+                view.
               </p>
             </div>
 
-            {/* Functional QR Representation */}
             <div className="flex flex-col items-center mt-4">
               <div className="bg-white p-3 border border-border rounded-none shadow-sm dark:bg-white">
                 <QRCodeSVG
@@ -182,9 +202,8 @@ export function QuickDropClient() {
               QuickDrop
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto text-[17px] font-medium leading-relaxed">
-              Securely drop and share text, notes, or code. Paste below{" "}
-              <br className="hidden sm:block" />
-              to generate a temporary access URL.
+              Encrypt text in your browser, then share a URL and a 6-character
+              key. The server never sees the key or the plaintext.
             </p>
           </div>
 
@@ -214,9 +233,10 @@ export function QuickDropClient() {
                 )}
               </Field>
 
-              {/* Toolbar */}
               <div className="bg-muted/30 border-t border-border px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div></div>
+                <p className="text-xs text-muted-foreground">
+                  A 6-character key is generated in your browser.
+                </p>
 
                 <Button
                   type="submit"
@@ -226,7 +246,7 @@ export function QuickDropClient() {
                   {createMutation.isPending ? (
                     <Icons.loader2 className="animate-spin mr-2" />
                   ) : (
-                    <Icons.plus weight="bold" size={16} className="mr-2" />
+                    <Icons.lock weight="bold" size={16} className="mr-2" />
                   )}
                   Create Drop
                 </Button>

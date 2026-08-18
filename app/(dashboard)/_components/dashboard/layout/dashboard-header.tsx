@@ -45,22 +45,24 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
 
   const NavLinks = ({ className = "" }: { className?: string }) => (
     <>
-      <Link
-        href="/"
-        prefetch={true}
-        className={cn(
-          "relative h-full flex items-center px-4 md:px-3 text-sm font-medium transition-colors",
-          pathname === "/" || pathname === "/dashboard"
-            ? "text-foreground"
-            : "text-muted-foreground hover:text-foreground",
-          className,
-        )}
-      >
-        Notes
-        {(pathname === "/" || pathname === "/dashboard") && (
-          <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground rounded-t-full hidden md:block" />
-        )}
-      </Link>
+      {user ? (
+        <Link
+          href="/"
+          prefetch={true}
+          className={cn(
+            "relative h-full flex items-center px-4 md:px-3 text-sm font-medium transition-colors",
+            pathname === "/" || pathname === "/dashboard"
+              ? "text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+            className,
+          )}
+        >
+          Notes
+          {(pathname === "/" || pathname === "/dashboard") && (
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground rounded-t-full hidden md:block" />
+          )}
+        </Link>
+      ) : null}
       <Link
         href="/quickdrop"
         prefetch={true}
@@ -86,38 +88,36 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
         <div className="flex justify-between h-14 items-center">
           {/* Brand */}
           <div className="flex items-center gap-2.5 flex-1">
-            {user ? (
-              <Sheet>
-                <SheetTrigger>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="md:hidden h-8 w-8 -ml-2 text-muted-foreground/60"
-                  >
-                    <Icons.list size={18} />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-[280px] sm:w-[350px]">
-                  <SheetHeader className="mt-4 border-b border-border/50 pb-4 mb-4">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 bg-primary flex items-center justify-center rounded">
-                        <Icons.notebook
-                          weight="fill"
-                          className="text-primary-foreground"
-                          size={16}
-                        />
-                      </div>
-                      <SheetTitle className="font-black text-xs uppercase tracking-[0.2em]">
-                        Quick Note
-                      </SheetTitle>
+            <Sheet>
+              <SheetTrigger>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden h-8 w-8 -ml-2 text-muted-foreground/60"
+                >
+                  <Icons.list size={18} />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[280px] sm:w-[350px]">
+                <SheetHeader className="mt-4 border-b border-border/50 pb-4 mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 bg-primary flex items-center justify-center rounded">
+                      <Icons.notebook
+                        weight="fill"
+                        className="text-primary-foreground"
+                        size={16}
+                      />
                     </div>
-                  </SheetHeader>
-                  <div className="flex flex-col gap-2">
-                    <NavLinks className="justify-start px-4 h-11" />
+                    <SheetTitle className="font-black text-xs uppercase tracking-[0.2em]">
+                      Quick Note
+                    </SheetTitle>
                   </div>
-                </SheetContent>
-              </Sheet>
-            ) : null}
+                </SheetHeader>
+                <div className="flex flex-col gap-2">
+                  <NavLinks className="justify-start px-4 h-11" />
+                </div>
+              </SheetContent>
+            </Sheet>
 
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 bg-primary flex items-center justify-center rounded">
@@ -134,11 +134,9 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
           </div>
 
           {/* Navigation - Minimalist Line Tabs (Desktop) */}
-          {user ? (
-            <nav className="hidden md:flex flex-none items-center gap-8 h-full">
-              <NavLinks />
-            </nav>
-          ) : null}
+          <nav className="hidden md:flex flex-none items-center gap-8 h-full">
+            <NavLinks />
+          </nav>
 
           {/* Actions */}
           <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
