@@ -1,14 +1,45 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+function hasSessionCookie(request: NextRequest) {
+  return request.cookies.getAll().some((cookie) => {
+    const name = cookie.name;
+    return (
+      name === "better-auth.session_token" ||
+      name === "__Secure-better-auth.session_token" ||
+      name === "__Host-better-auth.session_token" ||
+      name.startsWith("better-auth.session_token.") ||
+      name.startsWith("__Secure-better-auth.session_token.") ||
+      name.startsWith("__Host-better-auth.session_token.")
+    );
+  });
+}
+
+function isDropShareRequest(pathname: string) {
+  const path = pathname.length > 1 && pathname.endsWith("/")
+    ? pathname.slice(0, -1)
+    : pathname;
+
+  if (path.startsWith("/api/quickdrop/")) {
+    return true;
+  }
+
+  const reserved = new Set([
+    "quickdrop",
+    "print",
+    "sign-in",
+    "sign-up",
+    "landing",
+    "api",
+    "_next",
+    "static",
+  ]);
+  const segments = path.split("/").filter(Boolean);
+  return segments.length === 1 && !reserved.has(segments[0].toLowerCase());
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check for session cookie
-  const sessionToken =
-    request.cookies.get("better-auth.session_token") ||
-    request.cookies.get("__Secure-better-auth.session_token");
-
-  // Static files and internal requests
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/static") ||
@@ -17,25 +48,26 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const publicPaths = ["/sign-in", "/sign-up", "/api/auth"];
-  const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
-  const isQuickDropView =
-    /^\/[A-Za-z0-9]{6}$/.test(pathname) ||
-    (request.method === "GET" &&
-      /^\/api\/quickdrop\/[A-Za-z0-9]{6}$/.test(pathname));
-
-  // /landing is not a real page — it was matching the drop [code] route
   if (pathname === "/landing") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // If not logged in and trying to access protected routes
-  if (!sessionToken && !isPublicPath && pathname !== "/" && !isQuickDropView) {
+  // Share links must work without an account
+  if (isDropShareRequest(pathname)) {
+    return NextResponse.next();
+  }
+
+  const publicPaths = ["/sign-in", "/sign-up", "/api/auth"];
+  const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
+
+  if (!hasSessionCookie(request) && !isPublicPath && pathname !== "/") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // If logged in and trying to access auth pages
-  if (sessionToken && (pathname === "/sign-in" || pathname === "/sign-up")) {
+  if (
+    hasSessionCookie(request) &&
+    (pathname === "/sign-in" || pathname === "/sign-up")
+  ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -43,5 +75,9 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    // Keep drop share URLs and /api/quickdrop/:code out of this list so
+    // unauthenticated recipients are never redirected to login.
+    "/((?!api/auth|api/quickdrop/|_next/static|_next/image|favicon.ico).*)",
+  ],
 };
